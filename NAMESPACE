@@ -1,0 +1,15 @@
+import(BiocGenerics)
+importFrom(AnnotationDbi, keytypes, cols, keys, select)
+
+exportMethods(keytypes,
+              cols,
+              keys,
+              select,
+              taxId,
+              "taxId<-",
+              species)
+              
+export(availableUniprotSpecies,
+       lookupUniprotSpeciesFromTaxId)
+
+
