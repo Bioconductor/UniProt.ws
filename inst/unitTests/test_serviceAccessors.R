@@ -31,19 +31,19 @@ test_mapUniprot <- function(){
 ## Test to be commented (but not removed).
 ## This is a useful test, but it takes a very long time to run. And since the
 ## function is only needed twice a year...
-test_getOneToMany <- function(){
-  taxId <- "9606" ## human taxonomy Id
+## test_getOneToMany <- function(){
+##   taxId <- "9606" ## human taxonomy Id
   
-  ## Now I can get pfams like this:
-  pfs <- UniProt.ws:::getOneToMany(taxId, "PFAM")
-  .check_rect_result(pfs)
-  checkTrue(dim(pfs[pfs[[1]]=="P30443",])[1] > 1)
+##   ## Now I can get pfams like this:
+##   pfs <- UniProt.ws:::getOneToMany(taxId, "PFAM")
+##   .check_rect_result(pfs)
+##   checkTrue(dim(pfs[pfs[[1]]=="P30443",])[1] > 1)
 
-  ## And I can get prosite IDs like this:
-  ps <- UniProt.ws:::getOneToMany(taxId, "prosite")
-  .check_rect_result(ps)
-  checkTrue(dim(ps[ps[[1]]=="P62258",])[1] > 1)
-}
+##   ## And I can get prosite IDs like this:
+##   ps <- UniProt.ws:::getOneToMany(taxId, "prosite")
+##   .check_rect_result(ps)
+##   checkTrue(dim(ps[ps[[1]]=="P62258",])[1] > 1)
+## }
 
 
 

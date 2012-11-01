@@ -126,21 +126,21 @@ test_select_7 <- function(){
 
 ## keys is extremely slow, so I will comment this test to speed up the tests.
 ## but it might be useful to have this in the future.
-test_keys <- function(){
+## test_keys <- function(){
 
-  ## keys is VERY slow :(
-  ##   keytype = "UNIPROTKB"
-  ##   k = keys(UniProt.ws, keytype)
+##   ## keys is VERY slow :(
+##   ##   keytype = "UNIPROTKB"
+##   ##   k = keys(UniProt.ws, keytype)
   
-  ## so switch to a critter with fewer egs?
-  taxId(UniProt.ws) <- 9913
+##   ## so switch to a critter with fewer egs?
+##   taxId(UniProt.ws) <- 9913
   
-  keytype = "ENTREZ_GENE"
-  egs = keys(UniProt.ws, keytype)
-  checkTrue(any("282126" %in% egs))
-  checkTrue(is.character(egs))
-  checkTrue(length(egs)>1)
-}
+##   keytype = "ENTREZ_GENE"
+##   egs = keys(UniProt.ws, keytype)
+##   checkTrue(any("282126" %in% egs))
+##   checkTrue(is.character(egs))
+##   checkTrue(length(egs)>1)
+## }
 
 
 
