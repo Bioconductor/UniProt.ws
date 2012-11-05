@@ -77,7 +77,7 @@ If you already know about the select interface, you can immediately
 learn about the various methods for this object by just looking it's
 the help page.
 
-<<help>>=
+<<help,eval=FALSE>>=
 help("UniProt.ws")
 @ 
 

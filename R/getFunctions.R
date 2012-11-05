@@ -47,7 +47,7 @@ extraColsDat <- extraColsDat[-c(8L,24L,29L,33L),]
   ## But the URL expects it to be a space separated string.
   query <- paste(query, collapse=" ")
   ## url is constant here
-  url <- 'http://www.UniProt.org/mapping/'
+  url <- 'http://www.uniprot.org/mapping/'
   params <- c('from'=from,'to'= to,'format'='tab',
     'query'=query)
 ##   res <- getForm(url,
@@ -134,14 +134,14 @@ mapUniprot <- function(from, to, query){
 ## use dataNibbler.  So it's a stand-alone thing for now. (only used for
 ## making the annots at release time)
 ## What about something simpler?
-## http://www.UniProt.org/UniProt/?query=P12345&format=tab&columns=id,sequence
+## http://www.uniprot.org/uniprot/?query=P12345&format=tab&columns=id,sequence
 ## What about PFAM and Prosite (need special functions for special services).
 
 getOneToMany <- function(taxId, type=c("PFAM","prosite")){ 
   type <- match.arg(type)
-  url <- paste0("http://www.UniProt.org/UniProt/?query=organism:",taxId,"&format=tab&columns=id,database(")
+  url <- paste0("http://www.uniprot.org/uniprot/?query=organism:",taxId,"&format=tab&columns=id,database(")
   fullUrl <- paste0(url,type,")")
-  message("Reading in data from Uniprot web services.")
+  message("Reading in data from UniProt web services.")
 ##   dat <- read.delim(fullUrl, stringsAsFactors=FALSE)
   dat <- .tryReadResult(fullUrl)
   colnames(dat) <- c('ids', 'ids2')
@@ -198,7 +198,7 @@ backFillCols <- function(tab, cols){
   ## query and cols start as a character vectors
   qstring <- paste(query, collapse="+or+")  
   cstring <- paste(cols, collapse=",")
-  url <- 'http://www.UniProt.org/UniProt/?query='
+  url <- 'http://www.uniprot.org/uniprot/?query='
   fullUrl <- paste0(url,qstring,'&format=tab&columns=id,',cstring)
   ## This step may need to repeat (in the event that it fails).
   dat <- .tryReadResult(fullUrl)
@@ -259,13 +259,13 @@ lookupUniprotSpeciesFromTaxId <- function(id){
 
 ## important resources:
 ## query syntax
-## http://www.UniProt.org/help/text-search
+## http://www.uniprot.org/help/text-search
 
 ## how to use the REST site (generally):
-## http://www.UniProt.org/faq/28
+## http://www.uniprot.org/faq/28
 
 ## query fields (what you can put for the "query=" part)
-## http://www.UniProt.org/help/query-fields
+## http://www.uniprot.org/help/query-fields
 
 
 
@@ -275,29 +275,29 @@ lookupUniprotSpeciesFromTaxId <- function(id){
 ## something like below...
 
 ## these work:
-## http://www.UniProt.org/UniProt/?query=P12345&format=tab&columns=id,sequence
-## http://www.UniProt.org/UniProt/?query=accession:P30443&format=tab&columns=id,sequence
+## http://www.uniprot.org/uniprot/?query=P12345&format=tab&columns=id,sequence
+## http://www.uniprot.org/uniprot/?query=accession:P30443&format=tab&columns=id,sequence
 
 
 ## This also works (gets ALL the IDs):
-## http://www.UniProt.org/UniProt/?query=organism:9606&format=tab&columns=id,sequence
+## http://www.uniprot.org/uniprot/?query=organism:9606&format=tab&columns=id,sequence
 
 
 
 ## And this is if you want multiple of the same kind
-## http://www.UniProt.org/UniProt/?query="P04217"+or+"P30443"&format=tab&columns=id,sequence
+## http://www.uniprot.org/uniprot/?query="P04217"+or+"P30443"&format=tab&columns=id,sequence
 
 ## Notice though that I am getting extra entries.  Are they equivalant or cruft?
 ## The DEFINITELY are not perfectly equivalent...  
 ## I would like to understand why some requests get me multiple hits, while others only get me one hit????
 
-## http://www.UniProt.org/UniProt/?query="P04217"&format=tab&columns=id,sequence
+## http://www.uniprot.org/uniprot/?query="P04217"&format=tab&columns=id,sequence
 
 ## So lets look at this example here: "P30443" returns data for it and also some data for another species with the ID "G7ZFG0"  </puzzled>
-## http://www.UniProt.org/UniProt/?query="P30443"&format=tab&columns=id,sequence
+## http://www.uniprot.org/uniprot/?query="P30443"&format=tab&columns=id,sequence
 
 ## But if I just ask for "G7ZFG0" I don't also get the human version "P30443"...
-## http://www.UniProt.org/UniProt/?query="G7ZFG0"&format=tab&columns=id,sequence
+## http://www.uniprot.org/uniprot/?query="G7ZFG0"&format=tab&columns=id,sequence
 
 
 ## What's more: using single quotes seems to change thigns AGAIN (makes it even LESS specific somehow?)
@@ -307,11 +307,11 @@ lookupUniprotSpeciesFromTaxId <- function(id){
 
 
 ## SO I want to format the query like this:
-## http://www.UniProt.org/UniProt/?query=P04217+or+P30443&format=tab&columns=id,sequence
+## http://www.uniprot.org/uniprot/?query=P04217+or+P30443&format=tab&columns=id,sequence
 
 
 ## I can also do things like this (thus extracting the stuff from other DBs)
-## http://www.UniProt.org/UniProt/?query=P04217+or+P30443&format=tab&columns=id,database%28interpro%29
+## http://www.uniprot.org/uniprot/?query=P04217+or+P30443&format=tab&columns=id,database%28interpro%29
 
 
 
