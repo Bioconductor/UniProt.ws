@@ -114,17 +114,17 @@ makePFAMandPrositeTables <- function(db){
      ipi_id TEXT,
      pfam_id TEXT
     );"
-    sqliteQuickSQL(db, sqlCreate)
+    sqliteQuickSQL(db, sql)
     sql <-  "CREATE INDEX c20 ON pfam(_id);"
-    sqliteQuickSQL(db, sqlCreate)
+    sqliteQuickSQL(db, sql)
     sql <-  "CREATE TABLE prosite (
      _id INTEGER REFERENCES genes(_id),
      ipi_id TEXT,
      prosite_id TEXT
     );"
-    sqliteQuickSQL(db, sqlCreate)
+    sqliteQuickSQL(db, sql)
     sql <-  "CREATE INDEX c21 ON prosite(_id);"
-    sqliteQuickSQL(db, sqlCreate)
+    sqliteQuickSQL(db, sql)
 }
 
 
