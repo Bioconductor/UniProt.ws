@@ -107,7 +107,25 @@ getData <- function(dbFile, db){
 }
 
 
-
+## ## make PFAM and Prosite tables
+makePFAMandPrositeTables <- function(db){
+    sql <-  "CREATE TABLE pfam (
+     _id INTEGER REFERENCES genes(_id),
+     ipi_id TEXT,
+     pfam_id TEXT
+    );"
+    sqliteQuickSQL(db, sqlCreate)
+    sql <-  "CREATE INDEX c20 ON pfam(_id);"
+    sqliteQuickSQL(db, sqlCreate)
+    sql <-  "CREATE TABLE prosite (
+     _id INTEGER REFERENCES genes(_id),
+     ipi_id TEXT,
+     prosite_id TEXT
+    );"
+    sqliteQuickSQL(db, sqlCreate)
+    sql <-  "CREATE INDEX c21 ON prosite(_id);"
+    sqliteQuickSQL(db, sqlCreate)
+}
 
 
 ## 4) For each species, get the data, using getData, and then go
@@ -164,6 +182,9 @@ for(species in speciesList){
   message("Getting data for:",species)
   res <- getData(species, db)
 
+  message("Making tables for pfam and prosite")
+  makePFAMandPrositeTables(db)
+  
   message("Inserting data for:",species)
   ## Now I need to insert the data:
   doInserts(db, "pfam", res[["pfam"]])
