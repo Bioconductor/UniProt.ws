@@ -28,7 +28,7 @@ speciesList = c("chipsrc_human.sqlite",
   #  "chipsrc_worm.sqlite",
   #  "chipsrc_fly.sqlite",
   "chipsrc_mouse.sqlite",
-  "chipsrc_bovine.sqlite",
+  "chipsrc_bovine.sqlite"#,
   #  "chipsrc_arabidopsis.sqlite"  ## this is available and could be "activated"
   ## But to activate arabidopsis, remember you have to pre-add the tables...
   #  "chipsrc_canine.sqlite",
