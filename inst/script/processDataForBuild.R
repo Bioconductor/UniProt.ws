@@ -109,6 +109,7 @@ getData <- function(dbFile, db){
 
 ## ## make PFAM and Prosite tables
 makePFAMandPrositeTables <- function(db){
+    sqliteQuickSQL(db, "DROP TABLE IF EXISTS pfam;")
     sql <-  "CREATE TABLE pfam (
      _id INTEGER REFERENCES genes(_id),
      ipi_id TEXT,
@@ -117,6 +118,7 @@ makePFAMandPrositeTables <- function(db){
     sqliteQuickSQL(db, sql)
     sql <-  "CREATE INDEX c20 ON pfam(_id);"
     sqliteQuickSQL(db, sql)
+    sqliteQuickSQL(db, "DROP TABLE IF EXISTS prosite;")
     sql <-  "CREATE TABLE prosite (
      _id INTEGER REFERENCES genes(_id),
      ipi_id TEXT,
@@ -139,6 +141,9 @@ makePFAMandPrositeTables <- function(db){
 doInserts <- function(db, table, data){
 
   ## make a temp pfam table pfamt
+  sqlDrop <-paste0("DROP TABLE IF EXISTS ",table,"t;")
+  sqliteQuickSQL(db, sqlDrop)
+
   sqlCreate <- paste0("CREATE TABLE ",table,"t (
                 gene_id TEXT,
                 ipi_id TEXT,
