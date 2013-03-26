@@ -19,7 +19,7 @@ test_mapUniprot <- function(){
                                 query=c('1','2','3','9','10'))
   .check_rect_result(res)
   checkTrue(res[1,1]=='1')
-  checkTrue(res[1,2]=='Q7Z3U3')
+  checkTrue(res[1,2]=='P04217')
   
   ## I can then map UniProt accessions to IPI IDs
   res <- UniProt.ws:::mapUniprot(from='ACC',to='P_IPI',
