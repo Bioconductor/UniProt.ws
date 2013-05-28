@@ -123,19 +123,19 @@ As you can see the species has now changed from Homo sapiens to Mus musculus.
 Once you have pointed the \Robject{uniport.ws} to use the appropriate
 organsims, you can make use of the standard set of methods in a
 \Rmethod{select} interface.  Specifically:
-\Rmethod{cols},\Rmethod{keytypes},\Rmethod{keys} and \Rmethod{select}.
+\Rmethod{columns},\Rmethod{keytypes},\Rmethod{keys} and \Rmethod{select}.
 
-You will probably notice that there are a large number of cols that can be
+You will probably notice that there are a large number of columns that can be
 retrieved.
 
-<<cols>>=
+<<columns>>=
 head(keytypes(UniProt.ws))
 @ 
 
 And most (but not all) of these fields can also be used as keytypes.
 
 <<keytypes>>=
-head(cols(UniProt.ws))
+head(columns(UniProt.ws))
 @ 
 
 If necessary you can also look up the keys of a given type.  But
@@ -147,7 +147,7 @@ probably going to want to save the result to your R session.
 egs = keys(UniProt.ws, "ENTREZ_GENE")
 @ 
 
-Finally, you can loop up whatever combinations of cols, keytypes and keys
+Finally, you can loop up whatever combinations of columns, keytypes and keys
 that you need when using \Rmethod{select}.
 
 <<select>>=

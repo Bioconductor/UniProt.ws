@@ -13,7 +13,7 @@ setMethod("keytypes", "UniProt.ws", function(x){.keytypes()})
   c(keytypeKeysDat[,1], extraColsDat[,1])
 }
 
-setMethod("cols", "UniProt.ws", function(x){.cols()})
+setMethod("columns", "UniProt.ws", function(x){.cols()})
 
 ## http://www.UniProt.org/UniProt/?query=organism:9606&format=tab&columns=id,sequence
 
@@ -70,8 +70,8 @@ setMethod("keys", "UniProt.ws",
   if(!any(keytypes(x) %in% keytype)){
     stop("keytype argument MUST match a value returned by keytypes method")
   }
-  if(!any(cols(x) %in% cols)){
-    stop("cols argument MUST match a value returned by cols method")
+  if(!any(columns(x) %in% cols)){
+    stop("cols argument MUST match a value returned by columns method")
   }
   oriTabCols <- unique(c(keytype,cols))
   cols <- cols[!(cols %in% keytype)]  ## remove keytype from cols 

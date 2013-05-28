@@ -18,7 +18,8 @@
 
 % select and select related methods
 \alias{cols}
-\alias{cols,UniProt.ws-method}
+\alias{columns}
+\alias{columns,UniProt.ws-method}
 
 \alias{keytypes}
 \alias{keytypes,UniProt.ws-method}
@@ -45,10 +46,10 @@
   to allow usage of \code{select} methods and other supporting methods
   to enable the easy extraction of data from the Uniprot web services.
 
-  \code{select}, \code{cols} and \code{keys} are used together to
+  \code{select}, \code{columns} and \code{keys} are used together to
   extract data via an \code{UniProt.ws} object. 
 
-  \code{cols} shows which kinds of data can be returned for the
+  \code{columns} shows which kinds of data can be returned for the
   \code{UniProt.ws} object.
   
   \code{keytypes} allows the user to discover which keytypes can be
@@ -61,7 +62,7 @@
   \code{keytype} argument, it will return the keys from that keytype.
   
   \code{select} will retrieve the data as a data.frame based on
-  parameters for selected \code{keys} and \code{cols} and \code{keytype}
+  parameters for selected \code{keys} and \code{columns} and \code{keytype}
   arguments.
   
   The \code{UniProt.ws} will be loaded whenever you load the
@@ -94,7 +95,7 @@
 }
 
 \usage{
-  cols(x)
+  columns(x)
   keytypes(x)
   select(x, keys, cols, keytype, ...)
   species(x)
@@ -108,9 +109,9 @@
   \item{x}{the \code{UniProt.ws} object. }
   \item{keys}{the keys to select records for from the database.  All possible 
     keys are returned by using the \code{keys} method.}
-  \item{cols}{the cols or kinds of things that can be retrieved from the 
-    database.  As with \code{keys}, all possible cols are returned by using the
-    \code{cols} method.}
+  \item{cols}{the columns or kinds of things that can be retrieved
+    from the database.  As with \code{keys}, all possible columns are
+    returned by using the \code{columns} method.}
   \item{keytype}{the keytype that matches the keys used.  For the
     \code{select} methods, this is used to indicate the kind of ID being used
     with the keys argument. For the \code{keys} method this is used to
@@ -123,7 +124,7 @@
 }
 
 \value{
-  \code{keys},\code{cols},\code{keytypes}, \code{species} and
+  \code{keys},\code{columns},\code{keytypes}, \code{species} and
   \code{lookupUniprotSpeciesFromTaxId} each return a character vector of
   possible values.
   
@@ -163,8 +164,8 @@ UniProt.ws
 ## list the possible key types
 head(keytypes(UniProt.ws))
 
-## list the cols that can be retreived
-head(cols(UniProt.ws))
+## list the columns that can be retreived
+head(columns(UniProt.ws))
 
 ## list all possible keys of type entrez gene ID.
 ## (this process is not instantaneous)

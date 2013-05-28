@@ -132,17 +132,17 @@
 \alias{DATABASE(PFAM)}
 \alias{DATABASE(PDB)}
 
-\title{Descriptions of available values for \code{cols} and \code{keytypes}.}
+\title{Descriptions of available values for \code{columns} and \code{keytypes}.}
 
 
 \description{
   This manual page enumerates the kinds of data represented by the
-  values returned when the user calls \code{cols} or \code{keytypes}
+  values returned when the user calls \code{columns} or \code{keytypes}
 }
 
 
 \details{  
-  All the possible values for \code{cols} and \code{keytypes} are listed
+  All the possible values for \code{columns} and \code{keytypes} are listed
   below.  Users will have to actually use these methods to learn which
   of the following possible values actually apply in their case.
   
@@ -293,8 +293,8 @@
 
 \examples{
   library(UniProt.ws)
-  ## List the possible values for cols
-  cols(UniProt.ws)
+  ## List the possible values for columns
+  columns(UniProt.ws)
   ## List the possible values for keytypes
   keytypes(UniProt.ws)
   ## get some values back
