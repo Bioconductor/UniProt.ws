@@ -32,7 +32,7 @@ test_species <- function(){
 test_cols_and_keytypes <- function(){
  res <- keytypes(UniProt.ws)
  checkTrue(length(res) >1)
- res2 <- cols(UniProt.ws)
+ res2 <- columns(UniProt.ws)
  checkTrue(length(res2) >1)
  checkTrue(length(res) != length(res2))
  checkTrue(all(res %in% res2))
@@ -102,7 +102,7 @@ test_select_6 <- function(){
   keys <- head(keys, n=1000)
   kt <- "UNIPROTKB"
   cols <- c("SEQUENCE")
-  ## cols <- cols(UniProt.ws)[96:126]
+  ## cols <- columns(UniProt.ws)[96:126]
   ## debug(UniProt.ws:::.getSomeUniprotGoodies)
   res <- select(UniProt.ws, keys, cols, kt)
   checkTrue(dim(res)[1]>0)
