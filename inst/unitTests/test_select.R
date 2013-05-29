@@ -46,7 +46,7 @@ test_select_1 <- function(){
   keys <- c("P31946","P62258","Q04917")
   kt <- "UNIPROTKB"
   cols <- c("PDB","UNIGENE","SEQUENCE")
-  res <- select(UniProt.ws, keys, cols, kt)
+  res <- select(UniProt.ws, keys, cols, kt) 
   checkTrue(dim(res)[1]>0)
   checkTrue(dim(res)[2]==4)
   checkIdentical(c("UNIPROTKB","PDB","UNIGENE","SEQUENCE"), colnames(res))

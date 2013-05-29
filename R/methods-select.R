@@ -131,11 +131,25 @@ setMethod("keys", "UniProt.ws",
 ## foo = apply(res, FUN=gsub, MARGIN=2, pattern="^$",replacement=NA)
 
 
- 
+##  Remove this select warning function after 2.13 has released
+.selectWarnUni <- function(x, keys, columns, keytype, ...){    
+    extraArgs <- list(...)
+    if("cols" %in% names(extraArgs)){
+        ## warn the user about the old argument
+        AnnotationDbi:::.colsArgumentWarning()
+        ## then call it using cols in place of columns
+        .select(x, keys, extraArgs[["cols"]], keytype)  
+    }else{
+        .select(x, keys, columns, keytype)
+    }
+}
+
+
 setMethod("select", "UniProt.ws",
-    function(x, keys, cols, keytype){
+    function(x, keys, columns, keytype, ...){
           if (missing(keytype)) keytype <- "UNIPROTKB"
-          .select(x, keys, cols, keytype)
+          .selectWarnUni(x, keys, columns, keytype, ...)
+##           .select(x, keys, columns, keytype)
         }
 )
 

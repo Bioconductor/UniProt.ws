@@ -152,9 +152,9 @@ that you need when using \Rmethod{select}.
 
 <<select>>=
 keys <- c('1','2')
-cols <- c("PDB","UNIGENE","SEQUENCE")
+columns <- c("PDB","UNIGENE","SEQUENCE")
 kt <- "ENTREZ_GENE"
-res <- select(UniProt.ws, keys, cols, kt)
+res <- select(UniProt.ws, keys, columns, kt)
 head(res)
 @ 
 

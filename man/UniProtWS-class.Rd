@@ -97,7 +97,7 @@
 \usage{
   columns(x)
   keytypes(x)
-  select(x, keys, cols, keytype, ...)
+  select(x, keys, columns, keytype, ...)
   species(x)
   taxId(x)
 
@@ -109,7 +109,7 @@
   \item{x}{the \code{UniProt.ws} object. }
   \item{keys}{the keys to select records for from the database.  All possible 
     keys are returned by using the \code{keys} method.}
-  \item{cols}{the columns or kinds of things that can be retrieved
+  \item{columns}{the columns or kinds of things that can be retrieved
     from the database.  As with \code{keys}, all possible columns are
     returned by using the \code{columns} method.}
   \item{keytype}{the keytype that matches the keys used.  For the
@@ -175,9 +175,9 @@ if(interactive()){
 
 ## use select to extract some data
   keys <- c('1','2')
-  cols <- c("PDB","UNIGENE","SEQUENCE")
+  columns <- c("PDB","UNIGENE","SEQUENCE")
   kt <- "ENTREZ_GENE"
-  res <- select(UniProt.ws, keys, cols, kt)
+  res <- select(UniProt.ws, keys, columns, kt)
   head(res)
 }
 

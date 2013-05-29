@@ -304,7 +304,7 @@
     keys <- head(keys(UniProt.ws, keytype="UNIPROTKB"))
     keys
   }
-  select(UniProt.ws, keys=c("P31946","P62258"), cols=c("PDB","SEQUENCE"),
+  select(UniProt.ws, keys=c("P31946","P62258"), columns=c("PDB","SEQUENCE"),
   keytype="UNIPROTKB")
 }
 
