@@ -19,6 +19,9 @@ setMethod("columns", "UniProt.ws", function(x){.cols()})
 
 ## To make keys work I just want to return what was asked for...
 .keys <- function(x, keytype){
+  if(!any(keytypes(x) %in% keytype)){
+    stop("keytype argument MUST match a value returned by keytypes method")
+  }
   url <- 'http://www.UniProt.org/UniProt/?query=organism:'
   idUrl <- paste0(url, taxId(x), "&format=tab&columns=id")
   ## Now get that data
@@ -71,8 +74,29 @@ setMethod("keys", "UniProt.ws",
     stop("keytype argument MUST match a value returned by keytypes method")
   }
   if(!any(columns(x) %in% cols)){
-    stop("cols argument MUST match a value returned by columns method")
+    stop("columns argument MUST match a value returned by columns method")
   }
+  
+  ## POSSIBLE FIX FOR species specificity: option #1 (slow but sure)
+  ## Before we go on, I have to get the keys for the organism and then
+  ## verify that they are all legit (throwing an error if not)
+
+  ## POSSIBLE FIX FOR species specificity: option #2 (enhanced #1)
+  ## allow the user to say that they don't care about taxID, and then
+  ## don't provide any checks.  IOW, taxId(UniProt.ws) = NULL, and
+  ## then turn off the checks proposed for #1
+
+  ## POSSIBLE FIX FOR species specificity: option #2 (make all
+  ## downstream functions respect the taxId status (some do and some
+  ## don't).  But for at least some major ones (mapUniprot,
+  ## getUniprotGoodies), this is not a natural thing and will be every
+  ## bit as slow as option #1 (checking keys and then post-filtering).
+    
+## Martin favors slow and sure (option 1), but I will also look at
+## caching the uniprot IDs that are needed now in two places whenever
+## a user sets the taxId()
+  
+  
   oriTabCols <- unique(c(keytype,cols))
   cols <- cols[!(cols %in% keytype)]  ## remove keytype from cols 
   trueKeys <- keys ## may change depending on keytype.
@@ -91,7 +115,7 @@ setMethod("keys", "UniProt.ws",
     keys <- unique(res[[1]][,2]) ## capture UniProts as keys from this point on
     if(length(keys)==0) stop("No data is available for the keys provided.")
   }
-  if(length(colMappers) > 0){
+  if(length(colMappers) > 0 && colMappers!="ACC+ID"){
     res[[length(res)+1]] <- .getUPMappdata(colMappers, keys)
   }
   if(length(colUPGoodies) > 0){

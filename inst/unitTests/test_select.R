@@ -146,3 +146,68 @@ test_select_7 <- function(){
 
 
 ## problem getting headers for: tools, keyword-id, clusters, score
+
+
+
+
+### Problems:
+
+## The following does not work?:
+
+## refseq <- c("YP_139402", "YP_141320", "YP_820357", "YP_006002448", "YP_006040776", "YP_006340074", "YP_006340075", "YP_138830", "YP_819836", "YP_006001858")
+
+## select(UniProt.ws, keys=refseq, keytype="REFSEQ_PROTEIN", columns=c('UNIPROTKB'))
+
+## ANSWER: Bug?  - Not actually (in this case).  It's just that NONE of the refseq protein IDs (at least for human) are in the list this person posted...
+
+## These IDs appear to be from taxid = "1308" (Streptococcus thermophilus)
+## taxId(UniProt.ws) = "1308"
+## BUT even after setting to use that taxid, there doesn't seem to be any IDs inthe UniProt web service that match it.
+## rs = keys(UniProt.ws, "REFSEQ_PROTEIN")
+## any(refseq %in% rs)
+
+
+### BUT: I am unsatisfied with the idea that this is not a bug.  The initial step to map these refseq IDs to a uniprot ID seems to proceed without trouble, and then there seems to be no data coming back from .mapUni().  So why is that happening????  I think it's because the .mapUni() method should not be called at all IF the final end point is a uniprot and the start was not one either...
+## So this should work OK (for example):
+
+## select(UniProt.ws, keys=refseq, keytype="REFSEQ_PROTEIN", columns=c('ENTREZ_GENE'))
+
+## And it does...  ;)
+
+## That means that I just need to fix the fact that when you ask for Uniprots, .select needs to stop sooner.
+
+## STATUS: FIXED
+
+
+
+
+
+
+## And then there is this one:
+
+## Hi Marc!
+
+## I am using your Uniprot.ws package and really appreciate it!! However, I have some questions about mapping back and forth from/to Uniprot itself.
+## Below are my questions with R commands, hopefully self explanatory...
+## Thanks a lot!
+## Nik
+
+## # why does this give me many organisms, after i selected only human?
+## taxId(UniProt.ws) <- 9606 # set to human
+## select(UniProt.ws, keys=c("I39.001"), columns=c("ID", "ORGANISM"), "MEROPS")
+
+## ANSWER: Bug?
+
+
+## # I don't manage to map FROM uniprot ACs to other databases, i thought it would work like this:
+## select(UniProt.ws, keys=c("P01023"), columns=c("MEROPS"), "UNIPROTKB")
+
+## ANSWER: Bug? - Yes (same one as above - and it's fixed now)
+
+
+
+## # from the returned Uniprot ACs how do I distinguish between reviewed SwissProt and unreviewed TrEMBL ACs?
+## # How can i retrieve Uniprot IDs (like "A2MG_HUMAN") instead of ACs?
+## select(UniProt.ws, keys=c(216, 3679, 55607), columns=c("ID", "ORGANISM"), "ENTREZ_GENE")
+
+## ANSWER: I don't think you can.  The web service does not seem to want to make a distinction.
