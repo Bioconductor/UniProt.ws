@@ -20,9 +20,9 @@ test_mapUniprot <- function(){
   .check_rect_result(res)
   checkTrue(res[1,1]=='1')
   checkTrue(res[1,2]=='P04217')
-  
-  ## I can then map UniProt accessions to IPI IDs
-  res <- UniProt.ws:::mapUniprot(from='ACC',to='P_IPI',
+
+  ## I can then map UniProt accessions to Unigene IDs
+  res <- UniProt.ws:::mapUniprot(from='ACC',to='UNIGENE_ID',
                     query=c('P04217','P01023','F5H5R8','P18440','Q400J6'))
   .check_rect_result(res)
 }
