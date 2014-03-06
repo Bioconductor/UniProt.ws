@@ -50,23 +50,54 @@ speciesList = c("chipsrc_human.sqlite",
 ## & ALSO    gene_id, ipi_id, prosite_id
 
 
-getuniProtAndIPIs <- function(genes){
+## getuniProtAndIPIs <- function(genes){
   
-  ## get the UniProt IDs.
-  ## issue: URI is too large, so I need a helper since I will have to do this
-  ## in pieces...  - and actually, helper mapUniprot should do that
-  ## automagically.
+##   ## get the UniProt IDs.
+##   ## issue: URI is too large, so I need a helper since I will have to do this
+##   ## in pieces...  - and actually, helper mapUniprot should do that
+##   ## automagically.
+##   ups <- UniProt.ws:::mapUniprot(from='P_ENTREZGENEID',to='ACC',query=genes)
+##   ## get the IPI IDs
+##   upKeys <- as.character(t(ups$ACC))
+
+##   ## This no longer will work (UniProt no longer supports IPI accessions)
+##   ## ips <- UniProt.ws:::mapUniprot(from='ACC',to='P_IPI', upKeys)
+##   ## SO I NEED a NEW way to get the IPI IDs associated with uniprot ACCs.
+  
+  
+##   ## return as a single frame.
+##   ## Currently, I use an inner join here b/c DB is gene centric 
+##   base <- merge(ups, ips, by.x ="ACC", by.y ="ACC")#, all=TRUE)
+##   base
+  
+## }
+
+## TEMPORARILY (for ONE release)
+getuniProtAndIPIs <- function(genes, dbFile){
+
   ups <- UniProt.ws:::mapUniprot(from='P_ENTREZGENEID',to='ACC',query=genes)
   ## get the IPI IDs
-  upKeys <- as.character(t(ups$ACC))
-  ips <- UniProt.ws:::mapUniprot(from='ACC',to='P_IPI', upKeys)
+  ##upKeys <- as.character(t(ups$ACC))
+
+
+  ## NOW hack in the old IPI data
+  baseDir = '/mnt/cpb_anno/mcarlson/proj/mcarlson/sqliteGen/annosrc/uniprot/TEMPOLDCHIPSRC'
+  con <- dbConnect(drv,dbname=file.path(baseDir, dbFile))
+  pf_ipi <- sqliteQuickSQL(con, 'select g.gene_id AS P_ENTREZGENEID, p.ipi_id AS P_IPI from pfam AS p, genes AS g WHERE p._id=g._id')
+  ps_ipi <- sqliteQuickSQL(con, 'select g.gene_id AS P_ENTREZGENEID, p.ipi_id AS P_IPI from prosite AS p, genes AS g WHERE p._id=g._id')
+  ips <- unique(rbind(pf_ipi, ps_ipi))
   
   ## return as a single frame.
   ## Currently, I use an inner join here b/c DB is gene centric 
-  base <- merge(ups, ips, by.x ="ACC", by.y ="ACC")#, all=TRUE)
+  base <- merge(ups, ips, by.x ="P_ENTREZGENEID", by.y ="P_ENTREZGENEID")
   base
 }
 
+
+## Maybe have to stop using getOneToMany here and start with this instead (slower) ???
+## taxId(UniProt.ws) <- curTaxId
+## k <- keys(UniProt.ws, keytype="UNIPROTKB")
+## select(UniProt.ws, k, columns="PFAM", keytype="UNIPROTKB")
 
 getData <- function(dbFile, db){
   ## look up the tax ID
@@ -79,9 +110,9 @@ getData <- function(dbFile, db){
   }
   genes <- as.character(t(genes))
 
-  ## get the UniProt and IPI Id's (merged into a table)
-  base <- getuniProtAndIPIs(genes)
-  
+  ## ## get the UniProt and IPI Id's (merged into a table)
+  base <- getuniProtAndIPIs(genes, dbFile)
+  ## NO MORE IPIs! (temporarily we will populate with values from last time)
   
   ## get the pfam Id's
   pfam <- UniProt.ws:::getOneToMany(taxId, type="PFAM")
@@ -185,7 +216,7 @@ for(species in speciesList){
   db <- dbConnect(drv,dbname=file.path(dir, species))
   
   message("Getting data for:",species)
-  res <- getData(species, db)
+  res <- getData(species, db) 
 
   message("Making tables for pfam and prosite")
   makePFAMandPrositeTables(db)
