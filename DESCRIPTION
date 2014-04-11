@@ -1,7 +1,7 @@
 Package: UniProt.ws
 Type: Package
 Title: R Interface to UniProt Web Services
-Version: 2.3.1
+Version: 2.4.0
 Depends: RSQLite, RCurl, methods, utils
 Imports: BiocGenerics, AnnotationDbi
 Suggests: RUnit
