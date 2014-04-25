@@ -6,7 +6,7 @@
       checkTrue(dim(res)[2] ==2))
 }
 
-
+## problem?
 test_mapUniprot <- function(){
   res <- UniProt.ws:::mapUniprot(from='ACC',to='P_REFSEQ_AC',
                     query=c('P13368','P20806','Q9UM73','P97793','Q17192'))
@@ -19,7 +19,7 @@ test_mapUniprot <- function(){
                                 query=c('1','2','3','9','10'))
   .check_rect_result(res)
   checkTrue(res[1,1]=='1')
-  checkTrue(res[1,2]=='P04217')
+  checkTrue(res[2,2]=='P04217')
 
   ## I can then map UniProt accessions to Unigene IDs
   res <- UniProt.ws:::mapUniprot(from='ACC',to='UNIGENE_ID',
