@@ -1,5 +1,5 @@
 import(BiocGenerics)
-importFrom(AnnotationDbi, keytypes, cols, columns, keys, select)
+importFrom(AnnotationDbi, keytypes, columns, keys, select)
 
 exportMethods(keytypes,
               columns,
@@ -9,7 +9,7 @@ exportMethods(keytypes,
               "taxId<-",
               species)
               
-export(cols,
+export(columns,
        availableUniprotSpecies,
        lookupUniprotSpeciesFromTaxId)
 
