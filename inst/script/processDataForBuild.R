@@ -72,7 +72,7 @@ speciesList = c("chipsrc_human.sqlite",
   
 ## }
 
-## TEMPORARILY (for ONE release)
+## Modified to get uniprots where we may not have an IPI
 getuniProtAndIPIs <- function(genes, dbFile){
 
   ups <- UniProt.ws:::mapUniprot(from='P_ENTREZGENEID',to='ACC',query=genes)
@@ -89,7 +89,7 @@ getuniProtAndIPIs <- function(genes, dbFile){
   
   ## return as a single frame.
   ## Currently, I use an inner join here b/c DB is gene centric 
-  base <- merge(ups, ips, by.x ="P_ENTREZGENEID", by.y ="P_ENTREZGENEID")
+  base <- merge(ups, ips, by.x ="P_ENTREZGENEID", by.y ="P_ENTREZGENEID", all.x=TRUE)
   base
 }
 
