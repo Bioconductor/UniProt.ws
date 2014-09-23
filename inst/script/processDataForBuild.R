@@ -230,21 +230,29 @@ for(species in speciesList){
   date <- date()
   url <- "http://www.UniProt.org/"
   name <- "Uniprot"
+  
+  sqliteQuickSQL(db, "DELETE FROM metadata where name ='UPSOURCENAME' ")   
   sqlMeta1 <- paste0("INSERT INTO metadata (name,value) VALUES ('UPSOURCENAME','",name,"')")
   sqliteQuickSQL(db, sqlMeta1)
+  
+  sqliteQuickSQL(db, "DELETE FROM metadata where name ='UPSOURCEURL' ")   
   sqlMeta2 <- paste0("INSERT INTO metadata (name,value) VALUES ('UPSOURCEURL','",url,"')")
   sqliteQuickSQL(db, sqlMeta2)
+  
+  sqliteQuickSQL(db, "DELETE FROM metadata where name ='UPSOURCEDATE' ")   
   sqlMeta3 <- paste0("INSERT INTO metadata (name,value) VALUES ('UPSOURCEDATE','",date,"')")
   sqliteQuickSQL(db, sqlMeta3)
   sqliteQuickSQL(db,"DELETE FROM metadata WHERE name LIKE 'IPISOURCE%'")
 
   
   ## And don't forget the map_counts for PROSITE AND PFAM
+  sqliteQuickSQL(db, "DELETE FROM map_counts where map_name ='PFAM' ")   
   sqlmapcnt1 <- "INSERT INTO map_counts
                  SELECT 'PFAM', count(DISTINCT _id)
                  FROM pfam;"
   sqliteQuickSQL(db, sqlmapcnt1)
 
+  sqliteQuickSQL(db, "DELETE FROM map_counts where map_name ='PROSITE' ")   
   sqlmapcnt2 <- "INSERT INTO map_counts
                  SELECT 'PROSITE', count(DISTINCT _id)
                  FROM prosite;"
