@@ -292,8 +292,15 @@ for(species in speciesList){
 
 
 
-
-
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+## Now for special treatment for missing stuff from yeast.
+################################################################################
+################################################################################
+################################################################################
+################################################################################
 
 
 
@@ -378,77 +385,90 @@ doYeastInserts <- function(db, table, data){
 
 ## just one more run through to just do what is needed to get pfam into yeast.
 
-  species <- 'chipsrc_yeast.sqlite'
-  ## DB connection
-  db <- dbConnect(drv,dbname=file.path(dir, species))
-  message("Getting data for:",species)
-  res <- getYeastData(species, db) 
+species <- 'chipsrc_yeast.sqlite'
+## DB connection
+db <- dbConnect(drv,dbname=file.path(dir, species))
+message("Getting data for:",species)
+res <- getYeastData(species, db) 
 
-  ## Add pfam table
-  message("Making table for pfam") 
-  sqliteQuickSQL(db, "DROP TABLE IF EXISTS pfam;")
-  sql <-  "CREATE TABLE pfam (
+## Add pfam table
+message("Making table for pfam") 
+sqliteQuickSQL(db, "DROP TABLE IF EXISTS pfam;")
+sql <-  "CREATE TABLE pfam (
      _id INTEGER NOT NULL,
      pfam_id CHAR(7) NOT NULL,
      FOREIGN KEY (_id) REFERENCES sgd (_id)
     );"
-  sqliteQuickSQL(db, sql)
-  sql <-  "CREATE INDEX pf1 ON pfam(_id);"
-  sqliteQuickSQL(db, sql)
+sqliteQuickSQL(db, sql)
+sql <-  "CREATE INDEX pf1 ON pfam(_id);"
+sqliteQuickSQL(db, sql)
 
-  ## And a smart table too
-  message("Making table for smart") 
-  sqliteQuickSQL(db, "DROP TABLE IF EXISTS smart;")
-  sql <-  "CREATE TABLE smart (
+## And a smart table too
+message("Making table for smart") 
+sqliteQuickSQL(db, "DROP TABLE IF EXISTS smart;")
+sql <-  "CREATE TABLE smart (
      _id INTEGER NOT NULL,
      smart_id CHAR(7) NOT NULL,
      FOREIGN KEY (_id) REFERENCES sgd (_id)
     );"
-  sqliteQuickSQL(db, sql)
-  sql <-  "CREATE INDEX sm1 ON smart(_id);"
-  sqliteQuickSQL(db, sql)
+sqliteQuickSQL(db, sql)
+sql <-  "CREATE INDEX sm1 ON smart(_id);"
+sqliteQuickSQL(db, sql)
 
 
 
 
-  message("Inserting data for:",species)
-  ## Now I need to insert the data:
-  doYeastInserts(db, "pfam", res[["pfam"]])
-  doYeastInserts(db, "smart", res[["smart"]])
+message("Inserting data for:",species)
+## Now I need to insert the data:
+doYeastInserts(db, "pfam", res[["pfam"]])
+doYeastInserts(db, "smart", res[["smart"]])
   
-  ## And then I need to add metadata:
-  date <- date()
-  url <- "http://www.UniProt.org/"
-  name <- "Uniprot"
+## And then I need to add metadata:
+date <- date()
+url <- "http://www.UniProt.org/"
+name <- "Uniprot"
   
-  sqliteQuickSQL(db, "DELETE FROM metadata where name ='UPSOURCENAME' ")   
-  sqlMeta1 <- paste0("INSERT INTO metadata (name,value) VALUES ('UPSOURCENAME','",name,"')")
-  sqliteQuickSQL(db, sqlMeta1)
+sqliteQuickSQL(db, "DELETE FROM metadata where name ='UPSOURCENAME' ")   
+sqlMeta1 <- paste0("INSERT INTO metadata (name,value) VALUES ('UPSOURCENAME','",name,"')")
+sqliteQuickSQL(db, sqlMeta1)
   
-  sqliteQuickSQL(db, "DELETE FROM metadata where name ='UPSOURCEURL' ")   
-  sqlMeta2 <- paste0("INSERT INTO metadata (name,value) VALUES ('UPSOURCEURL','",url,"')")
-  sqliteQuickSQL(db, sqlMeta2)
+sqliteQuickSQL(db, "DELETE FROM metadata where name ='UPSOURCEURL' ")   
+sqlMeta2 <- paste0("INSERT INTO metadata (name,value) VALUES ('UPSOURCEURL','",url,"')")
+sqliteQuickSQL(db, sqlMeta2)
   
-  sqliteQuickSQL(db, "DELETE FROM metadata where name ='UPSOURCEDATE' ")   
-  sqlMeta3 <- paste0("INSERT INTO metadata (name,value) VALUES ('UPSOURCEDATE','",date,"')")
-  sqliteQuickSQL(db, sqlMeta3)
-  sqliteQuickSQL(db,"DELETE FROM metadata WHERE name LIKE 'IPISOURCE%'")
+sqliteQuickSQL(db, "DELETE FROM metadata where name ='UPSOURCEDATE' ")   
+sqlMeta3 <- paste0("INSERT INTO metadata (name,value) VALUES ('UPSOURCEDATE','",date,"')")
+sqliteQuickSQL(db, sqlMeta3)
+sqliteQuickSQL(db,"DELETE FROM metadata WHERE name LIKE 'IPISOURCE%'")
 
   
-  ## And don't forget the map_counts for PROSITE AND PFAM
-  sqliteQuickSQL(db, "DELETE FROM map_counts where map_name ='PFAM' ")   
-  sqlmapcnt1 <- "INSERT INTO map_counts
+## And don't forget the map_counts for PROSITE AND PFAM
+sqliteQuickSQL(db, "DELETE FROM map_counts where map_name ='PFAM' ")   
+sqlmapcnt1 <- "INSERT INTO map_counts
                  SELECT 'PFAM', count(DISTINCT _id)
                  FROM pfam;"
-  sqliteQuickSQL(db, sqlmapcnt1)
+sqliteQuickSQL(db, sqlmapcnt1)
+
+sqliteQuickSQL(db, "DELETE FROM map_counts where map_name ='SMART' ")   
+sqlmapcnt1 <- "INSERT INTO map_counts
+                 SELECT 'SMART', count(DISTINCT _id)
+                 FROM smart;"
+sqliteQuickSQL(db, sqlmapcnt1)
 
 
-  ## ALSO: modify the map_metadata (1st drop the PFAM and prosite entries
-  sqliteQuickSQL(db, "DELETE FROM map_metadata where map_name ='PFAM' ") 
-  ## then put our own entries in...
-  sqlPFMM <- paste0( "INSERT INTO map_metadata (map_name, source_name, ",
-                    "source_url, source_date) VALUES ('PFAM','",name,
-                    "','",url,"','",date,"')")
-  sqliteQuickSQL(db, sqlPFMM)
-  
+## ALSO: modify the map_metadata (1st drop the PFAM and prosite entries
+sqliteQuickSQL(db, "DELETE FROM map_metadata where map_name ='PFAM' ") 
+## then put our own entries in...
+sqlPFMM <- paste0( "INSERT INTO map_metadata (map_name, source_name, ",
+                  "source_url, source_date) VALUES ('PFAM','",name,
+                  "','",url,"','",date,"')")
+sqliteQuickSQL(db, sqlPFMM)
+
+sqliteQuickSQL(db, "DELETE FROM map_metadata where map_name ='SMART' ") 
+## then put our own entries in...
+sqlPFMM <- paste0( "INSERT INTO map_metadata (map_name, source_name, ",
+                  "source_url, source_date) VALUES ('SMART','",name,
+                  "','",url,"','",date,"')")
+sqliteQuickSQL(db, sqlPFMM)
+
 
