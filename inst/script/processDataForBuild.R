@@ -279,3 +279,176 @@ for(species in speciesList){
 
 
 ## 6) ALSO: Be sure to add map counts for PFAM and PROSITE too.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+getuniProt <- function(genes, dbFile){
+    UniProt.ws:::mapUniprot(from='P_ENTREZGENEID',to='ACC',query=genes)
+}
+
+
+getYeastData <- function(dbFile, db){
+  ## look up the tax ID
+  taxId <- sqliteQuickSQL(db, "SELECT value FROM metadata WHERE name='TAXID'")
+  ## look up the entrez gene IDs
+  genes <- sqliteQuickSQL(db, "SELECT gene_id FROM genes")
+  genes <- as.character(t(genes))
+
+  ## ## get the UniProt
+  base <- getuniProt(genes, dbFile)
+  
+  ## get the pfam Id's
+  pfam <- UniProt.ws:::getOneToMany(taxId, type="PFAM")
+  colnames(pfam) <- c("ACC", "PFAM")
+  pfam <- pfam[!is.na(pfam$PFAM),]
+  ## And smart IDs
+  smart <- UniProt.ws:::getOneToMany(taxId, type="SMART")
+  colnames(smart) <- c("ACC", "SMART")
+  smart <- smart[!is.na(smart$SMART),]
+  
+  
+  ## merge it all together. # 3 above - then return a list of length two
+  ## Currently I am using an inner join here b/c the DB is gene centric, so
+  ## there is no benefit fo haveing pfam/UniProt accessions that are not
+  ## connected to an entrez gene
+  lst <- list()
+  lst[[1]] <- merge(base, pfam, by.x="ACC", by.y="ACC") #,all=TRUE)
+  lst[[2]] <- merge(base, smart, by.x="ACC", by.y="ACC") #,all=TRUE)
+  names(lst) <- c("pfam","smart")
+
+## finally, be sure to drop the UniProt IDS?  I think we should keep
+## em...  ;) Later on I can make use of them to enhance the devel annots.
+  lst
+}
+
+
+
+doYeastInserts <- function(db, table, data){
+
+  ## make a temp pfam table pfamt
+  sqlDrop <-paste0("DROP TABLE IF EXISTS ",table,"t;")
+  sqliteQuickSQL(db, sqlDrop)
+
+  sqlCreate <- paste0("CREATE TABLE ",table,"t (
+                gene_id TEXT,
+                ",table,"_id TEXT);")
+  sqliteQuickSQL(db, sqlCreate)
+  
+  ## 1st insert
+  sqlIns <- paste0("INSERT into ",table,"t
+             (gene_id, ",table,"_id)
+             VALUES ($P_ENTREZGENEID,$",toupper(table),")")
+  dbBeginTransaction(db)
+  rset <- dbSendPreparedQuery(db, sqlIns, data)
+  dbClearResult(rset)
+  dbCommit(db)
+
+  ## then insert into the real table
+  sqlIns2 <- paste0("INSERT INTO ",table,"
+                SELECT DISTINCT g._id as _id, i.",table,"_id
+                FROM genes as g, ",table,"t as i
+                WHERE g.gene_id=i.gene_id
+                ORDER BY _id")
+  sqliteQuickSQL(db, sqlIns2)
+
+  ## then drop the table
+  sqlDrop <- paste0("DROP TABLE ",table,"t")
+  sqliteQuickSQL(db, sqlDrop)
+  
+}
+
+
+## just one more run through to just do what is needed to get pfam into yeast.
+
+  species <- 'chipsrc_yeast.sqlite'
+  ## DB connection
+  db <- dbConnect(drv,dbname=file.path(dir, species))
+  message("Getting data for:",species)
+  res <- getYeastData(species, db) 
+
+  ## Add pfam table
+  message("Making table for pfam") 
+  sqliteQuickSQL(db, "DROP TABLE IF EXISTS pfam;")
+  sql <-  "CREATE TABLE pfam (
+     _id INTEGER NOT NULL,
+     pfam_id CHAR(7) NOT NULL,
+     FOREIGN KEY (_id) REFERENCES sgd (_id)
+    );"
+  sqliteQuickSQL(db, sql)
+  sql <-  "CREATE INDEX pf1 ON pfam(_id);"
+  sqliteQuickSQL(db, sql)
+
+  ## And a smart table too
+  message("Making table for smart") 
+  sqliteQuickSQL(db, "DROP TABLE IF EXISTS smart;")
+  sql <-  "CREATE TABLE smart (
+     _id INTEGER NOT NULL,
+     smart_id CHAR(7) NOT NULL,
+     FOREIGN KEY (_id) REFERENCES sgd (_id)
+    );"
+  sqliteQuickSQL(db, sql)
+  sql <-  "CREATE INDEX sm1 ON smart(_id);"
+  sqliteQuickSQL(db, sql)
+
+
+
+
+  message("Inserting data for:",species)
+  ## Now I need to insert the data:
+  doYeastInserts(db, "pfam", res[["pfam"]])
+  doYeastInserts(db, "smart", res[["smart"]])
+  
+  ## And then I need to add metadata:
+  date <- date()
+  url <- "http://www.UniProt.org/"
+  name <- "Uniprot"
+  
+  sqliteQuickSQL(db, "DELETE FROM metadata where name ='UPSOURCENAME' ")   
+  sqlMeta1 <- paste0("INSERT INTO metadata (name,value) VALUES ('UPSOURCENAME','",name,"')")
+  sqliteQuickSQL(db, sqlMeta1)
+  
+  sqliteQuickSQL(db, "DELETE FROM metadata where name ='UPSOURCEURL' ")   
+  sqlMeta2 <- paste0("INSERT INTO metadata (name,value) VALUES ('UPSOURCEURL','",url,"')")
+  sqliteQuickSQL(db, sqlMeta2)
+  
+  sqliteQuickSQL(db, "DELETE FROM metadata where name ='UPSOURCEDATE' ")   
+  sqlMeta3 <- paste0("INSERT INTO metadata (name,value) VALUES ('UPSOURCEDATE','",date,"')")
+  sqliteQuickSQL(db, sqlMeta3)
+  sqliteQuickSQL(db,"DELETE FROM metadata WHERE name LIKE 'IPISOURCE%'")
+
+  
+  ## And don't forget the map_counts for PROSITE AND PFAM
+  sqliteQuickSQL(db, "DELETE FROM map_counts where map_name ='PFAM' ")   
+  sqlmapcnt1 <- "INSERT INTO map_counts
+                 SELECT 'PFAM', count(DISTINCT _id)
+                 FROM pfam;"
+  sqliteQuickSQL(db, sqlmapcnt1)
+
+
+  ## ALSO: modify the map_metadata (1st drop the PFAM and prosite entries
+  sqliteQuickSQL(db, "DELETE FROM map_metadata where map_name ='PFAM' ") 
+  ## then put our own entries in...
+  sqlPFMM <- paste0( "INSERT INTO map_metadata (map_name, source_name, ",
+                    "source_url, source_date) VALUES ('PFAM','",name,
+                    "','",url,"','",date,"')")
+  sqliteQuickSQL(db, sqlPFMM)
+  
+

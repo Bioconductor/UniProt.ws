@@ -137,7 +137,7 @@ mapUniprot <- function(from, to, query){
 ## http://www.uniprot.org/uniprot/?query=P12345&format=tab&columns=id,sequence
 ## What about PFAM and Prosite (need special functions for special services).
 
-getOneToMany <- function(taxId, type=c("PFAM","prosite")){ 
+getOneToMany <- function(taxId, type=c("PFAM","prosite","SMART")){ 
   type <- match.arg(type)
   url <- paste0("http://www.uniprot.org/uniprot/?query=organism:",taxId,"&format=tab&columns=id,database(")
   fullUrl <- paste0(url,type,")")
