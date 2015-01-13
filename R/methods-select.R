@@ -110,7 +110,7 @@ setMethod("keys", "UniProt.ws",
   }
   ## At this point I have some results, Now I just need to merge them base on
   ## UniProt IDs (and upon whether or not they are real)
-  tab <- .mergeList(res, joinType="left")
+  tab <- .mergeList(res, joinType="all")
   ## rename cols:
   rosetta <- rbind(keytypeKeysDat, extraColsDat)
   ## We need the third col of rosetta to tell us what the cols will come back
