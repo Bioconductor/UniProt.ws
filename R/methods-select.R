@@ -60,7 +60,7 @@ setMethod("keys", "UniProt.ws",
   ## get a list of mapping results (as data.frames)
   res <- lapply(colMappers, FUN=mapUniprot, from="ACC+ID", query=keys)
   ## Them merge all these mappings together based on UniProt.
-  .mergeList(res, joinType="left")
+  .mergeList(res, joinType="all")
 }
 
 ## Here is the business end of my select method.
