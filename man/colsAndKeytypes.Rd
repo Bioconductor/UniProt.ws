@@ -293,18 +293,19 @@
 
 \examples{
   library(UniProt.ws)
+  up <- UniProt.ws(taxId=9606)
   ## List the possible values for columns
-  columns(UniProt.ws)
+  columns(up)
   ## List the possible values for keytypes
-  keytypes(UniProt.ws)
+  keytypes(up)
   ## get some values back
   ## list all possible keys of type entrez gene ID.
   ## (this process is not instantaneous)
   if(interactive()){
-    keys <- head(keys(UniProt.ws, keytype="UNIPROTKB"))
+    keys <- head(keys(up, keytype="UNIPROTKB"))
     keys
   }
-  select(UniProt.ws, keys=c("P31946","P62258"), columns=c("PDB","SEQUENCE"),
+  select(up, keys=c("P31946","P62258"), columns=c("PDB","SEQUENCE"),
   keytype="UNIPROTKB")
 }
 

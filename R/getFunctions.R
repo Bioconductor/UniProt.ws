@@ -235,11 +235,11 @@ availableUniprotSpecies <- function(pattern="", n=Inf){
 
 
 ## and another method to look up the species name based on the tax ID.
-lookupUniprotSpeciesFromTaxId <- function(id){
+lookupUniprotSpeciesFromTaxId <- function(taxId){
   species <- read.delim(system.file('extdata','availSpecies.txt',
                                     package='UniProt.ws')
                         , header=FALSE, stringsAsFactors=FALSE)
-  g <- species[,1] %in% id
+  g <- species[,1] %in% taxId
   res <- species[g,2]
   if(length(res)<1) stop("No species match the requested Tax Id.")
   if(length(res)>1) stop("There may be a problem with the Tax Id data file.")

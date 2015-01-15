@@ -1,12 +1,13 @@
 ##  require(RUnit)
 ##  require(UniProt.ws)
+up <- UniProt.ws(taxId=9606)
 
 
 
 test_newTaxId <- function(){
-  taxId(UniProt.ws)
-  taxId(UniProt.ws) <- 10090
-  checkTrue(taxId(UniProt.ws) == 10090)
+  taxId(up)
+  taxId(up) <- 10090
+  checkTrue(taxId(up) == 10090)
 }
 
 
@@ -24,15 +25,15 @@ test_lookupUniprotSpeciesFromTaxId<- function(){
 
 
 test_species <- function(){
-  res <- species(UniProt.ws)
+  res <- species(up)
   checkIdentical(res, "Homo sapiens")
 }
 
 
 test_cols_and_keytypes <- function(){
- res <- keytypes(UniProt.ws)
+ res <- keytypes(up)
  checkTrue(length(res) >1)
- res2 <- columns(UniProt.ws)
+ res2 <- columns(up)
  checkTrue(length(res2) >1)
  checkTrue(length(res) != length(res2))
  checkTrue(all(res %in% res2))
@@ -46,7 +47,7 @@ test_select_1 <- function(){
   keys <- c("P31946","P62258","Q04917")
   kt <- "UNIPROTKB"
   cols <- c("PDB","UNIGENE","SEQUENCE")
-  res <- select(UniProt.ws, keys, cols, kt) 
+  res <- select(up, keys, cols, kt) 
   checkTrue(dim(res)[1]>0)
   checkTrue(dim(res)[2]==4)
   checkIdentical(c("UNIPROTKB","PDB","UNIGENE","SEQUENCE"), colnames(res))
@@ -57,7 +58,7 @@ test_select_2 <- function(){
   keys <- c('1','2','3','9','10')
   kt <- "ENTREZ_GENE"
   cols <- c("PDB","UNIGENE","SEQUENCE")
-  res <- select(UniProt.ws, keys, cols, kt)
+  res <- select(up, keys, cols, kt)
   checkTrue(dim(res)[1]>0)
   checkTrue(dim(res)[2]==4)
   checkIdentical(c("ENTREZ_GENE" ,"PDB","UNIGENE","SEQUENCE"),
@@ -69,14 +70,14 @@ test_select_3 <- function(){
   keys <- c("P31946","P62258","Q04917")
   kt <- "UNIPROTKB"
   cols <- c("VIRUS_HOSTS") ## this is not allowed
-  checkException(res <- select(UniProt.ws, keys, cols, kt))
+  checkException(res <- select(up, keys, cols, kt))
 }
 
 test_select_4 <- function(){
   keys <- c("P31946","P62258","Q04917")
   kt <- "UNIPROTKB"
   cols <- c("DATABASE(PDB)")
-  res <- select(UniProt.ws, keys, cols, kt)
+  res <- select(up, keys, cols, kt)
   checkTrue(dim(res)[1]>0)
   checkTrue(dim(res)[2]==2)
   checkIdentical(c("UNIPROTKB" ,"DATABASE(PDB)"),
@@ -87,24 +88,24 @@ test_select_5 <- function(){
   keys <- c('1','2','3','9','10')
   kt <- "ENTREZ_GENE"
   cols <- c("PDB","CLUSTERS")
-  res <- select(UniProt.ws, keys, cols, kt)
+  res <- select(up, keys, cols, kt)
   checkTrue(dim(res)[1]>0)
   checkTrue(dim(res)[2]==3)
   checkIdentical(c("ENTREZ_GENE","PDB","CLUSTERS"),
                  colnames(res))
 }
 
-## system.time(res <- select(UniProt.ws, keys, cols="EC", kt))
+## system.time(res <- select(up, keys, cols="EC", kt))
 
 test_select_6 <- function(){
   ## now lets just get a bunch of the sequences.
-  keys <- keys(UniProt.ws,keytype="UNIPROTKB")
+  keys <- keys(up,keytype="UNIPROTKB")
   keys <- head(keys, n=1000)
   kt <- "UNIPROTKB"
   cols <- c("SEQUENCE")
-  ## cols <- columns(UniProt.ws)[96:126]
+  ## cols <- columns(up)[96:126]
   ## debug(UniProt.ws:::.getSomeUniprotGoodies)
-  res <- select(UniProt.ws, keys, cols, kt)
+  res <- select(up, keys, cols, kt)
   checkTrue(dim(res)[1]>0)
   checkTrue(dim(res)[2]==2)
   checkIdentical(c("UNIPROTKB" ,"SEQUENCE"),
@@ -115,7 +116,7 @@ test_select_6 <- function(){
 test_select_7 <- function(){
   ## test that we fail when the pass in bad keytype
   kt = "UNIPROT"
-  checkException(select(UniProt.ws, keys, cols, kt))
+  checkException(select(up, keys, cols, kt))
 }
 
 
@@ -130,13 +131,13 @@ test_select_7 <- function(){
 
 ##   ## keys is VERY slow :(
 ##   ##   keytype = "UNIPROTKB"
-##   ##   k = keys(UniProt.ws, keytype)
+##   ##   k = keys(up, keytype)
   
 ##   ## so switch to a critter with fewer egs?
-##   taxId(UniProt.ws) <- 9913
+##   taxId(up) <- 9913
   
 ##   keytype = "ENTREZ_GENE"
-##   egs = keys(UniProt.ws, keytype)
+##   egs = keys(up, keytype)
 ##   checkTrue(any("282126" %in% egs))
 ##   checkTrue(is.character(egs))
 ##   checkTrue(length(egs)>1)
@@ -156,21 +157,21 @@ test_select_7 <- function(){
 
 ## refseq <- c("YP_139402", "YP_141320", "YP_820357", "YP_006002448", "YP_006040776", "YP_006340074", "YP_006340075", "YP_138830", "YP_819836", "YP_006001858")
 
-## select(UniProt.ws, keys=refseq, keytype="REFSEQ_PROTEIN", columns=c('UNIPROTKB'))
+## select(up, keys=refseq, keytype="REFSEQ_PROTEIN", columns=c('UNIPROTKB'))
 
 ## ANSWER: Bug?  - Not actually (in this case).  It's just that NONE of the refseq protein IDs (at least for human) are in the list this person posted...
 
 ## These IDs appear to be from taxid = "1308" (Streptococcus thermophilus)
-## taxId(UniProt.ws) = "1308"
+## taxId(up) = "1308"
 ## BUT even after setting to use that taxid, there doesn't seem to be any IDs inthe UniProt web service that match it.
-## rs = keys(UniProt.ws, "REFSEQ_PROTEIN")
+## rs = keys(up, "REFSEQ_PROTEIN")
 ## any(refseq %in% rs)
 
 
 ### BUT: I am unsatisfied with the idea that this is not a bug.  The initial step to map these refseq IDs to a uniprot ID seems to proceed without trouble, and then there seems to be no data coming back from .mapUni().  So why is that happening????  I think it's because the .mapUni() method should not be called at all IF the final end point is a uniprot and the start was not one either...
 ## So this should work OK (for example):
 
-## select(UniProt.ws, keys=refseq, keytype="REFSEQ_PROTEIN", columns=c('ENTREZ_GENE'))
+## select(up, keys=refseq, keytype="REFSEQ_PROTEIN", columns=c('ENTREZ_GENE'))
 
 ## And it does...  ;)
 
@@ -193,14 +194,14 @@ test_select_7 <- function(){
 ## Nik
 
 ## # why does this give me many organisms, after i selected only human?
-## taxId(UniProt.ws) <- 9606 # set to human
-## select(UniProt.ws, keys=c("I39.001"), columns=c("ID", "ORGANISM"), "MEROPS")
+## taxId(up) <- 9606 # set to human
+## select(up, keys=c("I39.001"), columns=c("ID", "ORGANISM"), "MEROPS")
 
 ## ANSWER: Bug?
 
 
 ## # I don't manage to map FROM uniprot ACs to other databases, i thought it would work like this:
-## select(UniProt.ws, keys=c("P01023"), columns=c("MEROPS"), "UNIPROTKB")
+## select(up, keys=c("P01023"), columns=c("MEROPS"), "UNIPROTKB")
 
 ## ANSWER: Bug? - Yes (same one as above - and it's fixed now)
 
@@ -208,6 +209,6 @@ test_select_7 <- function(){
 
 ## # from the returned Uniprot ACs how do I distinguish between reviewed SwissProt and unreviewed TrEMBL ACs?
 ## # How can i retrieve Uniprot IDs (like "A2MG_HUMAN") instead of ACs?
-## select(UniProt.ws, keys=c(216, 3679, 55607), columns=c("ID", "ORGANISM"), "ENTREZ_GENE")
+## select(up, keys=c(216, 3679, 55607), columns=c("ID", "ORGANISM"), "ENTREZ_GENE")
 
 ## ANSWER: I don't think you can.  The web service does not seem to want to make a distinction.

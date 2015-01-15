@@ -71,6 +71,7 @@ interface to the UniProt web service.
 
 <<loadPkg>>=
 library(UniProt.ws)
+up <- UniProt.ws(taxId=9606)
 @ 
 
 If you already know about the select interface, you can immediately
@@ -87,7 +88,7 @@ When you load the \Rpackage{UniProt.ws} package, it creates a
 some helpful information about it.
 
 <<show>>=
-UniProt.ws
+up
 @ 
 
 By default, you can see that the \Robject{UniProt.ws} object is set to
@@ -108,34 +109,37 @@ availableUniprotSpecies(pattern="musculus")
 
 Once you have learned the taxonomy ID for the species of interest, you
 can then change the taxonomy id for the \Robject{UniProt.ws} object
-using the \Rmethod{}
+using \Rmethod{taxId} setter or by calling the constructor for
+\Rfunction{UniProt.ws}
 
 <<setTaxID>>=
-taxId(UniProt.ws) <- 10090
-UniProt.ws
+mouseUp <- UniProt.ws(10090)
+mouseUp
 @ 
 
-As you can see the species has now changed from Homo sapiens to Mus musculus.
+As you can see the species is different for the
+\Robject{mouseUp} new object.
 
 
 \section{Using \Robject{uniport.ws}}
 
-Once you have pointed the \Robject{uniport.ws} to use the appropriate
-organsims, you can make use of the standard set of methods in a
-\Rmethod{select} interface.  Specifically:
-\Rmethod{columns},\Rmethod{keytypes},\Rmethod{keys} and \Rmethod{select}.
+Once you are safisfied that you have an \Robject{uniport.ws} that is
+using the appropriate organsims, you can make use of the standard set
+of methods in a \Rmethod{select} interface.  Specifically:
+\Rmethod{columns},\Rmethod{keytypes},\Rmethod{keys} and
+\Rmethod{select}.
 
 You will probably notice that there are a large number of columns that can be
 retrieved.
 
 <<columns>>=
-head(keytypes(UniProt.ws))
+head(keytypes(up))
 @ 
 
 And most (but not all) of these fields can also be used as keytypes.
 
 <<keytypes>>=
-head(columns(UniProt.ws))
+head(columns(up))
 @ 
 
 If necessary you can also look up the keys of a given type.  But
@@ -144,17 +148,17 @@ of lookup.  So if you really want to do this kind of operation you are
 probably going to want to save the result to your R session.
 
 <<keys,eval=FALSE>>=
-egs = keys(UniProt.ws, "ENTREZ_GENE")
+egs = keys(up, "ENTREZ_GENE")
 @ 
 
 Finally, you can loop up whatever combinations of columns, keytypes and keys
 that you need when using \Rmethod{select}.
 
 <<select>>=
-keys <- c("22627","22629")
+keys <- c("1","2")
 columns <- c("PDB","UNIGENE","SEQUENCE")
 kt <- "ENTREZ_GENE"
-res <- select(UniProt.ws, keys, columns, kt)
+res <- select(up, keys, columns, kt)
 head(res)
 @ 
 

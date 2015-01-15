@@ -102,7 +102,8 @@
   taxId(x)
 
   availableUniprotSpecies(pattern, n=Inf)
-  lookupUniprotSpeciesFromTaxId(id)
+  lookupUniprotSpeciesFromTaxId(taxId)
+  UniProt.ws(taxId, ...)
 }
 
 \arguments{
@@ -119,7 +120,7 @@
   }
   \item{pattern}{A string passed in to limit the results}
   \item{n}{the maximim number of results to return.}
-  \item{id}{a taxonomy id}
+  \item{taxId}{a taxonomy id}
   \item{...}{other arguments}
 }
 
@@ -142,42 +143,45 @@
 }
 
 \examples{
+## Make a UniProt.ws object
+up <- UniProt.ws(taxId=9606)
+
 ## look at the object
-UniProt.ws
+up
 
 ## get the current species
-species(UniProt.ws)
+species(up)
 
 ## look up available species with their tax ids
 availableUniprotSpecies("musculus")
 
 ## get the current taxId
-taxId(UniProt.ws)
+taxId(up)
 
 ## look up the species that goes with a tax id
 lookupUniprotSpeciesFromTaxId(9606)
 
 ## set the taxId to something else
-taxId(UniProt.ws) <- 10090
-UniProt.ws
+taxId(up) <- 10090
+up
 
 ## list the possible key types
-head(keytypes(UniProt.ws))
+head(keytypes(up))
 
 ## list the columns that can be retreived
-head(columns(UniProt.ws))
+head(columns(up))
 
 ## list all possible keys of type entrez gene ID.
 ## (this process is not instantaneous)
 if(interactive()){
-  egs = keys(UniProt.ws, "ENTREZ_GENE")
+  egs = keys(up, "ENTREZ_GENE")
 }
 
 ## use select to extract some data
   keys <- c("22627","22629")
   columns <- c("PDB","UNIGENE","SEQUENCE")
   kt <- "ENTREZ_GENE"
-  res <- select(UniProt.ws, keys, columns, kt)
+  res <- select(up, keys, columns, kt)
   head(res)
 }
 
