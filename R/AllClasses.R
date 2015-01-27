@@ -14,7 +14,7 @@ setClass("UniProt.ws",
 
 
 ## I want a real constructor function because of all the argument "deduction"
-UniProt.ws <- function(taxId, ...)
+UniProt.ws <- function(taxId=9606, ...)
 {
     ## deduce db and taxIdUniprots from the taxId and pre-cache them
     ## into the object.
