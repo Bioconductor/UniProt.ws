@@ -37,8 +37,8 @@
 \alias{ENSEMBL_GENOMES}
 \alias{ENSEMBL_GENOMES PROTEIN}
 \alias{ENSEMBL_GENOMES TRANSCRIPT}
-\alias{GENEID}
-\alias{GENOMEREVIEWS}
+% \alias{GENEID}
+% \alias{GENOMEREVIEWS}
 \alias{KEGG}
 \alias{PATRIC}
 \alias{TIGR}
@@ -103,7 +103,7 @@
 \alias{DOMAIN}
 \alias{EC}
 \alias{ID}
-\alias{ENTRY NAME}
+% \alias{ENTRY NAME}
 \alias{EXISTENCE}
 \alias{FAMILIES}
 \alias{FEATURES}
@@ -124,11 +124,11 @@
 \alias{SCORE}
 \alias{SEQUENCE}
 \alias{3D}
-\alias{SUBCELLULAR LOCATIONS}
+% \alias{SUBCELLULAR LOCATIONS}
 \alias{TAXON}
 \alias{TOOLS}
 \alias{VERSION}
-\alias{VIRUS_HOSTS}
+% \alias{VIRUS_HOSTS}
 \alias{DATABASE(PFAM)}
 \alias{DATABASE(PDB)}
 
@@ -184,8 +184,8 @@
     \item{:ENSEMBL_GENOMES}{Ensembl Genomes}
     \item{:ENSEMBL_GENOMES PROTEIN}{Ensembl Genomes Protein}
     \item{:ENSEMBL_GENOMES TRANSCRIPT}{Ensembl Genomes Transcript}
-    \item{:GENEID}{GeneID}
-    \item{:GENOMEREVIEWS}{GenomeReviews}
+%    \item{:GENEID}{GeneID}
+%    \item{:GENOMEREVIEWS}{GenomeReviews}
     \item{:KEGG}{KEGG}
     \item{:PATRIC}{PATRIC}
     \item{:TIGR}{TIGR}
@@ -250,7 +250,7 @@
     \item{:DOMAIN}{domain}
     \item{:EC}{ec ID}
     \item{:ID}{ID}
-    \item{:ENTRY NAME}{entry name}
+%    \item{:ENTRY NAME}{entry name}
     \item{:EXISTENCE}{existence}
     \item{:FAMILIES}{families}
     \item{:FEATURES}{features}
@@ -271,11 +271,11 @@
     \item{:SCORE}{score}
     \item{:SEQUENCE}{sequence}
     \item{:3D}{3d}
-    \item{:SUBCELLULAR LOCATIONS}{subcellular locations}
+%    \item{:SUBCELLULAR LOCATIONS}{subcellular locations}
     \item{:TAXON}{taxon}
     \item{:TOOLS}{tools}
     \item{:VERSION}{version}
-    \item{:VIRUS_HOSTS}{virus hosts}
+%    \item{:VIRUS_HOSTS}{virus hosts}
     \item{:DATABASE(PFAM)}{PFAM ids}
     \item{:DATABASE(PDB)}{PDB ids}
 

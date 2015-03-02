@@ -13,7 +13,8 @@ extraColsDat <- read.delim(system.file('extdata','extraCols.txt',
                              , header=FALSE, stringsAsFactors=FALSE)
 
 ## FOR NOW: we are not supporting the following 4 cols (they give us the 505)
-keytypeKeysDat <- keytypeKeysDat[-c(38L),]
+## Also remember: adjust/comment these in man page...
+keytypeKeysDat <- keytypeKeysDat[-c(37L,38L),]
 extraColsDat <- extraColsDat[-c(8L,24L,29L,33L),]
 
 
