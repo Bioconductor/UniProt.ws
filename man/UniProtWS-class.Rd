@@ -98,7 +98,7 @@
   columns(x)
   keytypes(x)
   select(x, keys, columns, keytype, ...)
-  species(x)
+  species(object)
   taxId(x)
 
   availableUniprotSpecies(pattern, n=Inf)

@@ -119,7 +119,7 @@ setReplaceMethod("taxId", "UniProt.ws",
 )
 
 setMethod("species", "UniProt.ws",
-          function(x){lookupUniprotSpeciesFromTaxId(x@taxId)}
+          function(object){lookupUniprotSpeciesFromTaxId(object@taxId)}
 )
 
 
