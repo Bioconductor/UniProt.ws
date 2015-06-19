@@ -15,7 +15,6 @@ extraColsDat <- read.delim(system.file('extdata','extraCols.txt',
 ## FOR NOW: we are not supporting the following 4 cols (they give us the 505)
 ## Also remember: adjust/comment these in man page...
 keytypeKeysDat <- keytypeKeysDat[-c(37L,38L),]
-extraColsDat <- extraColsDat[-c(8L,24L,29L,33L),]
 
 
 ## Some code to make the string into a data.frame...
@@ -122,7 +121,7 @@ mapUniprot <- function(from, to, query){
 .tryReadResult <- function(url){
  for (i in 1:6) {
      result <- tryCatch({
-         read.delim(url, stringsAsFactors=FALSE)
+         read.delim(URLencode(url), stringsAsFactors=FALSE)
      }, error=function(err) NULL)
      if (!is.null(result)) return(result)
      Sys.sleep(5)

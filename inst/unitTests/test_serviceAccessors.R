@@ -73,4 +73,6 @@ test_getUniprotGoodies <- function(){
 }
 
 
+## Faster testing:
+## BiocGenerics:::testPackage(pattern="^test_serviceAccessors.*\\.R$")
 

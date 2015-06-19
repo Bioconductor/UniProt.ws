@@ -212,3 +212,10 @@ test_select_7 <- function(){
 ## select(up, keys=c(216, 3679, 55607), columns=c("ID", "ORGANISM"), "ENTREZ_GENE")
 
 ## ANSWER: I don't think you can.  The web service does not seem to want to make a distinction.
+
+
+
+
+## Faster testing:
+## BiocGenerics:::testPackage(pattern="^test_select.*\\.R$")
+
