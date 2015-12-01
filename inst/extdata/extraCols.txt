@@ -23,7 +23,7 @@ ORGANISM-ID	organism-id	Organism.ID
 PATHWAY	pathway	Pathway
 PROTEIN-NAMES	protein names	Protein.names
 REVIEWED	reviewed	Status
-SCORE	score	Score
+SCORE	annotation score	Annotation
 SEQUENCE	sequence	Sequence
 3D	3d	X3D
 SUBCELLULAR-LOCATIONS	subcellular locations	Subcellular.location
