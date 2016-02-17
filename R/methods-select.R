@@ -74,13 +74,11 @@ setMethod("keys", "UniProt.ws",
     stop("columns argument MUST match a value returned by columns method")
   }
 
-  ## 1st get all the (UNIPROTKB) possible keys for this organism
-  orgSpecificKeys <- keys(x, keytype="UNIPROTKB")
-  
+  ## process columns
   oriTabCols <- unique(c(keytype,cols))
   cols <- cols[!(cols %in% keytype)]  ## remove keytype from cols 
   trueKeys <- keys ## may change depending on keytype.
-  ## 1st step is to split cols into two pieces
+  ## split into 2 groups: cols in keytypeKeys and cols in extraCols 
   colMappers <- cols[cols %in% keytypeKeysDat[,1]]
   colUPGoodies <- cols[cols %in% extraColsDat[,1]]
   ## then convert those into the internally used IDs
@@ -95,6 +93,8 @@ setMethod("keys", "UniProt.ws",
     keys <- unique(res[[1]][,2]) ## capture UniProts as keys from this point on
   }
 
+  ## All the (UNIPROTKB) possible keys for this organism
+  orgSpecificKeys <- keys(x, keytype="UNIPROTKB")
   ## Now filter keys with orgSpecificKeys (uniprots intersected with uniprots)
   keys <- intersect(keys, orgSpecificKeys)
   if(length(keys)==0) stop("No data is available for the keys provided.")

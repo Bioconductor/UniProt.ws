@@ -194,7 +194,8 @@ backFillCols <- function(tab, cols){
 
 ## A function that take UniProt IDs and gets supplementary cols back
 .getSomeUniprotGoodies  <- function(query, cols){
-  message("Getting extra data for ",query[1]," ",query[2]," ",query[3]," etc")
+  message(paste0("Getting extra data for ",
+          paste(head(query), collapse=",")))
   ## query and cols start as a character vectors
   qstring <- paste(query, collapse="+or+")  
   cstring <- paste(cols, collapse=",")
@@ -202,8 +203,9 @@ backFillCols <- function(tab, cols){
   fullUrl <- paste0(url,qstring,'&format=tab&columns=id,',cstring)
   ## This step may need to repeat (in the event that it fails).
   dat <- .tryReadResult(fullUrl)
-  ## read.delim will name mangle if colnames have repeats 
+  ## read.delim will name mangle if colnames have repeats or [CC]:
   colnames(dat) <- sub("\\.\\d","",colnames(dat)) 
+  colnames(dat) <- sub("\\.\\.CC\\.", "", colnames(dat))
   ## now remove things that were not in the specific original query...
   dat <- dat[dat[,1] %in% query,,drop=FALSE]
   if(dim(dat)[2]< (length(cols)+1)){## we have some empty cols.

@@ -108,6 +108,7 @@
 
 \arguments{
   \item{x}{the \code{UniProt.ws} object. }
+  \item{object}{the \code{UniProt.ws} object. }
   \item{keys}{the keys to select records for from the database.  All possible 
     keys are returned by using the \code{keys} method.}
   \item{columns}{the columns or kinds of things that can be retrieved
