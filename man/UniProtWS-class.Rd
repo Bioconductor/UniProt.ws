@@ -179,11 +179,11 @@ if(interactive()){
 }
 
 ## use select to extract some data
-  keys <- c("22627","22629")
-  columns <- c("PDB","UNIGENE","SEQUENCE")
-  kt <- "ENTREZ_GENE"
-  res <- select(up, keys, columns, kt)
-  head(res)
+res <- select(up, 
+              keys = c("22627","22629"), 
+              columns = c("PDB","UNIGENE","SEQUENCE"),
+              keytype = "ENTREZ_GENE")
+head(res)
 }
 
 
