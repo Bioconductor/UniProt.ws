@@ -85,6 +85,8 @@ setMethod("keys", "UniProt.ws",
   colUPGoodies <- cols[cols %in% extraColsDat[,1]]
   ## then convert those into the internally used IDs
   colMappers <- keytypeKeysDat[keytypeKeysDat[,1] %in% colMappers, 2]
+  ## Don't want ACC+ID in colMappers:
+  colMappers <- colMappers[colMappers != "ACC+ID"]
   colUPGoodies <- extraColsDat[extraColsDat[,1] %in% colUPGoodies, 2]
   res <- list()
   if(keytype!="UNIPROTKB" ){
@@ -103,9 +105,9 @@ setMethod("keys", "UniProt.ws",
   if(length(keys)==0) stop("No data is available for the keys provided.")
 
   ## now get the other data (depending what was asked for)
-  if (length(colMappers) > 0 && colMappers!="ACC+ID")
-    res <- c(res, list(.getUPMappdata(colMappers, keys)))
-  if(length(colUPGoodies) > 0){
+  if (length(colMappers))
+      res <- c(res, list(.getUPMappdata(colMappers, keys)))
+  if (length(colUPGoodies) > 0) {
     dat <- getUniprotGoodies(keys, colUPGoodies)
     colnames(dat)[1] <- "ACC+ID" ## always the 1st
     res <- c(res, list(dat))
