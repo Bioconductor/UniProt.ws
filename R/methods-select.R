@@ -77,6 +77,8 @@ setMethod("keys", "UniProt.ws",
   ## process columns
   oriTabCols <- unique(c(keytype,cols))
   cols <- cols[!(cols %in% keytype)]  ## remove keytype from cols 
+  if (!length(cols))
+      stop("'columns' should be different from 'keytype'")
   trueKeys <- keys ## may change depending on keytype.
   ## split into 2 groups: cols in keytypeKeys and cols in extraCols 
   colMappers <- cols[cols %in% keytypeKeysDat[,1]]
@@ -89,8 +91,9 @@ setMethod("keys", "UniProt.ws",
     kt <- keytypeKeysDat[keytypeKeysDat[,1] %in% keytype,2]
     dat <- mapUniprot(from=kt, to="ACC", query=keys)
     colnames(dat)[2] <-  "ACC+ID" ## always the 2nd one...
-    res[[length(res)+1]] <- dat
-    keys <- unique(res[[1]][,2]) ## capture UniProts as keys from this point on
+    ## capture UniProts as keys from this point on
+    keys <- unique(dat[["ACC+ID"]])
+    res <- c(res, list(dat))
   }
 
   ## All the (UNIPROTKB) possible keys for this organism
@@ -100,13 +103,12 @@ setMethod("keys", "UniProt.ws",
   if(length(keys)==0) stop("No data is available for the keys provided.")
 
   ## now get the other data (depending what was asked for)
-  if(length(colMappers) > 0 && colMappers!="ACC+ID"){
-    res[[length(res)+1]] <- .getUPMappdata(colMappers, keys)
-  }
+  if (length(colMappers) > 0 && colMappers!="ACC+ID")
+    res <- c(res, list(.getUPMappdata(colMappers, keys)))
   if(length(colUPGoodies) > 0){
     dat <- getUniprotGoodies(keys, colUPGoodies)
     colnames(dat)[1] <- "ACC+ID" ## always the 1st
-    res[[length(res)+1]] <- dat
+    res <- c(res, list(dat))
   }
   ## At this point I have some results, Now I just need to merge them base on
   ## UniProt IDs (and upon whether or not they are real)
@@ -120,9 +122,8 @@ setMethod("keys", "UniProt.ws",
   ## unique to this web service is the fact that I sometimes will have an
   ## extra UNIPROTKB col.  Regardless, we ONLY want the cols we asked for..
   ## BUT: we also can't try this if the above code has failed to rename anything
-  if(all(!is.na(colnames(tab)))){
-    tab <- tab[,oriTabCols]
-  }
+  if (all(!is.na(colnames(tab))))
+    tab <- tab[,colnames(tab) %in% oriTabCols]
   ## resort
   tab <- AnnotationDbi:::.resort(tab, trueKeys, keytype, oriTabCols)
   ## Now one last cast to make NAs (and all cols) and make things "uniform"
@@ -135,47 +136,10 @@ setMethod("keys", "UniProt.ws",
   tab
 }
 
-
-## TODO: I need to replace all the empty strings with NA values.
-## should look like a bit this (where res is my data.frame result):
-## foo = apply(res, FUN=gsub, MARGIN=2, pattern="^$",replacement=NA)
-
-
-##  Remove this select warning function after 2.13 has released
-.selectWarnUni <- function(x, keys, columns, keytype, ...){    
-    extraArgs <- list(...)
-    if("cols" %in% names(extraArgs)){
-        ## warn the user about the old argument
-        AnnotationDbi:::.colsArgumentWarning()
-        ## then call it using cols in place of columns
-        .select(x, keys, extraArgs[["cols"]], keytype)  
-    }else{
-        .select(x, keys, columns, keytype)
-    }
-}
-
-
 setMethod("select", "UniProt.ws",
     function(x, keys, columns, keytype, ...){
-          if (missing(keytype)) keytype <- "UNIPROTKB"
-          .selectWarnUni(x, keys, columns, keytype, ...)
-##           .select(x, keys, columns, keytype)
+          if (missing(keytype)) 
+              keytype <- "UNIPROTKB"
+          .select(x, keys, columns, keytype)
         }
 )
-
-## TODO: get headers matched up and then deal with the formatting.
-
-
-
-
-
-
-## testing:
-## library(UniProt.ws); kt = "UNIPROTKB"; k = head(keys(UniProt.ws,keytype=kt)); c = cols(UniProt.ws); debug(UniProt.ws:::.select)
-
-## system.time(res<- select(UniProt.ws, k[1:2], cols=c[131], kt))
-
-
-
-
-## NOW I can save things here: c = UniProt.ws:::cache(UniProt.ws)

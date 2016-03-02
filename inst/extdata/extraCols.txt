@@ -20,14 +20,14 @@ LAST-MODIFIED	last-modified	Date.of.last.modification
 LENGTH	length	Length
 ORGANISM	organism	Organism
 ORGANISM-ID	organism-id	Organism.ID
-PATHWAY	comment(PATHWAY)	General.annotation..pathway.
+PATHWAY	comment(PATHWAY)	Pathway
 PROTEIN-NAMES	protein names	Protein.names
 REVIEWED	reviewed	Status
 SCORE	annotation score	Annotation
 SEQUENCE	sequence	Sequence
 3D	3d	X3D
 SUBCELLULAR-LOCATIONS	comment(SUBCELLULAR LOCATION)	Subcellular.location
-TAXON	taxon	Taxon.ID
+TAXONOMIC-LINEAGE	lineage(all)	Taxonomic.lineage..all.
 TOOLS	tools	Tools
 VERSION	version	Version
 VIRUS-HOSTS	virus hosts	Virus.hosts

@@ -125,7 +125,7 @@
 \alias{SEQUENCE}
 \alias{3D}
 % \alias{SUBCELLULAR LOCATIONS}
-\alias{TAXON}
+\alias{TAXONOMY-LINEAGE}
 \alias{TOOLS}
 \alias{VERSION}
 % \alias{VIRUS_HOSTS}
@@ -229,7 +229,6 @@
     \item{:ZFIN}{ZFIN}
     \item{:EGGNOG}{eggNOG}
     \item{:GENETREE}{GeneTree}
-    \item{:HOGENOM}{HOGENOM}
     \item{:HOVERGEN}{HOVERGEN}
     \item{:KO}{KO}
     \item{:OMA}{OMA}
