@@ -2,7 +2,7 @@ import(methods)
 import(BiocGenerics)
 import(RCurl)
 import(RSQLite)
-importFrom(AnnotationDbi, keytypes, columns, keys, select)
+importFrom(AnnotationDbi, keytypes, columns, keys, select, resort_base)
 
 exportMethods(keytypes,
               columns,

@@ -127,7 +127,7 @@ setMethod("keys", "UniProt.ws",
   if (all(!is.na(colnames(tab))))
     tab <- tab[,colnames(tab) %in% oriTabCols]
   ## resort
-  tab <- AnnotationDbi:::.resort(tab, trueKeys, keytype, oriTabCols)
+  tab <- resort_base(tab, trueKeys, keytype, oriTabCols)
   ## Now one last cast to make NAs (and all cols) and make things "uniform"
   cnames <- colnames(tab)
   .blankToNA <- function(row){
