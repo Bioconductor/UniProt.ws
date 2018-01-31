@@ -5,25 +5,24 @@ library(XML)
 URL <- "https://www.uniprot.org/help/api_idmapping"
 
 ## The function is used to update the keytypes.
-## This function assumes you have docker installed,
-## and this docker container is running,
-## docker run -d -p 4445:4444 selenium/standalone-firefox:2.53.1
-## You can use this function only if the docker container is running.
+## This function assumes you have PhantomJS installed,
+## and RSelenium knows how to find it in the path.
+## https://cran.r-project.org/web/packages/RSelenium/vignettes/RSelenium-headless.html
+## Mac OS: brew install phantomjs
 updateKeytypes <-
     function(URL, silent=TRUE)
 {
-
-    remDr <- remoteDriver(remoteServerAddr = "localhost" 
-                      , port = 4445L
-                      , browserName = "firefox"
-                        )
-    remDr$open(silent=silent) 
-    ## ## Get status
-    ## remDr$getStatus()
-    ## ## Navigate URL
+    pJS <- phantom()
+    Sys.sleep(5) # give the binary a moment
+    remDr <- remoteDriver(browserName = 'phantomjs')
+    
+    ## Open and navigate to URL
+    remDr$open()
     remDr$navigate(URL)
-    ## Check if webpage is the same
+    
     title <- remDr$getTitle(URL)[[1]]
+
+    
     if (title != "Programmatic access - Mapping database identifiers")
         stop("The webpage has changed, please check the URL")
     
@@ -34,10 +33,9 @@ updateKeytypes <-
 
     ## Omit category names
     keytypes <- na.omit(keytypes)
-
-    ## Close and stop server
+    
     remDr$close()
-    rD$server$stop()
+    pJS$stop()     
     
     keytypes
 }
