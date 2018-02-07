@@ -12,14 +12,13 @@ updateKeytypes <-
     ## Always start on port 4568 instead of default, so
     ## it does not interfere with the commonly used port 4567
     pJS <- wdman::phantomjs(verbose=verbose, port=4568L)
-    ## give the binary a moment
+    ## give the binary a moment or five
     Sys.sleep(5)
     ## open connection with a remote driver
     remDr <- RSelenium::remoteDriver(browserName = "phantomjs",
                                      port = 4568L)
-   
     ## Open and navigate to URL
-    remDr$open()
+    remDr$open(silent=TRUE)
     remDr$navigate(URL)
     ## Check if title is similar
     title <- remDr$getTitle(URL)[[1]]

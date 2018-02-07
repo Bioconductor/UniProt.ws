@@ -3,6 +3,7 @@ keytypeKeysDat <- NULL
 .onLoad <- function(...) {
     keytypeKeysDat <<- tryCatch({
         updateKeytypes()
+        processAvailableSpeciesFiles()
     }, error = function(err) {
         warning(
             "failed to download:",
