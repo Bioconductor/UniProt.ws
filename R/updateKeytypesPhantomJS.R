@@ -1,8 +1,3 @@
-library(RSelenium)
-library(wdman)
-library(rvest)
-library(xml2)
-
 ## The function is used to update the keytypes.
 ## This function assumes you have PhantomJS installed,
 ## and RSelenium knows how to find it in the path.
@@ -38,13 +33,29 @@ updateKeytypes <-
     ## Omit category names
     keytypes <- na.omit(keytypes)
 
+    ## Remove observations(rows) with "Category" in them,
+    keytypes <- keytypes[-grep("Category",keytypes$Name),]
+
+    ## Manually curate a few entries, because UniProt 
+    ## doesn't support them.
+    keytypes$Name[keytypes$Name == "UniProtKB AC/ID"] = "UniProtKB"
+    keytypes$Name[keytypes$Name == "Entrez Gene (GeneID)"] = "Entrez_Gene"
+    keytypes$Name <- toupper(keytypes$Name)
+
+    ## replace spaces with underscores
+    keytypes$Name <- gsub(" ", "_", x=keytypes$Name, fixed=TRUE)
+
+    ## Direction seems irrelavent
+    keytypes$Direction <- keytypes$Abbreviation
+    
     ## Stop remDr and phantomJS 
     remDr$close()
     pJS$stop()     
 
     file <- system.file('extdata', 'keytypes.txt', package='UniProt.ws')
     if (save) {
-        write.table(keytypes, file=file, row.names=FALSE, col.names=TRUE)
+        write.table(keytypes, file=file, row.names=FALSE, col.names=TRUE,
+                    sep="\t")
     }
     
     keytypes
