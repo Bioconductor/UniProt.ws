@@ -18,6 +18,7 @@ Collate: AllGenerics.R
     utilities.R
     test_UniProt.ws_package.R
     updateKeytypesPhantomJS.R
+    processAvailableSpeciesFiles.R
     zzz.R
 License: Artistic License 2.0
 biocViews: Annotation, Infrastructure, GO, KEGG, BioCarta
