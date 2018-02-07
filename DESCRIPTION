@@ -18,8 +18,7 @@ Collate: AllGenerics.R
     utilities.R
     test_UniProt.ws_package.R
     getKeytypeKeysData.R
-    processAvailableSpeciesFiles.R
-    zzz.R
+    getAvailableSpeciesFiles.R
 License: Artistic License 2.0
 biocViews: Annotation, Infrastructure, GO, KEGG, BioCarta
 LazyLoad: yes

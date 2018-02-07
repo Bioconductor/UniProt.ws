@@ -218,9 +218,7 @@ getUniprotGoodies <- function(query, cols){
 
 ## Need method to return dataFrame of available species.
 availableUniprotSpecies <- function(pattern="", n=Inf){
-  species <- read.delim(system.file('extdata','availSpecies.txt',
-                                    package='UniProt.ws')
-                        , header=FALSE, stringsAsFactors=FALSE)
+  species <- .getAvailableSpeciesData()
   g <- grepl(pattern, species[,2])
   res <- species[g,]
   colnames(res) <- c("taxon ID","Species name")
@@ -233,14 +231,15 @@ availableUniprotSpecies <- function(pattern="", n=Inf){
 
 ## and another method to look up the species name based on the tax ID.
 lookupUniprotSpeciesFromTaxId <- function(taxId){
-  species <- read.delim(system.file('extdata','availSpecies.txt',
-                                    package='UniProt.ws')
-                        , header=FALSE, stringsAsFactors=FALSE)
-  g <- species[,1] %in% taxId
-  res <- species[g,2]
-  if(length(res)<1) stop("No species match the requested Tax Id.")
-  if(length(res)>1) stop("There may be a problem with the Tax Id data file.")
-  if(length(res)==1) return(res)
+    species <- .getAvailableSpeciesData()
+    g <- species[,1] %in% taxId
+    res <- species[g,2]
+    if(length(res)<1)
+        stop("No species match the requested Tax Id.")
+    if(length(res)>1)
+        stop("There may be a problem with the Tax Id data file.")
+    if(length(res)==1)
+        return(res)
 }
 
 
