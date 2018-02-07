@@ -33,6 +33,7 @@ digestspecfile <- function(specfile) {
     }
 }
 
+
 # Utility functions
 #
 # UniProt uses custom coding of organism names from which protein sequences
@@ -96,4 +97,17 @@ updatespecfile <- function() {
         specfile <- localfile
     }
     specfile
+}
+
+## Update specfile and save it as a data.frame in
+## inst/extdata/specfile.RData
+processSpecFile <-
+    function()
+{
+    file <- updatespecfile()
+    codes <- digestspecfile(file)
+    rda <- system.file("extdata",
+                       "speclist.RData",
+                       package="UniProt.ws")
+    save(codes, file=rda)
 }
