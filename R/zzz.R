@@ -1,7 +1,7 @@
 keytypeKeysDat <- NULL
 
 .onLoad <- function(...) {
-    keytypeKeysDat <<- tryCatch({
+    tryCatch({
         updateKeytypes()
         processAvailableSpeciesFiles()
     }, error = function(err) {
@@ -10,7 +10,7 @@ keytypeKeysDat <- NULL
             "\n  ", conditionMessage(err),
             "\nusing cached version"
         )
-        file <- system.file('extdata','keytypes.txt', package='UniProt.ws')
-        read.delim(file, header=FALSE, stringsAsFactors=FALSE)
+        file <- system.file('extdata','keytypes.txt', package='UniProt.ws')=
     })
+    keytypeKeysDat <<- read.delim(file, header=TRUE, stringsAsFactors=FALSE)
 }
