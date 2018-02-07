@@ -2,7 +2,7 @@
 
 ## no way to 'discover' the keytypes either (and they are subset of cols).
 .keytypes <- function(){
-  keytypeKeysDat[,1]
+  .getKeytypeKeysData()[,1]
 }
 
 setMethod("keytypes", "UniProt.ws", function(x){.keytypes()})
@@ -10,7 +10,7 @@ setMethod("keytypes", "UniProt.ws", function(x){.keytypes()})
 
 ## no way to 'discover' the cols, so I hard code them here.
 .cols <- function(){
-  c(keytypeKeysDat[,1], extraColsDat[,1])
+  c(.getKeytypeKeysData()[,1], extraColsDat[,1])
 }
 
 setMethod("columns", "UniProt.ws", function(x){.cols()})
@@ -26,8 +26,9 @@ setMethod("columns", "UniProt.ws", function(x){.cols()})
   if(keytype == "UNIPROTKB"){
     return(dat)
   }else{
-    ## then convert this to be the keytype requested...
-    tkt = keytypeKeysDat[keytypeKeysDat[,1] %in% keytype,2]
+      ## then convert this to be the keytype requested...
+      keytypeKeysData <- .getKeytypeKeysData()
+    tkt = keytypeKeysData[keytypeKeysData[,1] %in% keytype,2]
     dat2 <- mapUniprot(from="ACC+ID", to=tkt, query=dat)
     return(unique(as.character(dat2[,2])))
   }
@@ -80,17 +81,18 @@ setMethod("keys", "UniProt.ws",
   if (!length(cols))
       stop("'columns' should be different from 'keytype'")
   trueKeys <- keys ## may change depending on keytype.
-  ## split into 2 groups: cols in keytypeKeys and cols in extraCols 
-  colMappers <- cols[cols %in% keytypeKeysDat[,1]]
+  ## split into 2 groups: cols in keytypeKeys and cols in extraCols
+  keytypeKeysData <- .getKeytypeKeysData()
+  colMappers <- cols[cols %in% keytypeKeysData[,1]]
   colUPGoodies <- cols[cols %in% extraColsDat[,1]]
   ## then convert those into the internally used IDs
-  colMappers <- keytypeKeysDat[keytypeKeysDat[,1] %in% colMappers, 2]
+  colMappers <- keytypeKeysData[keytypeKeysData[,1] %in% colMappers, 2]
   ## Don't want ACC+ID in colMappers:
   colMappers <- colMappers[colMappers != "ACC+ID"]
   colUPGoodies <- extraColsDat[extraColsDat[,1] %in% colUPGoodies, 2]
   res <- list()
   if(keytype!="UNIPROTKB" ){
-    kt <- keytypeKeysDat[keytypeKeysDat[,1] %in% keytype,2]
+    kt <- keytypeKeysData[keytypeKeysData[,1] %in% keytype,2]
     dat <- mapUniprot(from=kt, to="ACC", query=keys)
     colnames(dat)[2] <-  "ACC+ID" ## always the 2nd one...
     ## capture UniProts as keys from this point on
@@ -116,7 +118,7 @@ setMethod("keys", "UniProt.ws",
   ## UniProt IDs (and upon whether or not they are real)
   tab <- .mergeList(res, joinType="all")
   ## rename cols:
-  rosetta <- rbind(keytypeKeysDat, extraColsDat)
+  rosetta <- rbind(.getKeytypeKeysData(), extraColsDat)
   ## We need the third col of rosetta to tell us what the cols will come back
   ## from the service as
   idx <- match(colnames(tab), rosetta[,3])
