@@ -23,6 +23,10 @@
     remDr <- RSelenium::remoteDriver(browserName = "phantomjs", port = 4568L)
     ## Open and navigate to url
     remDr$open(silent=TRUE)
+    on.exit({
+        remDr$close()
+        pJS$stop()
+    })
     remDr$navigate(url)
     ## Check if title is similar
     title <- remDr$getTitle(url)[[1]]
@@ -30,9 +34,6 @@
         stop("the webpage has changed, please check the url")
     ## Get table
     doc <- xml2::read_html(remDr$getPageSource()[[1]])
-    ## Stop remDr and phantomJS
-    remDr$close()
-    pJS$stop()
 
     keytypes <- rvest::html_table(doc, header=TRUE)[[1]]
     ## Remove observations(rows) with "Category" in them,
