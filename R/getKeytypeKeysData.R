@@ -8,8 +8,7 @@
 
 .updateKeytypes <-
     function(url="https://www.uniprot.org/help/api_idmapping",
-             file = tempfile(),
-             verbose=FALSE, save=TRUE)
+             file = tempfile(), verbose=FALSE)
 {
     message("updating keytype map from ", url)
     loadNamespace("wdman")
@@ -51,11 +50,7 @@
     ## Direction seems irrelavent
     keytypes$Direction <- keytypes$Abbreviation
 
-    if (save) {
-        write.table(
-            keytypes, file=file, row.names=FALSE, col.names=TRUE, sep="\t"
-        )
-    }
+    write.table(keytypes, file=file, row.names=FALSE, col.names=TRUE, sep="\t")
 
     file
 }
