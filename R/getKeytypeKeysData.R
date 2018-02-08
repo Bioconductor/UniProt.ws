@@ -64,7 +64,8 @@
         if (is.null(keytypeKeysData)) {
             fpath <- .updateKeytypes()
             keytypeKeysData <<- read.delim(
-                fpath, header=TRUE, stringsAsFactors=FALSE
+                fpath, header=TRUE, stringsAsFactors=FALSE,
+                col.names=c("V1","V2","V3")
             )
         }
         keytypeKeysData
