@@ -6,11 +6,9 @@
 ## 
 ## Optional: Mac OS: brew install phantomjs
 
-.updateKeytypes <-
-    function(url="https://www.uniprot.org/help/api_idmapping",
-             file = tempfile(), verbose=FALSE)
+.parseKeytypesFile <-
+    function(url, file, verbose)
 {
-    message("updating keytype map from ", url)
     loadNamespace("wdman")
     loadNamespace("RSelenium")
     loadNamespace("rvest")
@@ -31,7 +29,7 @@
     ## Check if title is similar
     title <- remDr$getTitle(url)[[1]]
     if (!identical(title, "Programmatic access - Mapping database identifiers"))
-        stop("the webpage has changed, please check the url")
+        stop("'keytypes' webpage changed, report to https://support.bioconductor.org")
     ## Get table
     doc <- xml2::read_html(remDr$getPageSource()[[1]])
 
@@ -52,7 +50,15 @@
     keytypes$Direction <- keytypes$Abbreviation
 
     write.table(keytypes, file=file, row.names=FALSE, col.names=TRUE, sep="\t")
+}
 
+.updateKeytypes <-
+    function(url="https://www.uniprot.org/help/api_idmapping", verbose=FALSE)
+{
+    needsUpdate <- .cacheNeedsUpdate(url)
+    file <- names(needsUpdate)
+    if (needsUpdate)
+        .parseKeytypesFile(url, file)
     file
 }
 

@@ -111,3 +111,32 @@ processSpecFile <-
                        package="UniProt.ws")
     save(codes, file=rda)
 }
+
+.cacheNeedsUpdate <- function(url) {
+    message("updating resource from ", url)
+    needsUpdate <- TRUE
+    cache <- rappdirs::user_cache_dir(appname="UniProt.ws")
+
+    tryCatch({
+        bfc <- BiocFileCache::BiocFileCache(cache, ask=FALSE)
+        query <- bfcquery(bfc, url, "rname")
+
+        if (nrow(query) == 0L) {
+            file <- bfcnew(bfc, url)
+            needsUpdate <- TRUE
+        } else {
+            file <- query$rpath
+            id <- query$rid
+            mtime <- file.mtime(query$rpath) 
+            expires <- httr::cache_info(httr::HEAD(url))$expires
+            needsUpdate <- expires < Sys.Date()
+        }
+    }, error = function(err) {
+        stop(
+            "could not connect or cache url ", url,
+            "\n  reason: ", conditionMessage(err)
+        )
+    })
+
+    setNames(needsUpdate, file)
+}
