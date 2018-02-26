@@ -70,36 +70,31 @@ taxname2domain <- function(taxname, specfile) {
     domains
 }
 
-# Download the latest version of species definition file from UnoProt:
-# updatespecfile().  UniProt.ws package has an archived version of the species
-# definition file downloaded from http://www.uniprot.org/docs/speclist.  This
-# updatespecfile helper function attempts to download the current version of
-# conversion table, but if it fails to do that still you can use the archived
-# copy saved to the extdata directory.
+.cacheNeedsUpdate <- function(url) {
+    message("updating resource from ", url)
+    needsUpdate <- TRUE
+    cache <- rappdirs::user_cache_dir(appname="UniProt.ws")
 
-updatespecfile <- function() {
-    specfile <- .getSpecfile() 
-    # Check if speclist.txt is available online, if yes, download, if not, 
-    # fall back to local copy
-    localfile <- tempfile("specfile.")
-    specurl <- 'http://www.uniprot.org/docs/speclist.txt'
-    test <- getBinaryURL(specurl)
-    if(length(test)>1) {
-        writeBin(test,localfile)
-        specfile <- localfile
-    }
-    specfile
-}
+    tryCatch({
+        bfc <- BiocFileCache::BiocFileCache(cache, ask=FALSE)
+        query <- bfcquery(bfc, url, "rname")
 
-## Update specfile and save it as a data.frame in
-## inst/extdata/specfile.RData
-processSpecFile <-
-    function()
-{
-    file <- updatespecfile()
-    codes <- digestspecfile(file)
-    rda <- system.file("extdata",
-                       "speclist.RData",
-                       package="UniProt.ws")
-    save(codes, file=rda)
+        if (nrow(query) == 0L) {
+            file <- bfcnew(bfc, url)
+            needsUpdate <- TRUE
+        } else {
+            file <- query$rpath
+            id <- query$rid
+            mtime <- file.mtime(query$rpath)
+            expires <- httr::cache_info(httr::HEAD(url))$expires
+            needsUpdate <- expires < Sys.Date()
+        }
+    }, error = function(err) {
+        stop(
+            "could not connect or cache url ", url,
+            "\n  reason: ", conditionMessage(err)
+        )
+    })
+
+    setNames(needsUpdate, file)
 }
