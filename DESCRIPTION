@@ -1,11 +1,10 @@
 Package: UniProt.ws
 Type: Package
 Title: R Interface to UniProt Web Services
-Version: 2.19.0
+Version: 2.19.1
 Depends: methods, utils, RSQLite, RCurl, BiocGenerics (>= 0.13.8)
-Imports: AnnotationDbi
+Imports: AnnotationDbi, BiocFileCache, rappdirs
 Suggests: RUnit
-Author: Marc Carlson
 Authors@R: c(person("Marc", "Carlson", role=c("aut", "cre"),
         email="maintainer@bioconductor.org"),
     person("Csaba", "Ortutay", role="ctb"))

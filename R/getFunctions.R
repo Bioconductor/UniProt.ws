@@ -219,13 +219,18 @@ getUniprotGoodies <- function(query, cols){
               chnkSize=400, cols=cols)
 }
 
-
+.availableSpecies <-
+    function()
+{
+    res <- digestspecfile()[, c("taxId", "taxname")]
+    rownames(res) <- NULL
+    colnames(res) <- paste0("V", 1:2)
+    res
+}
 
 ## Need method to return dataFrame of available species.
 availableUniprotSpecies <- function(pattern="", n=Inf){
-  species <- read.delim(system.file('extdata','availSpecies.txt',
-                                    package='UniProt.ws')
-                        , header=FALSE, stringsAsFactors=FALSE)
+  species <- .availableSpecies()
   g <- grepl(pattern, species[,2])
   res <- species[g,]
   colnames(res) <- c("taxon ID","Species name")
@@ -238,9 +243,7 @@ availableUniprotSpecies <- function(pattern="", n=Inf){
 
 ## and another method to look up the species name based on the tax ID.
 lookupUniprotSpeciesFromTaxId <- function(taxId){
-  species <- read.delim(system.file('extdata','availSpecies.txt',
-                                    package='UniProt.ws')
-                        , header=FALSE, stringsAsFactors=FALSE)
+  species <- .availableSpecies()
   g <- species[,1] %in% taxId
   res <- species[g,2]
   if(length(res)<1) stop("No species match the requested Tax Id.")
