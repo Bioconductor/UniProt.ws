@@ -15,7 +15,6 @@ Collate: AllGenerics.R
     getFunctions.R 
     methods-select.R 
     utilities.R
-    test_UniProt.ws_package.R 
 License: Artistic License 2.0
 biocViews: Annotation, Infrastructure, GO, KEGG, BioCarta
 LazyLoad: yes
