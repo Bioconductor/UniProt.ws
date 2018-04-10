@@ -5,33 +5,70 @@
 ## Contributed by Csaba Ortutay; csaba.ortutay@gmail.com, 17.10.2016
 #########################################################################
 
-.getSpecfile <- function() {
-    load(system.file("extdata", "speclist.RData", package="UniProt.ws"))
+.getSpecfile <-
+    function(url)
+{
+    cache <- rappdirs::user_cache_dir(appname="UniProt.ws")
+    bfc <- BiocFileCache(cache, ask=FALSE)
+
+    rid <- tryCatch({
+        rid0 <- bfcquery(bfc, url, "fpath")$rid
+        if (length(rid0)) {
+            update <- bfcneedsupdate(bfc, rid0)
+            if (!isFALSE(update))
+                bfcdownload(bfc, rid0, ask = FALSE)
+        } else
+            rid0 <- names(bfcadd(bfc, url))
+        rid0
+    }, error = function(...) integer())
+
+    if (length(rid))
+        bfcrpath(bfc, rids=rid)
+    else
+        system.file("extdata", "speclist.txt", package="UniProt.ws")
+}
+
+## digest specfile
+.parseSpecfile <-
+    function(specfile)
+{
+    my.text <- readLines(specfile)
+
+    pattern <- "^([[:alnum:]]+) +([[:alnum:]]) +([[:digit:]]+): N=(.*)"
+    codetable <- my.text[grepl(pattern, my.text)]
+
+    codes <- data.frame(
+        domain = factor(sub(pattern, "\\2", codetable)),
+        taxId = as.integer(sub(pattern, "\\3", codetable)),
+        taxname = sub(pattern, "\\4", codetable),
+        row.names = sub(pattern, "\\1", codetable),
+        stringsAsFactors = FALSE
+    )
+    codes$species <- sub(" +\\(.*", "\\1", codes$taxname)
     codes
 }
 
-# digest specfile
-digestspecfile <- function(specfile) {
-    if (is.character(specfile)) {
-        my.text <- readLines(specfile)
-        codetable <- my.text[grep("^[A-Z0-9]+ +[ABEVO]", my.text, 
-                                  perl=TRUE, value=FALSE)]
-        codes <- data.frame(
-            domain = substr(codetable, 7, 7),
-            taxId = as.numeric(substr(codetable, 8, 15)),
-            taxname = sapply(strsplit(codetable, ": N="), '[', 2),
-            row.names = 
-                sapply(strsplit(codetable, " +[ABEVO] +",perl=TRUE), '[', 1))
-        codes$species <- 
-            gsub("^([^ ]* [^ ]*) .*$","\\1",codes$taxname, perl=TRUE)
-        codes
-    } else {
+digestspecfile <- local({
+    db <- new.env(parent=emptyenv())
+    function(specfile) {
+        if (missing(specfile)) {
+            specfile <- "http://www.uniprot.org/docs/speclist.txt"
+            if (is.null(db[[specfile]])) {
+                rsrc <- .getSpecfile()
+                db[[specfile]] <- .parseSpecfile(rsrc)
+            }
+            specfile <- db[[specfile]]
+        } else if (is.character(specfile)) {
+            if (is.null(db[[specfile]]))
+                db[[specfile]] <- .parseSpecfile(specfile)
+            specfile <- db[[specfile]]
+        }
         if (!is(specfile, "data.frame"))
-            stop(paste0("'specfile' must be the name of a local file or ",
-                        "the cached 'data.frame' in extdata/"))
+            stop("'specfile' must be the name of a local file or ",
+                 "(advanced use) a 'data.frame' of appropriate format")
         specfile
     }
-}
+})
 
 # Utility functions
 #
@@ -44,8 +81,6 @@ digestspecfile <- function(specfile) {
 # taxname2species()
 # 
 taxname2species <- function(taxname, specfile) {
-    if (missing(specfile))
-        specfile <- .getSpecfile()
     codetable <- digestspecfile(specfile)
     specnames <- codetable[taxname,"species"]
     specnames
@@ -54,8 +89,6 @@ taxname2species <- function(taxname, specfile) {
 # Converting UniProt taxonomy names to NCBI Taxonomy IDs: taxname2taxid()
 # 
 taxname2taxid  <- function(taxname, specfile) {
-    if (missing(specfile))
-        specfile <- .getSpecfile()
     codetable <- digestspecfile(specfile)
     taxids <- codetable[taxname,"taxId"]
     taxids
@@ -70,8 +103,6 @@ taxname2taxid  <- function(taxname, specfile) {
 #   'O' for others (such as artificial sequences)
 
 taxname2domain <- function(taxname, specfile) {
-    if (missing(specfile))
-        specfile <- .getSpecfile()
     codetable <- digestspecfile(specfile)
     domains <- codetable[taxname,"domain"]
     domains
@@ -85,15 +116,5 @@ taxname2domain <- function(taxname, specfile) {
 # copy saved to the extdata directory.
 
 updatespecfile <- function() {
-    specfile <- .getSpecfile() 
-    # Check if speclist.txt is available online, if yes, download, if not, 
-    # fall back to local copy
-    localfile <- tempfile("specfile.")
-    specurl <- 'http://www.uniprot.org/docs/speclist.txt'
-    test <- getBinaryURL(specurl)
-    if(length(test)>1) {
-        writeBin(test,localfile)
-        specfile <- localfile
-    }
-    specfile
+    .getSpecfile()
 }

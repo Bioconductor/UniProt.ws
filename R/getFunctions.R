@@ -1,16 +1,18 @@
 ## A couple of constants (referred to by many functions)
 ## We will maintain a list of supported key types in file in extdata..
-keytypeKeysDat <- read.delim(system.file('extdata','keytypes.txt',
-                                         package='UniProt.ws')
-                             , header=FALSE, stringsAsFactors=FALSE)
+keytypeKeysDat <- read.delim(
+    system.file('extdata', 'keytypes.txt', package='UniProt.ws'),
+    header=FALSE, stringsAsFactors=FALSE
+)
 
 ## write.table(keytypeKeysDat, file="keytypes2.txt", quote=FALSE, sep="\t", row.names=FALSE, col.names=FALSE)
 
 ## We also keep a list of supported additional cols (things that can be
 ## retrieved but not used as keys in a file called extraCols.txt
-extraColsDat <- read.delim(system.file('extdata','extraCols.txt',
-                                         package='UniProt.ws')
-                             , header=FALSE, stringsAsFactors=FALSE)
+extraColsDat <- read.delim(
+    system.file('extdata','extraCols.txt', package='UniProt.ws'),
+    header=FALSE, stringsAsFactors=FALSE
+)
 
 ## FOR NOW: we are not supporting the following 4 cols (they give us the 505)
 ## Also remember: adjust/comment these in man page...
@@ -219,13 +221,18 @@ getUniprotGoodies <- function(query, cols){
               chnkSize=400, cols=cols)
 }
 
-
+.availableSpecies <-
+    function()
+{
+    res <- digestspecfile()[, c("taxId", "taxname")]
+    rownames(res) <- NULL
+    colnames(res) <- paste0("V", 1:2)
+    res
+}
 
 ## Need method to return dataFrame of available species.
 availableUniprotSpecies <- function(pattern="", n=Inf){
-  species <- read.delim(system.file('extdata','availSpecies.txt',
-                                    package='UniProt.ws')
-                        , header=FALSE, stringsAsFactors=FALSE)
+  species <- .availableSpecies()
   g <- grepl(pattern, species[,2])
   res <- species[g,]
   colnames(res) <- c("taxon ID","Species name")
@@ -238,9 +245,7 @@ availableUniprotSpecies <- function(pattern="", n=Inf){
 
 ## and another method to look up the species name based on the tax ID.
 lookupUniprotSpeciesFromTaxId <- function(taxId){
-  species <- read.delim(system.file('extdata','availSpecies.txt',
-                                    package='UniProt.ws')
-                        , header=FALSE, stringsAsFactors=FALSE)
+  species <- .availableSpecies()
   g <- species[,1] %in% taxId
   res <- species[g,2]
   if(length(res)<1) stop("No species match the requested Tax Id.")
