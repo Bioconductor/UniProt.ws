@@ -33,3 +33,4 @@ VERSION	version	Version
 VIRUS-HOSTS	virus hosts	Virus.hosts
 DATABASE(PFAM)	database(pfam)	Cross.reference..pfam.
 DATABASE(PDB)	database(pdb)	Cross.reference..pdb.
+FUNCTION	comment(FUNCTION)	Function
