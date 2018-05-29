@@ -126,10 +126,17 @@ mapUniprot <- function(from, to, query){
 
 ## Try five times and give error if all attempts fail.
 .tryReadResult <- function(url){
- for (i in 1:6) {
+ for (i in 1:5) {
      result <- tryCatch({
          read.delim(URLencode(url), stringsAsFactors=FALSE)
-     }, error=function(err) NULL)
+     }, error=function(err) {
+         message(
+             "reading url",
+             "\n    ", URLencode(url),
+             "\nfailed on attempt ", i, " of 5"
+         )
+         NULL
+     })
      if (!is.null(result)) return(result)
      Sys.sleep(5)
  }
