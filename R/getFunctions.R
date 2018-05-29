@@ -76,17 +76,22 @@ keytypeKeysDat <- keytypeKeysDat[-c(37L,38L),]
   v
 }
 
-.tryToGetAllChunks <- function(res, qs, FUN, ...){
-  ## call FUN for each
-  ## res <- lapply(qs, FUN, ...)
-  for (i in seq_len(length(qs))){
-    if(length(res[[i]])==1 && is.na(res[[i]])){
-      res[[i]] <- tryCatch({
-        FUN(qs[[i]], ...) ## call the getter method
-      }, error=function(err) NA)
+.tryToGetAllChunks <- function(res, qs, FUN, ...) {
+    ## call FUN for each
+    ## res <- lapply(qs, FUN, ...)
+    for (i in seq_along(qs)[is.na(res)]) {
+        res[[i]] <- tryCatch({
+            FUN(qs[[i]], ...) ## call the getter method
+        }, error = function(err) {
+            message(
+                "error while trying to retrieve data in chunk ", i, ":",
+                "\n    ", conditionMessage(err),
+                "\ncontinuing to try"
+            )
+            NULL
+        })
     }
-  }
-  res
+    res
 }
 
 dataNibbler <- function(query, FUN, chnkSize=400, ...){
@@ -97,9 +102,9 @@ dataNibbler <- function(query, FUN, chnkSize=400, ...){
   ## assign all vals in res to be NA
   res <- rep.int(list(NA),length(qs))
   
-  while(any(is.na(res))){
-    ## repeat till you get all the answers.
-    res <- .tryToGetAllChunks(res, qs, FUN, ...)
+  while (anyNA(res)) {
+      ## repeat till you get all the answers.
+      res <- .tryToGetAllChunks(res, qs, FUN, ...)
   }
   
   fin <- do.call(rbind, res)
@@ -196,8 +201,7 @@ backFillCols <- function(tab, cols){
 
 ## A function that take UniProt IDs and gets supplementary cols back
 .getSomeUniprotGoodies  <- function(query, cols){
-  message(paste0("Getting extra data for ",
-          paste(head(query), collapse=",")))
+  message("Getting extra data for ", paste(head(query), collapse=","))
   ## query and cols start as a character vectors
   qstring <- paste(query, collapse="+or+")  
   cstring <- paste(cols, collapse=",")
