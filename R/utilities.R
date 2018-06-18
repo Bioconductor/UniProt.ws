@@ -52,9 +52,9 @@ digestspecfile <- local({
     db <- new.env(parent=emptyenv())
     function(specfile) {
         if (missing(specfile)) {
-            specfile <- "http://www.uniprot.org/docs/speclist.txt"
+            specfile <- "https://www.uniprot.org/docs/speclist.txt"
             if (is.null(db[[specfile]])) {
-                rsrc <- .getSpecfile()
+                rsrc <- .getSpecfile(specfile)
                 db[[specfile]] <- .parseSpecfile(rsrc)
             }
             specfile <- db[[specfile]]
@@ -116,5 +116,6 @@ taxname2domain <- function(taxname, specfile) {
 # copy saved to the extdata directory.
 
 updatespecfile <- function() {
-    .getSpecfile()
+    specfile <- "https://www.uniprot.org/docs/speclist.txt"
+    .getSpecfile(specfile)
 }
