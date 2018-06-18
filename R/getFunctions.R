@@ -118,7 +118,7 @@ mapUniprot <- function(from, to, query){
   ## 1st we look at that query.  Is is longer than 400 long, then we tend to
   ## get a "bad request" response, so I am simplifying it here to do small
   ## bites and then reassemble them
-  message("Getting mapping data for ",query[1]," ... and ",to)
+  message("Getting mapping data for ", query[1], " ... and ", to)
   dataNibbler(query=query, FUN=.mapUni, chnkSize=400,
               from=from, to=to) ## not a typo that from is used twice here.
 }
@@ -172,7 +172,12 @@ backFillCols <- function(tab, cols){
 
 ## A function that take UniProt IDs and gets supplementary cols back
 .getSomeUniprotGoodies  <- function(query, cols){
-  message("Getting extra data for ", paste(head(query), collapse=","))
+    message(
+        "Getting extra data for ",
+        paste(head(query, 3), collapse=", "),
+        if (length(query) > 3)
+            paste0("... (", length(query), " total)")
+    )
   ## query and cols start as a character vectors
   qstring <- paste(query, collapse="+or+")  
   cstring <- paste(cols, collapse=",")
