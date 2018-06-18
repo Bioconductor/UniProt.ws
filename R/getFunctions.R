@@ -30,33 +30,27 @@ keytypeKeysDat <- keytypeKeysDat[-c(37L,38L),]
 }
 
 ## Try five times and give error if all attempts fail.
-.tryGetResult <- function(url, params){
- for (i in 1:11) {
-     result <- tryCatch({
-           getForm(url,
-                   .params=params,
-                   .opts=list(FOLLOWLOCATION=TRUE))
-     }, error=function(err) NULL)
-     if (!is.null(result)) return(result)
-     Sys.sleep(10)
- }
- stop("no results after 5 attempts; please try again later")
+.tryGetResult <- function(url, params) {
+    for (i in 1:5) {
+        result <- tryCatch({
+            getForm(url, .params=params, .opts=list(FOLLOWLOCATION=TRUE))
+        }, error=function(err) NULL)
+        if (!is.null(result)) return(result)
+        Sys.sleep(10)
+    }
+    stop("no results after 5 attempts; please try again later")
 }
 
 
-.mapUni <- function(query, from, to){
-  ## query starts as a character vector...
-  ## But the URL expects it to be a space separated string.
-  query <- paste(query, collapse=" ")
-  ## url is constant here
-  url <- 'http://www.uniprot.org/mapping/'
-  params <- c('from'=from,'to'= to,'format'='tab',
-    'query'=query)
-##   res <- getForm(url,
-##                 .params=params,
-##                 .opts=list(FOLLOWLOCATION=TRUE))
-  res <- .tryGetResult(url, params)
-  .cleanup(res, from, to)
+.mapUni <- function(query, from, to) {
+    ## query starts as a character vector...
+    ## But the URL expects it to be a space separated string.
+    query <- paste(query, collapse=" ")
+    ## url is constant here
+    url <- 'https://www.uniprot.org/mapping/'
+    params <- c('from'=from, 'to'= to, 'format'='tab', 'query'=query)
+    res <- .tryGetResult(url, params)
+    .cleanup(res, from, to)
 }
 
 .makeChunkVector <- function(chnkSize,query){
