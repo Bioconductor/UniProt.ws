@@ -8,23 +8,29 @@
 
 ## problem?
 test_mapUniprot <- function(){
-  res <- UniProt.ws:::mapUniprot(from='ACC',to='P_REFSEQ_AC',
-                    query=c('P13368','P20806','Q9UM73','P97793','Q17192'))
-  .check_rect_result(res)
-  checkTrue(res[1,1]=='P13368')
-  checkTrue(res[1,2]=='NP_511114.2')
+    mapUniprot <- UniProt.ws:::mapUniprot
+    res <- mapUniprot(
+        from='ACC',to='P_REFSEQ_AC',
+        query=c('P13368','P20806','Q9UM73','P97793','Q17192')
+    )
+    .check_rect_result(res)
+    checkTrue(res[1,1]=='P13368')
+    checkTrue(res[1,2]=='NP_511114.2')
 
-  ## what if I have entrezGene IDs and I want UniProts?
-  res <- UniProt.ws:::mapUniprot(from='P_ENTREZGENEID',to='ACC',
-                                query=c('1','2','3','9','10'))
-  .check_rect_result(res)
-  checkTrue(res[1,1]=='1')
-  checkTrue(res[1,2]=='P04217')
+    ## what if I have entrezGene IDs and I want UniProts?
+    res <- mapUniprot(
+        from='P_ENTREZGENEID', to='ACC', query=c('1','2','3','9','10')
+    )
+    .check_rect_result(res)
+    checkTrue(res[1,1]=='1')
+    checkTrue(res[1,2]=='P04217')
 
-  ## I can then map UniProt accessions to Unigene IDs
-  res <- UniProt.ws:::mapUniprot(from='ACC',to='UNIGENE_ID',
-                    query=c('P04217','P01023','F5H5R8','P18440','Q400J6'))
-  .check_rect_result(res)
+    ## I can then map UniProt accessions to Unigene IDs
+    res <- mapUniprot(
+        from='ACC',to='UNIGENE_ID',
+        query=c('P04217','P01023','F5H5R8','P18440','Q400J6')
+    )
+    .check_rect_result(res)
 }
 
 
