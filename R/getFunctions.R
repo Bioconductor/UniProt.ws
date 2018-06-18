@@ -143,42 +143,6 @@ mapUniprot <- function(from, to, query){
  stop("no results after 5 attempts; please try again later")
 }
 
-
-## FOR NOW: There doesn't seem to be a need for getOneToMany to be altered to
-## use dataNibbler.  So it's a stand-alone thing for now. (only used for
-## making the annots at release time)
-## What about something simpler?
-## http://www.uniprot.org/uniprot/?query=P12345&format=tab&columns=id,sequence
-## What about PFAM and Prosite (need special functions for special services).
-
-getOneToMany <- function(taxId, type=c("PFAM","prosite","SMART")){ 
-  type <- match.arg(type)
-  url <- paste0("http://www.uniprot.org/uniprot/?query=organism:",taxId,"&format=tab&columns=id,database(")
-  fullUrl <- paste0(url,type,")")
-  message("Reading in data from UniProt web services.")
-##   dat <- read.delim(fullUrl, stringsAsFactors=FALSE)
-  dat <- .tryReadResult(fullUrl)
-  colnames(dat) <- c('ids', 'ids2')
-  ## split up the strings
-  dat[[2]] <- strsplit( as.character(dat[[2]]), split=";")
-  ## get number of things matched to each ID in col 1
-  lens <- unlist(lapply(dat[[2]],length))
-  ## make factor based on dat[[1]], repeated lens times
-  ids <- rep.int(dat[[1]],lens) ## this excludes ones where lens==0
-  ids2 <- unlist(dat[[2]])
-  if(length(ids)==length(ids2)){
-    res <- cbind(ids,ids2)
-  }else{
-    stop("getOneToMany: ids != ids2")
-  }
-  ## recover dat[[1]] where lens==0
-  rem <- dat[lens==0,]
-  rem[[2]] <- NA ## these values are all NA
-  rbind(res, rem)
-}
-
-
-
 ## helper to fill back in missing cols.
 backFillCols <- function(tab, cols){
   ## 1st we need to translate cols to be the expected headers for tab.  
