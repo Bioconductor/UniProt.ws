@@ -175,7 +175,7 @@ backFillCols <- function(tab, cols){
   ## query and cols start as a character vectors
   qstring <- paste(query, collapse="+or+")  
   cstring <- paste(cols, collapse=",")
-  url <- 'http://www.uniprot.org/uniprot/?query='
+  url <- 'https://www.uniprot.org/uniprot/?query='
   fullUrl <- paste0(url,qstring,'&format=tab&columns=id,',cstring)
   ## This step may need to repeat (in the event that it fails).
   dat <- .tryReadResult(fullUrl)
