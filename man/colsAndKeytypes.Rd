@@ -291,7 +291,6 @@
 
 
 \examples{
-  library(UniProt.ws)
   up <- UniProt.ws(taxId=9606)
   ## List the possible values for columns
   columns(up)

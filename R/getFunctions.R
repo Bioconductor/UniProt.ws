@@ -21,12 +21,10 @@ keytypeKeysDat <- keytypeKeysDat[-c(37L,38L),]
 
 ## Some code to make the string into a data.frame...
 .cleanup <- function(str, from, to){
-  vec <- unlist(strsplit(str,"\n"))
-  vec2 <- unlist(strsplit(vec,"\t"))
-  res <- matrix(vec2, ncol=2, byrow=TRUE)
-  res <- as.data.frame(res, stringsAsFactors=FALSE)
+  res <- read.delim(text = gsub("[\t]+", "\t", readLines(textConnection(str)), perl = TRUE), sep = "\t")
+  res <- res[,c(1, 2)]
   colnames(res) <- c(from, to)
-  res[-1,] 
+  res
 }
 
 ## Try five times and give error if all attempts fail.
