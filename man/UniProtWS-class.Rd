@@ -181,7 +181,7 @@ if(interactive()){
 ## use select to extract some data
 res <- select(up, 
               keys = c("22627","22629"), 
-              columns = c("PDB","UNIGENE","SEQUENCE"),
+              columns = c("PDB","HGNC","SEQUENCE"),
               keytype = "ENTREZ_GENE")
 head(res)
 }

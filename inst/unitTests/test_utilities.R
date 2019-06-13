@@ -35,12 +35,12 @@ test_taxname2domain <- function() {
 }
 
 test_taxname2domain_vec <- function() {
-  res <- taxname2domain(c(org, "MYCGJ"))
+  res <- taxname2domain(c(org, "MYCGI"))
   checkIdentical(
       res,
       factor(
-          c("E","E","E","E","E","B","V","A","O"),
-          levels = c("A", "B", "E", "O", "V", "X")
+          c("E","E","E","E","E","B","V","A","B"),
+          levels = c("A", "B", "E", "V", "X")
       )
   )
 }

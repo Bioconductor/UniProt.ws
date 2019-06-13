@@ -46,22 +46,22 @@ test_select_1 <- function(){
   ## 1st working select example...  
   keys <- c("P31946","P62258","Q04917")
   kt <- "UNIPROTKB"
-  cols <- c("PDB","UNIGENE","SEQUENCE")
+  cols <- c("PDB","HGNC","SEQUENCE")
   res <- select(up, keys, cols, kt) 
   checkTrue(dim(res)[1]>0)
   checkTrue(dim(res)[2]==4)
-  checkIdentical(c("UNIPROTKB","PDB","UNIGENE","SEQUENCE"), colnames(res))
+  checkIdentical(c("UNIPROTKB","PDB","HGNC","SEQUENCE"), colnames(res))
 }
 
 test_select_2 <- function(){
   ## with an alternate keytype (need to think carefully about merge keys here)
   keys <- c('1','2','3','9','10')
   kt <- "ENTREZ_GENE"
-  cols <- c("PDB","UNIGENE","SEQUENCE")
+  cols <- c("PDB","HGNC","SEQUENCE")
   res <- select(up, keys, cols, kt)
   checkTrue(dim(res)[1]>0)
   checkTrue(dim(res)[2]==4)
-  checkIdentical(c("ENTREZ_GENE" ,"PDB","UNIGENE","SEQUENCE"),
+  checkIdentical(c("ENTREZ_GENE" ,"PDB","HGNC","SEQUENCE"),
                  colnames(res))
 }
 

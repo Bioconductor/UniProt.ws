@@ -156,10 +156,10 @@ that you need when using \Rmethod{select}.
 
 <<select>>=
 keys <- c("1","2")
-columns <- c("PDB","UNIGENE","SEQUENCE")
+columns <- c("PDB","HGNC","SEQUENCE")
 kt <- "ENTREZ_GENE"
 res <- select(up, keys, columns, kt)
-head(res)
+res
 @ 
 
 

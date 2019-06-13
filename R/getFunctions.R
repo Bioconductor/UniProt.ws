@@ -16,7 +16,7 @@ extraColsDat <- read.delim(
 
 ## FOR NOW: we are not supporting the following 4 cols (they give us the 505)
 ## Also remember: adjust/comment these in man page...
-keytypeKeysDat <- keytypeKeysDat[-c(37L,38L),]
+## keytypeKeysDat <- keytypeKeysDat[-c(37L,38L),]
 
 
 ## Some code to make the string into a data.frame...
