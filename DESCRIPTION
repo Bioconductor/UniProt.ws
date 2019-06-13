@@ -1,10 +1,10 @@
 Package: UniProt.ws
 Type: Package
 Title: R Interface to UniProt Web Services
-Version: 2.25.0
+Version: 2.25.1
 Depends: methods, utils, RSQLite, RCurl, BiocGenerics (>= 0.13.8)
 Imports: AnnotationDbi, BiocFileCache, rappdirs
-Suggests: RUnit
+Suggests: RUnit, BiocStyle, knitr
 Authors@R: c(person("Marc", "Carlson", role=c("aut", "cre"),
         email="maintainer@bioconductor.org"),
     person("Csaba", "Ortutay", role="ctb"))
@@ -17,4 +17,5 @@ Collate: AllGenerics.R
     utilities.R
 License: Artistic License 2.0
 biocViews: Annotation, Infrastructure, GO, KEGG, BioCarta
+VignetteBuilder: knitr
 LazyLoad: yes

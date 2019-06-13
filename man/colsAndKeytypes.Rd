@@ -8,7 +8,6 @@
 \alias{EMBL/GENBANK/DDBJ}
 \alias{EMBL/GENBANK/DDBJ_CDS}
 \alias{PIR}
-\alias{UNIGENE}
 \alias{ENTREZ_GENE}
 \alias{GI_NUMBER*}
 \alias{IPI}
@@ -155,7 +154,6 @@
     \item{:EMBL/GENBANK/DDBJ}{EMBL/GenBank/DDBJ}
     \item{:EMBL/GENBANK/DDBJ_CDS}{EMBL/GenBank/DDBJ CDS}
     \item{:PIR}{PIR}
-    \item{:UNIGENE}{UniGene}
     \item{:ENTREZ_GENE}{Entrez Gene (GeneID)}
     \item{:GI_NUMBER*}{GI number}
     \item{:IPI}{IPI}

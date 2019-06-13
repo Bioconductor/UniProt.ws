@@ -1,76 +1,29 @@
 %\VignetteIndexEntry{UniProt.ws: A package for retrieving data from the UniProt web service}
 %\VignetteDepends{UniProt.ws}
+%\VignetteEngine{knitr::knitr}
 
-\documentclass[11pt]{article}
+\documentclass{article}
 
-\usepackage{Sweave}
-\usepackage[usenames,dvipsnames]{color}
-\usepackage{graphics}
-\usepackage{latexsym, amsmath, amssymb}
-\usepackage{authblk}
-\usepackage[colorlinks=true, linkcolor=Blue, urlcolor=Blue,
-  citecolor=Blue]{hyperref}
-
-%% Simple macros
-
-\newcommand{\code}[1]{{\texttt{#1}}}
-\newcommand{\file}[1]{{\texttt{#1}}}
-
-\newcommand{\software}[1]{\textsl{#1}}
-\newcommand\R{\textsl{R}}
-\newcommand\Bioconductor{\textsl{Bioconductor}}
-\newcommand\Rpackage[1]{{\textsl{#1}\index{#1 (package)}}}
-\newcommand\Biocpkg[1]{%
-  {\href{http://bioconductor.org/packages/devel/bioc/html/#1.html}%
-    {\textsl{#1}}}%
-  \index{#1 (package)}}
-\newcommand\Rpkg[1]{%
-  {\href{http://cran.fhcrc.org/web/devel/#1/index.html}%
-    {\textsl{#1}}}%
-  \index{#1 (package)}}
-\newcommand\Biocdatapkg[1]{%
-  {\href{http://bioconductor.org/packages/devel/data/experiment/html/#1.html}%
-    {\textsl{#1}}}%
-  \index{#1 (package)}}
-\newcommand\Robject[1]{{\small\texttt{#1}}}
-\newcommand\Rclass[1]{{\textit{#1}\index{#1 (class)}}}
-\newcommand\Rfunction[1]{{{\small\texttt{#1}}\index{#1 (function)}}}
-\newcommand\Rmethod[1]{{\texttt{#1}}}
-\newcommand\Rfunarg[1]{{\small\texttt{#1}}}
-\newcommand\Rcode[1]{{\small\texttt{#1}}}
-
-%% Question, Exercise, Solution
-\usepackage{theorem}
-\theoremstyle{break}
-\newtheorem{Ext}{Exercise}
-\newtheorem{Question}{Question}
-
-
-\newenvironment{Exercise}{
-  \renewcommand{\labelenumi}{\alph{enumi}.}\begin{Ext}%
-}{\end{Ext}}
-\newenvironment{Solution}{%
-  \noindent\textbf{Solution:}\renewcommand{\labelenumi}{\alph{enumi}.}%
-}{\bigskip}
-
-
-
+<<style-knitr, eval=TRUE, echo=FALSE, results="asis">>=
+BiocStyle::latex()
+@ 
 
 \title{UniProt.ws: A package for retrieving data from the UniProt web service}
 \author{Marc Carlson}
 
-\SweaveOpts{keep.source=TRUE}
 \begin{document}
 
 \maketitle
 
-\section{Configuring  \Robject{uniport.ws}}
+\section{Configuring \Robject{uniport.ws}}
 
-The \Rpackage{UniProt.ws} package provides a \Rmethod{select}
+The \Rpackage{UniProt.ws} package provides a \Rfunction{select}
 interface to the UniProt web service.  
 
 <<loadPkg>>=
-library(UniProt.ws)
+suppressPackageStartupMessages({
+    library(UniProt.ws)
+})
 up <- UniProt.ws(taxId=9606)
 @ 
 
@@ -81,7 +34,6 @@ the help page.
 <<help,eval=FALSE>>=
 help("UniProt.ws")
 @ 
-
 
 When you load the \Rpackage{UniProt.ws} package, it creates a
 \Robject{UniProt.ws} object.  If you look at the object you will see
@@ -109,7 +61,7 @@ availableUniprotSpecies(pattern="musculus")
 
 Once you have learned the taxonomy ID for the species of interest, you
 can then change the taxonomy id for the \Robject{UniProt.ws} object
-using \Rmethod{taxId} setter or by calling the constructor for
+using \Rfunction{taxId} setter or by calling the constructor for
 \Rfunction{UniProt.ws}
 
 <<setTaxID>>=
@@ -121,13 +73,13 @@ As you can see the species is different for the
 \Robject{mouseUp} new object.
 
 
-\section{Using \Robject{uniport.ws}}
+\section{Using \Robject{UniProt.ws}}
 
 Once you are safisfied that you have an \Robject{uniport.ws} that is
 using the appropriate organsims, you can make use of the standard set
-of methods in a \Rmethod{select} interface.  Specifically:
-\Rmethod{columns},\Rmethod{keytypes},\Rmethod{keys} and
-\Rmethod{select}.
+of methods in a \Rfunction{select} interface.  Specifically:
+\Rfunction{columns}, \Rfunction{keytypes}, \Rfunction{keys} and
+\Rfunction{select}.
 
 You will probably notice that there are a large number of columns that can be
 retrieved.
@@ -152,17 +104,21 @@ egs = keys(up, "ENTREZ_GENE")
 @ 
 
 Finally, you can loop up whatever combinations of columns, keytypes and keys
-that you need when using \Rmethod{select}.
+that you need when using \Rfunction{select}.
 
 <<select>>=
 keys <- c("1","2")
-columns <- c("PDB","UNIGENE","SEQUENCE")
+columns <- c("PDB","HGNC","SEQUENCE")
 kt <- "ENTREZ_GENE"
 res <- select(up, keys, columns, kt)
-head(res)
+res
 @ 
 
+\section*{\Rfunction{sessionInfo()}}
 
+<<<sessionInfo>>=
+sessionInfo()
+@ 
 
 \end{document}
 
