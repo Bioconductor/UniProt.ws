@@ -100,7 +100,7 @@ test_select_5 <- function(){
 test_select_6 <- function(){
   ## now lets just get a bunch of the sequences.
   keys <- keys(up,keytype="UNIPROTKB")
-  keys <- head(keys, n=1000)
+  keys <- head(keys, n=100)
   kt <- "UNIPROTKB"
   cols <- c("SEQUENCE")
   ## cols <- columns(up)[96:126]
