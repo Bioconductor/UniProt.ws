@@ -74,6 +74,15 @@ setMethod("keys", "UniProt.ws",
     stop("columns argument MUST match a value returned by columns method")
   }
 
+  max_key_length <- 100
+  if(length(keys) > max_key_length)
+  {
+    message("Uniprot limits queries with a large amount of keys. ",
+            "It's recommended that the select method be invoked ",
+            "with fewer than ", max_key_length," keys or the query ",
+            "may fail.")
+  }
+
   ## process columns
   oriTabCols <- unique(c(keytype,cols))
   cols <- cols[!(cols %in% keytype)]  ## remove keytype from cols 
