@@ -1,13 +1,15 @@
 Package: UniProt.ws
 Type: Package
 Title: R Interface to UniProt Web Services
-Version: 2.25.2
+Version: 2.25.3
 Depends: methods, utils, RSQLite, RCurl, BiocGenerics (>= 0.13.8)
 Imports: AnnotationDbi, BiocFileCache, rappdirs
 Suggests: RUnit, BiocStyle, knitr
-Authors@R: c(person("Marc", "Carlson", role=c("aut", "cre"),
+Authors@R: c(person("Marc", "Carlson", role="aut",
         email="maintainer@bioconductor.org"),
-    person("Csaba", "Ortutay", role="ctb"))
+    person("Csaba", "Ortutay", role="ctb"),
+    person("Bioconductor Package", "Maintainer", role=c("aut", "cre"),
+        email="maintainer@bioconductor.org"))
 Description: A collection of functions for retrieving, processing and
     repackaging the UniProt web services.
 Collate: AllGenerics.R
