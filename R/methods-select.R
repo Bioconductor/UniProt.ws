@@ -83,6 +83,12 @@ setMethod("keys", "UniProt.ws",
             "may fail.")
   }
 
+  if(all(c("GENEID", "ENTREZ_GENE") %in% cols)){
+      message("GENEID and ENTREZ_GENE are the same.\n",
+              "  returning only GENEID in results.")
+      cols = cols[-which(cols == "ENTREZ_GENE")]
+  }
+
   ## process columns
   oriTabCols <- unique(c(keytype,cols))
   cols <- cols[!(cols %in% keytype)]  ## remove keytype from cols 
@@ -128,8 +134,14 @@ setMethod("keys", "UniProt.ws",
   rosetta <- rbind(keytypeKeysDat, extraColsDat)
   ## We need the third col of rosetta to tell us what the cols will come back
   ## from the service as
+  ## match does not suffice - duplicate entries in rosetta[,3] only picks up
+  ## first match
+
   idx <- match(colnames(tab), rosetta[,3])
   colnames(tab) <- rosetta[idx,1]
+  if(("ENTREZ_GENE" %in% colnames(tab)) && !("ENTREZ_GENE" %in% oriTabCols))
+      colnames(tab)[which(colnames(tab) == "ENTREZ_GENE")] = "GENEID"
+
   ## unique to this web service is the fact that I sometimes will have an
   ## extra UNIPROTKB col.  Regardless, we ONLY want the cols we asked for..
   ## BUT: we also can't try this if the above code has failed to rename anything

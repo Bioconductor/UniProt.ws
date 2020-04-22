@@ -120,6 +120,32 @@ test_select_7 <- function(){
 }
 
 
+
+test_select_8 <- function(){
+  ## GENEID was problematic
+  ## create test cases to fix
+  keys <- c("P31946","P62258","Q04917")
+  kt <- "UNIPROTKB"
+  cols <- c("GENEID")
+  res <- select(up, keys, cols, kt)
+  checkIdentical(c("UNIPROTKB","GENEID"), colnames(res))
+
+  cols <- c("GENEID", "SEQUENCE")
+  res <- select(up, keys, cols, kt)
+  checkIdentical(c("UNIPROTKB","GENEID", "SEQUENCE"), colnames(res))
+
+  cols <- c("GENEID", "ENTREZ_GENE", "SEQUENCE")
+  res <- select(up, keys, cols, kt)
+  checkIdentical(c("UNIPROTKB","GENEID", "SEQUENCE"), colnames(res))
+
+  cols = c("ENTREZ_GENE", "SEQUENCE")
+  res <- select(up, keys, cols, kt)
+  checkIdentical(c("UNIPROTKB","ENTREZ_GENE", "SEQUENCE"), colnames(res))
+
+}
+
+
+
 ## keys with ecs:
 ## keys = c("Q06278","Q9BRR6","Q86V24")
 ## What I learned from ecs is that if there are TRULY no hits, then you don't get the column you requested AT ALL, so code had to be added to handle this case

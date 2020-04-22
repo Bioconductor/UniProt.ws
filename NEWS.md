@@ -1,12 +1,15 @@
- 	**************************************************
-	*						 *
-	*	        1.2.0 SERIES NEWS		 *
-	*						 *
-	**************************************************
+Changes VERSION 2.27.0
+----------------------
+
+BUG FIX
+
+    o (2.27.1) Fix bug when selecting column GENEID. The mapping mapped both
+    GENEID and ENTREZ_GENE to P_ENTREZGENE. When returning columsn used match to
+    identify but would only pick up first match which was ENTREZ_GENE entry.
 
 
-		UniProt.ws VERSION 1.2.0
-
+Changes VERSION 1.2.0
+--------------------
 
 PKG FEATURES
 
