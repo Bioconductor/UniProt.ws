@@ -92,8 +92,12 @@ setMethod("taxIdUniprots", "UniProt.ws",
 .getUniprots <- function(taxId=9606) {
     url <- 'https://www.uniprot.org/uniprot/?query=organism:'
     idUrl <- paste0(url, taxId, "&format=tab&columns=id")
+    unitemp <- tempfile(fileext = ".txt")
+    download.file(idUrl, destfile = unitemp)
     ## Now return that data
-    readLines(idUrl)[-1]
+    #readLines(idUrl)[-1]
+    #read.table(unitemp, header = TRUE)
+    readLines(unitemp)[-1]
 }
 
 
