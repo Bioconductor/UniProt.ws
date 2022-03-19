@@ -31,7 +31,7 @@ extraColsDat <- read.delim(
 .tryGetResult <- function(url, params) {
     for (i in 1:5) {
         result <- tryCatch({
-            getForm(url, .params=params, .opts=list(FOLLOWLOCATION=TRUE))
+            httr::GET(url, query = as.list(params))
         }, error=function(err) NULL)
         if (!is.null(result)) return(result)
         Sys.sleep(10)
@@ -48,7 +48,7 @@ extraColsDat <- read.delim(
     url <- 'https://www.uniprot.org/mapping/'
     params <- c('from'=from, 'to'= to, 'format'='tab', 'query'=query)
     res <- .tryGetResult(url, params)
-    .cleanup(res, from, to)
+    .cleanup(httr::content(res, encoding = "UTF-8"), from, to)
 }
 
 .makeChunkVector <- function(chnkSize,query){
