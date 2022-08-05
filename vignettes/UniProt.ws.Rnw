@@ -6,7 +6,7 @@
 
 <<style-knitr, eval=TRUE, echo=FALSE, results="asis">>=
 BiocStyle::latex()
-@ 
+@
 
 \title{UniProt.ws: A package for retrieving data from the UniProt web service}
 \author{Marc Carlson}
@@ -18,14 +18,14 @@ BiocStyle::latex()
 \section{Configuring \Robject{uniport.ws}}
 
 The \Rpackage{UniProt.ws} package provides a \Rfunction{select}
-interface to the UniProt web service.  
+interface to the UniProt web service.
 
 <<loadPkg>>=
 suppressPackageStartupMessages({
     library(UniProt.ws)
 })
 up <- UniProt.ws(taxId=9606)
-@ 
+@
 
 If you already know about the select interface, you can immediately
 learn about the various methods for this object by just looking it's
@@ -33,7 +33,7 @@ the help page.
 
 <<help,eval=FALSE>>=
 help("UniProt.ws")
-@ 
+@
 
 When you load the \Rpackage{UniProt.ws} package, it creates a
 \Robject{UniProt.ws} object.  If you look at the object you will see
@@ -41,7 +41,7 @@ some helpful information about it.
 
 <<show>>=
 up
-@ 
+@
 
 By default, you can see that the \Robject{UniProt.ws} object is set to
 retrieve records from Homo sapiens.  But you can change that of
@@ -57,7 +57,7 @@ queries like this:
 
 <<availSpecies>>=
 availableUniprotSpecies(pattern="musculus")
-@ 
+@
 
 Once you have learned the taxonomy ID for the species of interest, you
 can then change the taxonomy id for the \Robject{UniProt.ws} object
@@ -67,7 +67,7 @@ using \Rfunction{taxId} setter or by calling the constructor for
 <<setTaxID>>=
 mouseUp <- UniProt.ws(10090)
 mouseUp
-@ 
+@
 
 As you can see the species is different for the
 \Robject{mouseUp} new object.
@@ -86,13 +86,13 @@ retrieved.
 
 <<columns>>=
 head(keytypes(up))
-@ 
+@
 
 And most (but not all) of these fields can also be used as keytypes.
 
 <<keytypes>>=
 head(columns(up))
-@ 
+@
 
 If necessary you can also look up the keys of a given type.  But
 please be warned that the web service is slow at this particular kind
@@ -100,8 +100,8 @@ of lookup.  So if you really want to do this kind of operation you are
 probably going to want to save the result to your R session.
 
 <<keys,eval=FALSE>>=
-egs = keys(up, "ENTREZ_GENE")
-@ 
+egs <- keys(up, "ENTREZ_GENE")
+@
 
 Finally, you can loop up whatever combinations of columns, keytypes and keys
 that you need when using \Rfunction{select}.
@@ -112,13 +112,13 @@ columns <- c("PDB","HGNC","SEQUENCE")
 kt <- "ENTREZ_GENE"
 res <- select(up, keys, columns, kt)
 res
-@ 
+@
 
 \section*{\Rfunction{sessionInfo()}}
 
 <<<sessionInfo>>=
 sessionInfo()
-@ 
+@
 
 \end{document}
 
