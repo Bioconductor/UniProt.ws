@@ -24,7 +24,7 @@
 \alias{keytypes}
 \alias{keytypes,UniProt.ws-method}
 
-\alias{keys} 
+\alias{keys}
 \alias{keys,UniProt.ws-method}
 
 \alias{select}
@@ -47,24 +47,24 @@
   to enable the easy extraction of data from the Uniprot web services.
 
   \code{select}, \code{columns} and \code{keys} are used together to
-  extract data via an \code{UniProt.ws} object. 
+  extract data via an \code{UniProt.ws} object.
 
   \code{columns} shows which kinds of data can be returned for the
   \code{UniProt.ws} object.
-  
+
   \code{keytypes} allows the user to discover which keytypes can be
   passed in to \code{select} or \code{keys} via the \code{keytype}
   argument.
-  
+
   \code{keys} returns keys for the database contained in the
   \code{UniProt.ws} object .  By default it will return the primary keys
-  for the database, which are UNIPROTKB keys, but if used with the
+  for the database, which are UniProtKB keys, but if used with the
   \code{keytype} argument, it will return the keys from that keytype.
-  
+
   \code{select} will retrieve the data as a data.frame based on
   parameters for selected \code{keys} and \code{columns} and \code{keytype}
   arguments.
-  
+
   The \code{UniProt.ws} will be loaded whenever you load the
   \code{UniProt.ws} package.  This object will be set up to retrieve
   information from Homo sapiens by default, but this value can be
@@ -72,15 +72,15 @@
   \code{species} and \code{taxId} methods allow users to see what
   species is currently being accessed, and \code{taxId<-} allows them to
   change this value.
-  
+
   \code{species} shows the genus and species label currently attached to
   the \code{UniProt.ws} objects database.
-  
+
   \code{taxId} shows the NCBI taxonomy ID currently attached to
   the \code{AnnotationDb} objects database.  Using the equivalently
   names replace method (\code{taxId<-}) allows the user to change the
   taxon ID, and the species represented along with it.
-  
+
   \code{availableUniprotSpecies} is a helper function to list out the
   available Species along with their official taxonomy IDs that are
   available by Uniprot.  Because there are so many species represented
@@ -88,10 +88,10 @@
   restrict the range of things returned to be only those whose species
   names match the searth term.  Please remember when using this argument
   that the Genus is always capitalized and the species never is.
-  
+
   \code{lookupUniprotSpeciesFromTaxId} is another helper that will look
   up the species of any tax ID that is supported by Uniprot.
-  
+
 }
 
 \usage{
@@ -109,7 +109,7 @@
 \arguments{
   \item{x}{the \code{UniProt.ws} object. }
   \item{object}{the \code{UniProt.ws} object. }
-  \item{keys}{the keys to select records for from the database.  All possible 
+  \item{keys}{the keys to select records for from the database.  All possible
     keys are returned by using the \code{keys} method.}
   \item{columns}{the columns or kinds of things that can be retrieved
     from the database.  As with \code{keys}, all possible columns are
@@ -129,7 +129,7 @@
   \code{keys},\code{columns},\code{keytypes}, \code{species} and
   \code{lookupUniprotSpeciesFromTaxId} each return a character vector of
   possible values.
-  
+
   \code{taxId} returns a numeric value that corresponds to the taxonomy
   ID.
 
@@ -179,8 +179,8 @@ if(interactive()){
 }
 
 ## use select to extract some data
-res <- select(up, 
-              keys = c("22627","22629"), 
+res <- select(up,
+              keys = c("22627","22629"),
               columns = c("PDB","HGNC","SEQUENCE"),
               keytype = "ENTREZ_GENE")
 head(res)

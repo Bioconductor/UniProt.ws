@@ -1,6 +1,6 @@
-\name{UNIPROTKB}
+\name{UniProtKB}
 
-\alias{UNIPROTKB}
+\alias{UniProtKB}
 \alias{UNIPARC}
 \alias{UNIREF50}
 \alias{UNIREF90}
@@ -140,11 +140,11 @@
 }
 
 
-\details{  
+\details{
   All the possible values for \code{columns} and \code{keytypes} are listed
   below.  Users will have to actually use these methods to learn which
   of the following possible values actually apply in their case.
-  
+
   \describe{
     \item{:UNIPROTKB}{The central ID for UniProt and swissprot}
     \item{:UNIPARC}{UniParc}
@@ -276,12 +276,12 @@
     \item{:DATABASE(PFAM)}{PFAM ids}
     \item{:DATABASE(PDB)}{PDB ids}
 
-    
+
     \item{:}{}
-    
+
   }
 
-  
+
 }
 
 
@@ -298,11 +298,11 @@
   ## list all possible keys of type entrez gene ID.
   ## (this process is not instantaneous)
   if(interactive()){
-    keys <- head(keys(up, keytype="UNIPROTKB"))
+    keys <- head(keys(up, keytype="UniProtKB"))
     keys
   }
   select(up, keys=c("P31946","P62258"), columns=c("PDB","SEQUENCE"),
-  keytype="UNIPROTKB")
+  keytype="UniProtKB")
 }
 
 

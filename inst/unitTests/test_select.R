@@ -43,14 +43,14 @@ test_cols_and_keytypes <- function(){
 
 
 test_select_1 <- function(){
-  ## 1st working select example...  
+  ## 1st working select example...
   keys <- c("P31946","P62258","Q04917")
-  kt <- "UNIPROTKB"
+  kt <- "UniProtKB"
   cols <- c("PDB","HGNC","SEQUENCE")
-  res <- select(up, keys, cols, kt) 
+  res <- select(up, keys, cols, kt)
   checkTrue(dim(res)[1]>0)
   checkTrue(dim(res)[2]==4)
-  checkIdentical(c("UNIPROTKB","PDB","HGNC","SEQUENCE"), colnames(res))
+  checkIdentical(c("UniProtKB","PDB","HGNC","SEQUENCE"), colnames(res))
 }
 
 test_select_2 <- function(){
@@ -68,19 +68,19 @@ test_select_2 <- function(){
 test_select_3 <- function(){
   ## Unit tests I have to make pass:
   keys <- c("P31946","P62258","Q04917")
-  kt <- "UNIPROTKB"
+  kt <- "UniProtKB"
   cols <- c("VIRUS_HOSTS") ## this is not allowed
   checkException(res <- select(up, keys, cols, kt))
 }
 
 test_select_4 <- function(){
   keys <- c("P31946","P62258","Q04917")
-  kt <- "UNIPROTKB"
+  kt <- "UniProtKB"
   cols <- c("DATABASE(PDB)")
   res <- select(up, keys, cols, kt)
   checkTrue(dim(res)[1]>0)
   checkTrue(dim(res)[2]==2)
-  checkIdentical(c("UNIPROTKB" ,"DATABASE(PDB)"),
+  checkIdentical(c("UniProtKB" ,"DATABASE(PDB)"),
                  colnames(res))
 }
 
@@ -99,16 +99,16 @@ test_select_5 <- function(){
 
 test_select_6 <- function(){
   ## now lets just get a bunch of the sequences.
-  keys <- keys(up,keytype="UNIPROTKB")
+  keys <- keys(up,keytype="UniProtKB")
   keys <- head(keys, n=100)
-  kt <- "UNIPROTKB"
+  kt <- "UniProtKB"
   cols <- c("SEQUENCE")
   ## cols <- columns(up)[96:126]
   ## debug(UniProt.ws:::.getSomeUniprotGoodies)
   res <- select(up, keys, cols, kt)
   checkTrue(dim(res)[1]>0)
   checkTrue(dim(res)[2]==2)
-  checkIdentical(c("UNIPROTKB" ,"SEQUENCE"),
+  checkIdentical(c("UniProtKB" ,"SEQUENCE"),
                  colnames(res))
 }
 
@@ -125,22 +125,22 @@ test_select_8 <- function(){
   ## GENEID was problematic
   ## create test cases to fix
   keys <- c("P31946","P62258","Q04917")
-  kt <- "UNIPROTKB"
+  kt <- "UniProtKB"
   cols <- c("GENEID")
   res <- select(up, keys, cols, kt)
-  checkIdentical(c("UNIPROTKB","GENEID"), colnames(res))
+  checkIdentical(c("UniProtKB","GENEID"), colnames(res))
 
   cols <- c("GENEID", "SEQUENCE")
   res <- select(up, keys, cols, kt)
-  checkIdentical(c("UNIPROTKB","GENEID", "SEQUENCE"), colnames(res))
+  checkIdentical(c("UniProtKB","GENEID", "SEQUENCE"), colnames(res))
 
   cols <- c("GENEID", "ENTREZ_GENE", "SEQUENCE")
   res <- select(up, keys, cols, kt)
-  checkIdentical(c("UNIPROTKB","GENEID", "SEQUENCE"), colnames(res))
+  checkIdentical(c("UniProtKB","GENEID", "SEQUENCE"), colnames(res))
 
   cols = c("ENTREZ_GENE", "SEQUENCE")
   res <- select(up, keys, cols, kt)
-  checkIdentical(c("UNIPROTKB","ENTREZ_GENE", "SEQUENCE"), colnames(res))
+  checkIdentical(c("UniProtKB","ENTREZ_GENE", "SEQUENCE"), colnames(res))
 
 }
 
@@ -156,12 +156,12 @@ test_select_8 <- function(){
 ## test_keys <- function(){
 
 ##   ## keys is VERY slow :(
-##   ##   keytype = "UNIPROTKB"
+##   ##   keytype = "UniProtKB"
 ##   ##   k = keys(up, keytype)
-  
+
 ##   ## so switch to a critter with fewer egs?
 ##   taxId(up) <- 9913
-  
+
 ##   keytype = "ENTREZ_GENE"
 ##   egs = keys(up, keytype)
 ##   checkTrue(any("282126" %in% egs))
@@ -183,7 +183,7 @@ test_select_8 <- function(){
 
 ## refseq <- c("YP_139402", "YP_141320", "YP_820357", "YP_006002448", "YP_006040776", "YP_006340074", "YP_006340075", "YP_138830", "YP_819836", "YP_006001858")
 
-## select(up, keys=refseq, keytype="REFSEQ_PROTEIN", columns=c('UNIPROTKB'))
+## select(up, keys=refseq, keytype="REFSEQ_PROTEIN", columns=c('UniProtKB'))
 
 ## ANSWER: Bug?  - Not actually (in this case).  It's just that NONE of the refseq protein IDs (at least for human) are in the list this person posted...
 
@@ -227,7 +227,7 @@ test_select_8 <- function(){
 
 
 ## # I don't manage to map FROM uniprot ACs to other databases, i thought it would work like this:
-## select(up, keys=c("P01023"), columns=c("MEROPS"), "UNIPROTKB")
+## select(up, keys=c("P01023"), columns=c("MEROPS"), "UniProtKB")
 
 ## ANSWER: Bug? - Yes (same one as above - and it's fixed now)
 
