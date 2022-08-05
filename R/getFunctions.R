@@ -31,7 +31,7 @@ extraColsDat <- read.delim(
 .tryGetResult <- function(url, params) {
     for (i in 1:5) {
         result <- tryCatch({
-            httr::GET(url, query = as.list(params))
+            GET(url, query = as.list(params))
         }, error=function(err) NULL)
         if (!is.null(result)) return(result)
         Sys.sleep(10)
@@ -48,7 +48,7 @@ extraColsDat <- read.delim(
     url <- 'https://rest.uniprot.org/idmapping/run'
     params <- list(from=from, to = to, ids=ids)
     res <- .tryGetResult(url, params)
-    .cleanup(httr::content(res, encoding = "UTF-8"), from, to)
+    .cleanup(content(res, encoding = "UTF-8"), from, to)
 }
 
 .makeChunkVector <- function(chnkSize,query){
@@ -115,8 +115,8 @@ dataNibbler <- function(query, FUN, chnkSize=400, ...){
 
 .getResponse <- function(jobId) {
     url <- paste0("https://rest.uniprot.org/idmapping/status/", jobId)
-    resp <- httr::GET(url = url, httr::accept_json())
-    httr::content(resp, as = "parsed")
+    resp <- GET(url = url, accept_json())
+    content(resp, as = "parsed")
 }
 
 .checkResponse <- function(response) {
@@ -129,12 +129,42 @@ dataNibbler <- function(query, FUN, chnkSize=400, ...){
     is.null(response[["results"]])
 }
 
-getFields <- function() {
-    results <- httr::content(
-      httr::GET("https://rest.uniprot.org/configure/idmapping/fields"),
-      encoding = "UTF-8"
-    )[["rules"]]
-    sort(unique(unlist(lapply(results, `[[`, "tos"))))
+allFromNames <- function() {
+    results <- content(
+        GET("https://rest.uniprot.org/configure/idmapping/fields",
+            content_type("application/json")
+        ), as = "text", encoding = "UTF-8"
+    )
+    allnames <- jmespath(
+      results,
+      paste0("groups[].items[?from==`true`].name[]")
+    )
+    unlist(parse_json(allnames))
+}
+
+allToNames <- function(fromName = "UniProtKB_AC-ID") {
+    results <- content(
+        GET("https://rest.uniprot.org/configure/idmapping/fields",
+            content_type("application/json")
+        ), as = "text", encoding = "UTF-8"
+    )
+    from <- jmespath(
+        results,
+        paste0("groups[].items[?name=='", fromName, "'].from[]|[0]")
+    )
+    if (identical(from, "false"))
+        stop(fromName, " cannot be a 'from' value")
+    ruleId <- jmespath(
+        results,
+        paste0("groups[].items[?name=='", from, "'].ruleId[]|[0]")
+    )
+    tos <- parse_json(
+        jmespath(
+            results,
+            paste0("rules[?ruleId == `", ruleId, "`].tos[]")
+        )
+    )
+    unlist(tos)
 }
 
 mapUniprot <- function(
@@ -145,11 +175,11 @@ mapUniprot <- function(
         isTRUEorFALSE(verbose)
     )
     files <- list(ids = paste(query, collapse = ","), from = from, to = to)
-    resp <- httr::POST(
+    resp <- POST(
         url = "https://rest.uniprot.org/idmapping/run",
         body = files,
         encode = "multipart",
-        httr::accept_json()
+        accept_json()
     )
     submission <- content(resp, as = "parsed")
     jobId <- submission[["jobId"]]
@@ -169,14 +199,14 @@ mapUniprot <- function(
     }
 
     url <- paste0("https://rest.uniprot.org/idmapping/details/", jobId)
-    resp <- httr::GET(url = url, httr::accept_json())
+    resp <- GET(url = url, accept_json())
     details <- content(resp, as = "parsed")
-    results <- httr::GET(
+    results <- GET(
         url = details[["redirectURL"]],
         query = list(format = "tsv"),
-        httr::accept_json()
+        accept_json()
     )
-    read.delim(text = httr::content(results, encoding = "UTF-8"))
+    read.delim(text = content(results, encoding = "UTF-8"))
 }
 
 
