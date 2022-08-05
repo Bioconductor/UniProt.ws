@@ -1,6 +1,6 @@
 #########################################################################
 ## Helper functions for UniProt.ws
-## These functions translate UniProt taxon names to scientific names, 
+## These functions translate UniProt taxon names to scientific names,
 ## taxids, or domain codes.
 ## Contributed by Csaba Ortutay; csaba.ortutay@gmail.com, 17.10.2016
 #########################################################################
@@ -8,7 +8,7 @@
 .getSpecfile <-
     function(url)
 {
-    cache <- rappdirs::user_cache_dir(appname="UniProt.ws")
+    cache <- tools::R_user_dir("UniProt.ws", "cache")
     bfc <- BiocFileCache(cache, ask=FALSE)
 
     rid <- tryCatch({
@@ -76,10 +76,10 @@ digestspecfile <- local({
 # they store. These taxon names are used also in the protein names (not in the
 # UniProt IDs!). These functions help to translate those names to standard
 # scientific (Latin) taxon names and other useful identifiers.
-# 
+#
 # Converting UniProt taxonomy names to scientific species names:
 # taxname2species()
-# 
+#
 taxname2species <- function(taxname, specfile) {
     codetable <- digestspecfile(specfile)
     specnames <- codetable[taxname,"species"]
@@ -87,7 +87,7 @@ taxname2species <- function(taxname, specfile) {
 }
 
 # Converting UniProt taxonomy names to NCBI Taxonomy IDs: taxname2taxid()
-# 
+#
 taxname2taxid  <- function(taxname, specfile) {
     codetable <- digestspecfile(specfile)
     taxids <- codetable[taxname,"taxId"]
@@ -95,7 +95,7 @@ taxname2taxid  <- function(taxname, specfile) {
 }
 
 # Converting UniProt taxonomy names to taxonomical domains: taxname2domain(). This function helps
-# to map those taxon names to these domains: 
+# to map those taxon names to these domains:
 #   'A' for archaea (=archaebacteria)
 #   'B' for bacteria (=prokaryota or eubacteria)
 #   'E' for eukaryota (=eukarya)
