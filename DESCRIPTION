@@ -3,7 +3,7 @@ Type: Package
 Title: R Interface to UniProt Web Services
 Version: 2.36.0
 Depends: methods, utils, RSQLite, BiocGenerics (>= 0.13.8)
-Imports: AnnotationDbi, BiocFileCache, rappdirs, httr
+Imports: AnnotationDbi, BiocFileCache, BiocBaseUtils, httr
 Suggests: RUnit, BiocStyle, knitr
 Authors@R: c(person("Marc", "Carlson", role="aut",
         email="maintainer@bioconductor.org"),

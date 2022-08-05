@@ -40,13 +40,13 @@ extraColsDat <- read.delim(
 }
 
 
-.mapUni <- function(query, from, to) {
+.mapUni <- function(ids, from, to) {
     ## query starts as a character vector...
     ## But the URL expects it to be a space separated string.
-    query <- paste(query, collapse=" ")
+    ids <- paste(query, collapse=",")
     ## url is constant here
-    url <- 'https://www.uniprot.org/mapping/'
-    params <- c('from'=from, 'to'= to, 'format'='tab', 'query'=query)
+    url <- 'https://rest.uniprot.org/idmapping/run'
+    params <- list(from=from, to = to, ids=ids)
     res <- .tryGetResult(url, params)
     .cleanup(httr::content(res, encoding = "UTF-8"), from, to)
 }
@@ -88,31 +88,95 @@ extraColsDat <- read.delim(
 
 dataNibbler <- function(query, FUN, chnkSize=400, ...){
   ## make the vector for the chunks
-  f <- .makeChunkVector(chnkSize, query)  
+  f <- .makeChunkVector(chnkSize, query)
   ## split by f
   qs <- split(query, as.factor(f))
   ## assign all vals in res to be NA
   res <- rep.int(list(NA),length(qs))
-  
+
   while (anyNA(res)) {
       ## repeat till you get all the answers.
       res <- .tryToGetAllChunks(res, qs, FUN, ...)
   }
-  
+
   fin <- do.call(rbind, res)
-  
+
   ## return combined results
   fin
 }
 
+.dotter <- function(ndots, maxlength) {
+  paste0(
+    paste0(rep(".", times = ndots), collapse = ""),
+    paste0(rep(" ", times = maxlength-ndots), collapse = ""),
+    collapse = ""
+  )
+}
 
-mapUniprot <- function(from, to, query){
-  ## 1st we look at that query.  Is is longer than 400 long, then we tend to
-  ## get a "bad request" response, so I am simplifying it here to do small
-  ## bites and then reassemble them
-  message("Getting mapping data for ", query[1], " ... and ", to)
-  dataNibbler(query=query, FUN=.mapUni, chnkSize=400,
-              from=from, to=to) ## not a typo that from is used twice here.
+.getResponse <- function(jobId) {
+    url <- paste0("https://rest.uniprot.org/idmapping/status/", jobId)
+    resp <- httr::GET(url = url, httr::accept_json())
+    httr::content(resp, as = "parsed")
+}
+
+.checkResponse <- function(response) {
+    if (!is.null(response[["messages"]]))
+        message(response[["messages"]])
+    if (!is.null(response[["failedIds"]]))
+        message(
+            "IDs not mapped: ", paste(response[["failedIds"]], collapse = ", ")
+        )
+    is.null(response[["results"]])
+}
+
+getFields <- function() {
+    results <- httr::content(
+      httr::GET("https://rest.uniprot.org/configure/idmapping/fields"),
+      encoding = "UTF-8"
+    )[["rules"]]
+    sort(unique(unlist(lapply(results, `[[`, "tos"))))
+}
+
+mapUniprot <- function(
+    from = "UniProtKB_AC-ID", to = "UniRef90", query, verbose = FALSE
+) {
+    stopifnot(
+        isScalarCharacter(from), isScalarCharacter(to), isCharacter(query),
+        isTRUEorFALSE(verbose)
+    )
+    files <- list(ids = paste(query, collapse = ","), from = from, to = to)
+    resp <- httr::POST(
+        url = "https://rest.uniprot.org/idmapping/run",
+        body = files,
+        encode = "multipart",
+        httr::accept_json()
+    )
+    submission <- content(resp, as = "parsed")
+    jobId <- submission[["jobId"]]
+    if (verbose)
+      message("ID Mapping jobId: ", jobId)
+    pb <- progress::progress_bar$new(
+        format = "  (:spin) waiting for query completion:dots :elapsedfull",
+        total = NA, clear = FALSE
+    )
+
+    while (.checkResponse(.getResponse(jobId))) {
+      for (ndot in seq(0, 10)) {
+        pb$tick(tokens = list(dots = .dotter(ndot, 10)))
+        Sys.sleep(2/8)
+      }
+      cat("\n")
+    }
+
+    url <- paste0("https://rest.uniprot.org/idmapping/details/", jobId)
+    resp <- httr::GET(url = url, httr::accept_json())
+    details <- content(resp, as = "parsed")
+    results <- httr::GET(
+        url = details[["redirectURL"]],
+        query = list(format = "tsv"),
+        httr::accept_json()
+    )
+    read.delim(text = httr::content(results, encoding = "UTF-8"))
 }
 
 
@@ -137,7 +201,7 @@ mapUniprot <- function(from, to, query){
 
 ## helper to fill back in missing cols.
 backFillCols <- function(tab, cols){
-  ## 1st we need to translate cols to be the expected headers for tab.  
+  ## 1st we need to translate cols to be the expected headers for tab.
   ecols <- extraColsDat[,3][match(cols, extraColsDat[,2])]
   ## Get vector with NAs where we need replacement cols
   ind = match(ecols,colnames(tab))
@@ -171,14 +235,14 @@ backFillCols <- function(tab, cols){
             paste0("... (", length(query), " total)")
     )
   ## query and cols start as a character vectors
-  qstring <- paste(query, collapse="+or+")  
+  qstring <- paste(query, collapse="+or+")
   cstring <- paste(cols, collapse=",")
   url <- 'https://www.uniprot.org/uniprot/?query='
   fullUrl <- paste0(url,qstring,'&format=tab&columns=id,',cstring)
   ## This step may need to repeat (in the event that it fails).
   dat <- .tryReadResult(fullUrl)
   ## read.delim will name mangle if colnames have repeats or [CC]:
-  colnames(dat) <- sub("\\.\\d","",colnames(dat)) 
+  colnames(dat) <- sub("\\.\\d","",colnames(dat))
   colnames(dat) <- sub("\\.\\.CC\\.", "", colnames(dat))
   ## now remove things that were not in the specific original query...
   dat <- dat[dat[,1] %in% query,,drop=FALSE]
@@ -189,7 +253,7 @@ backFillCols <- function(tab, cols){
 }
 
 getUniprotGoodies <- function(query, cols){
-  dataNibbler(query=query, FUN=.getSomeUniprotGoodies, 
+  dataNibbler(query=query, FUN=.getSomeUniprotGoodies,
               chnkSize=400, cols=cols)
 }
 
@@ -267,7 +331,7 @@ lookupUniprotSpeciesFromTaxId <- function(taxId){
 ## http://www.uniprot.org/uniprot/?query="P04217"+or+"P30443"&format=tab&columns=id,sequence
 
 ## Notice though that I am getting extra entries.  Are they equivalant or cruft?
-## The DEFINITELY are not perfectly equivalent...  
+## The DEFINITELY are not perfectly equivalent...
 ## I would like to understand why some requests get me multiple hits, while others only get me one hit????
 
 ## http://www.uniprot.org/uniprot/?query="P04217"&format=tab&columns=id,sequence

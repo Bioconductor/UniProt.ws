@@ -27,8 +27,8 @@ setMethod("columns", "UniProt.ws", function(x){.cols()})
     return(dat)
   }else{
     ## then convert this to be the keytype requested...
-    tkt = keytypeKeysDat[keytypeKeysDat[,1] %in% keytype,2]
-    dat2 <- mapUniprot(from="ACC+ID", to=tkt, query=dat)
+    tkt <- keytypeKeysDat[keytypeKeysDat[,1] %in% keytype,2]
+    dat2 <- mapUniprot(from="UniProtKB_AC-ID", to=tkt, query=dat)
     return(unique(as.character(dat2[,2])))
   }
 }
@@ -91,11 +91,11 @@ setMethod("keys", "UniProt.ws",
 
   ## process columns
   oriTabCols <- unique(c(keytype,cols))
-  cols <- cols[!(cols %in% keytype)]  ## remove keytype from cols 
+  cols <- cols[!(cols %in% keytype)]  ## remove keytype from cols
   if (!length(cols))
       stop("'columns' should be different from 'keytype'")
   trueKeys <- keys ## may change depending on keytype.
-  ## split into 2 groups: cols in keytypeKeys and cols in extraCols 
+  ## split into 2 groups: cols in keytypeKeys and cols in extraCols
   colMappers <- cols[cols %in% keytypeKeysDat[,1]]
   colUPGoodies <- cols[cols %in% extraColsDat[,1]]
   ## then convert those into the internally used IDs
@@ -161,7 +161,7 @@ setMethod("keys", "UniProt.ws",
 
 setMethod("select", "UniProt.ws",
     function(x, keys, columns, keytype, ...){
-          if (missing(keytype)) 
+          if (missing(keytype))
               keytype <- "UNIPROTKB"
           .select(x, keys, columns, keytype)
         }

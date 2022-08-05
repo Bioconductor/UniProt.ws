@@ -90,10 +90,13 @@ setMethod("taxIdUniprots", "UniProt.ws",
 
 ## Helper to retrieve Uniprot IDs and cache them
 .getUniprots <- function(taxId=9606) {
-    url <- 'https://www.uniprot.org/uniprot/?query=organism:'
-    idUrl <- paste0(url, taxId, "&format=tab&columns=id")
-    ## Now return that data
-    readLines(idUrl)[-1]
+    resp <- httr::GET("https://rest.uniprot.org/uniprotkb/search",
+        query = list(
+            query = paste0("taxonomy_id:", taxId), format = "tsv",
+            fields = "accession,organism_id"
+        )
+    )
+    read.delim(text = httr::content(resp, encoding = "UTF-8"))[["Entry"]]
 }
 
 
