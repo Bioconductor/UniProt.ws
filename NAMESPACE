@@ -2,13 +2,17 @@ import(methods)
 import(utils)
 import(BiocGenerics)
 import(RSQLite)
-importFrom(httr, GET, content)
+importFrom(cellxgenedp, jmespath)
+importFrom(jsonlite, parse_json)
+importFrom(progress, progress_bar)
+importFrom(httr, GET, POST, content, content_type, accept_json)
 importFrom(AnnotationDbi, keytypes, columns, keys, select, resort_base)
 importFrom(
     BiocFileCache,
     BiocFileCache, bfcquery, bfcnew, bfcneedsupdate, bfcdownload, bfcadd,
     bfcrpath
 )
+importFrom(BiocBaseUtils, isScalarCharacter, isCharacter, isTRUEorFALSE)
 
 exportMethods(keytypes,
               columns,
@@ -17,9 +21,10 @@ exportMethods(keytypes,
               taxId,
               "taxId<-",
               species)
- 
+
 export(columns,
        availableUniprotSpecies,
        lookupUniprotSpeciesFromTaxId,
        UniProt.ws,
+       allFromNames, allToNames, mapUniprot,
        taxname2domain, taxname2species, taxname2taxid, updatespecfile)
