@@ -23,7 +23,7 @@ setMethod("columns", "UniProt.ws", function(x){.cols()})
     stop("keytype argument MUST match a value returned by keytypes method")
   }
   dat <- taxIdUniprots(x) ## pre-cached
-  if(keytype == "UNIPROTKB"){
+  if(keytype == "UniProtKB"){
     return(dat)
   }else{
     ## then convert this to be the keytype requested...
@@ -104,7 +104,7 @@ setMethod("keys", "UniProt.ws",
   colMappers <- colMappers[colMappers != "ACC+ID"]
   colUPGoodies <- extraColsDat[extraColsDat[,1] %in% colUPGoodies, 2]
   res <- list()
-  if(keytype!="UNIPROTKB" ){
+  if(keytype!="UniProtKB" ){
     kt <- keytypeKeysDat[keytypeKeysDat[,1] %in% keytype,2]
     dat <- mapUniprot(from=kt, to="ACC", query=keys)
     colnames(dat)[2] <-  "ACC+ID" ## always the 2nd one...
@@ -114,7 +114,7 @@ setMethod("keys", "UniProt.ws",
   }
 
   ## All the (UNIPROTKB) possible keys for this organism
-  orgSpecificKeys <- keys(x, keytype="UNIPROTKB")
+  orgSpecificKeys <- keys(x, keytype="UniProtKB")
   ## Now filter keys with orgSpecificKeys (uniprots intersected with uniprots)
   keys <- intersect(keys, orgSpecificKeys)
   if(length(keys)==0) stop("No data is available for the keys provided.")
@@ -162,7 +162,7 @@ setMethod("keys", "UniProt.ws",
 setMethod("select", "UniProt.ws",
     function(x, keys, columns, keytype, ...){
           if (missing(keytype))
-              keytype <- "UNIPROTKB"
+              keytype <- "UniProtKB"
           .select(x, keys, columns, keytype)
         }
 )

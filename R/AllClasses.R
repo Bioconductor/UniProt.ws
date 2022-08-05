@@ -19,7 +19,7 @@ UniProt.ws <- function(taxId=9606, ...)
     ## deduce db and taxIdUniprots from the taxId and pre-cache them
     ## into the object.
 ##     db <- .getMatchingDbPkg(taxId)
-    taxIdUniprots <- .getUniprots(taxId)   
+    taxIdUniprots <- .getUniprots(taxId)
     new("UniProt.ws", taxId=taxId, taxIdUniprots=taxIdUniprots, ...)
 }
 
@@ -69,7 +69,7 @@ setMethod("taxIdUniprots", "UniProt.ws",
   paste(c("UniProt.ws",unlist(strsplit(species, split=" ")),
                        "sqlite"), collapse=".")
 }
-  
+
 ## ## helper for taxId replace Method.
 ## .getMatchingDbPkg <- function(taxId){
 ##   ## get pkgs and deps
@@ -90,13 +90,13 @@ setMethod("taxIdUniprots", "UniProt.ws",
 
 ## Helper to retrieve Uniprot IDs and cache them
 .getUniprots <- function(taxId=9606) {
-    resp <- httr::GET("https://rest.uniprot.org/uniprotkb/search",
+    resp <- GET("https://rest.uniprot.org/uniprotkb/search",
         query = list(
             query = paste0("taxonomy_id:", taxId), format = "tsv",
             fields = "accession,organism_id"
         )
     )
-    read.delim(text = httr::content(resp, encoding = "UTF-8"))[["Entry"]]
+    read.delim(text = content(resp, encoding = "UTF-8"))[["Entry"]]
 }
 
 
@@ -117,7 +117,7 @@ setReplaceMethod("taxId", "UniProt.ws",
         ## organism and cache them in a slot.
         x@taxIdUniprots <- .getUniprots(x@taxId)
       }else(stop("Please verify that this is a legitimate taxId"))
-      x 
+      x
     }
 )
 
