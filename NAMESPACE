@@ -27,4 +27,4 @@ export(columns,
        lookupUniprotSpeciesFromTaxId,
        UniProt.ws,
        allFromNames, allToNames, mapUniprot,
-       taxname2domain, taxname2species, taxname2taxid, updatespecfile)
+       taxname2domain, taxname2species, taxname2taxid)

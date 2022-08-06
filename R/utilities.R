@@ -10,22 +10,13 @@
 {
     cache <- tools::R_user_dir("UniProt.ws", "cache")
     bfc <- BiocFileCache(cache, ask=FALSE)
-
-    rid <- tryCatch({
-        rid0 <- bfcquery(bfc, url, "fpath")$rid
-        if (length(rid0)) {
-            update <- bfcneedsupdate(bfc, rid0)
-            if (!isFALSE(update))
-                bfcdownload(bfc, rid0, ask = FALSE)
-        } else
-            rid0 <- names(bfcadd(bfc, url))
-        rid0
-    }, error = function(...) integer())
-
-    if (length(rid))
-        bfcrpath(bfc, rids=rid)
-    else
-        system.file("extdata", "speclist.txt", package="UniProt.ws")
+    rpath <- BiocFileCache::bfcrpath(
+        bfc, rname = url, exact = TRUE, download = TRUE, rtype = "web"
+    )
+    update <- bfcneedsupdate(bfc, names(rpath))
+    if (update)
+        bfcdownload(bfc, names(rpath), ask = FALSE)
+    rpath
 }
 
 ## digest specfile
@@ -52,7 +43,10 @@ digestspecfile <- local({
     db <- new.env(parent=emptyenv())
     function(specfile) {
         if (missing(specfile)) {
-            specfile <- "https://www.uniprot.org/docs/speclist.txt"
+            specfile <- paste0(
+                "https://ftp.uniprot.org/pub/databases/uniprot/",
+                "current_release/knowledgebase/complete/docs/speclist"
+            )
             if (is.null(db[[specfile]])) {
                 rsrc <- .getSpecfile(specfile)
                 db[[specfile]] <- .parseSpecfile(rsrc)
@@ -106,16 +100,4 @@ taxname2domain <- function(taxname, specfile) {
     codetable <- digestspecfile(specfile)
     domains <- codetable[taxname,"domain"]
     domains
-}
-
-# Download the latest version of species definition file from UnoProt:
-# updatespecfile().  UniProt.ws package has an archived version of the species
-# definition file downloaded from http://www.uniprot.org/docs/speclist.  This
-# updatespecfile helper function attempts to download the current version of
-# conversion table, but if it fails to do that still you can use the archived
-# copy saved to the extdata directory.
-
-updatespecfile <- function() {
-    specfile <- "https://www.uniprot.org/docs/speclist.txt"
-    .getSpecfile(specfile)
 }
