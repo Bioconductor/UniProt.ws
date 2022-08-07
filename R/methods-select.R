@@ -1,35 +1,30 @@
 ## Here we will define the select methods.
+setMethod("keytypes", "UniProt.ws", function(x) {
+    allToKeys(fromName = "UniProtKB_AC-ID")
+})
 
-## no way to 'discover' the keytypes either (and they are subset of cols).
-.keytypes <- function(){
-  keytypeKeysDat[,1]
-}
-
-setMethod("keytypes", "UniProt.ws", function(x){.keytypes()})
-
-
-## no way to 'discover' the cols, so I hard code them here.
-.cols <- function(){
-  c(keytypeKeysDat[,1], extraColsDat[,1])
-}
-
-setMethod("columns", "UniProt.ws", function(x){.cols()})
+setMethod("columns", "UniProt.ws", function(x) {
+    warning(
+        "'columns' is deprecated.\n",
+        "The 'columns' method is out of date with the new API.\n",
+        "See the full list at https://www.uniprot.org/help/return_fields"
+    )
+})
 
 ## http://www.UniProt.org/UniProt/?query=organism:9606&format=tab&columns=id,sequence
 
 ## To make keys work I just want to return what was asked for...
-.keys <- function(x, keytype){
-  if(!any(keytypes(x) %in% keytype)){
+.keys <- function(x, keytype) {
+  if(!any(keytypes(x) %in% keytype)) {
     stop("keytype argument MUST match a value returned by keytypes method")
   }
   dat <- taxIdUniprots(x) ## pre-cached
-  if(keytype == "UniProtKB"){
+  if (keytype == "UniProtKB"){
     return(dat)
   }else{
     ## then convert this to be the keytype requested...
-    tkt <- keytypeKeysDat[keytypeKeysDat[,1] %in% keytype,2]
-    dat2 <- mapUniprot(from="UniProtKB_AC-ID", to=tkt, query=dat)
-    return(unique(as.character(dat2[,2])))
+    dat2 <- mapUniprot(from="UniProtKB_AC-ID", to=keytype, query=dat)
+    return(unique(dat2[["Entry"]]))
   }
 }
 
