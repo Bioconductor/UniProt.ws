@@ -93,7 +93,7 @@ setMethod("taxIdUniprots", "UniProt.ws",
     resp <- GET("https://rest.uniprot.org/uniprotkb/search",
         query = list(
             query = paste0("taxonomy_id:", taxId), format = "tsv",
-            fields = "accession,organism_id"
+            fields = "accession"
         )
     )
     read.delim(text = content(resp, encoding = "UTF-8"))[["Entry"]]

@@ -1,24 +1,3 @@
-## A couple of constants (referred to by many functions)
-## We will maintain a list of supported key types in file in extdata..
-keytypeKeysDat <- read.delim(
-    system.file('extdata', 'keytypes.txt', package='UniProt.ws'),
-    header=FALSE, stringsAsFactors=FALSE
-)
-
-## write.table(keytypeKeysDat, file="keytypes2.txt", quote=FALSE, sep="\t", row.names=FALSE, col.names=FALSE)
-
-## We also keep a list of supported additional cols (things that can be
-## retrieved but not used as keys in a file called extraCols.txt
-extraColsDat <- read.delim(
-    system.file('extdata','extraCols.txt', package='UniProt.ws'),
-    header=FALSE, stringsAsFactors=FALSE
-)
-
-## FOR NOW: we are not supporting the following 4 cols (they give us the 505)
-## Also remember: adjust/comment these in man page...
-## keytypeKeysDat <- keytypeKeysDat[-c(37L,38L),]
-
-
 ## Some code to make the string into a data.frame...
 .cleanup <- function(str, from, to){
   res <- read.delim(text = gsub("[\t]+", "\t", readLines(textConnection(str)), perl = TRUE), sep = "\t")
@@ -129,9 +108,9 @@ dataNibbler <- function(query, FUN, chnkSize=400, ...){
     is.null(response[["results"]])
 }
 
-allFromNames <- function() {
+allFromKeys <- function() {
     results <- content(
-        GET("https://rest.uniprot.org/configure/idmapping/fields",
+        httpcache::GET("https://rest.uniprot.org/configure/idmapping/fields",
             content_type("application/json")
         ), as = "text", encoding = "UTF-8"
     )
@@ -139,12 +118,12 @@ allFromNames <- function() {
       results,
       paste0("groups[].items[?from==`true`].name[]")
     )
-    unlist(parse_json(allnames))
+    sort(unlist(parse_json(allnames)))
 }
 
-allToNames <- function(fromName = "UniProtKB_AC-ID") {
+allToKeys <- function(fromName = "UniProtKB_AC-ID") {
     results <- content(
-        GET("https://rest.uniprot.org/configure/idmapping/fields",
+        httpcache::GET("https://rest.uniprot.org/configure/idmapping/fields",
             content_type("application/json")
         ), as = "text", encoding = "UTF-8"
     )
@@ -156,7 +135,7 @@ allToNames <- function(fromName = "UniProtKB_AC-ID") {
         stop(fromName, " cannot be a 'from' value")
     ruleId <- jmespath(
         results,
-        paste0("groups[].items[?name=='", from, "'].ruleId[]|[0]")
+        paste0("groups[].items[?name=='", fromName, "'].ruleId[]|[0]")
     )
     tos <- parse_json(
         jmespath(
