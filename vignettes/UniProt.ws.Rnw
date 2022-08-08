@@ -100,16 +100,18 @@ of lookup.  So if you really want to do this kind of operation you are
 probably going to want to save the result to your R session.
 
 <<keys,eval=FALSE>>=
-egs <- keys(up, "ENTREZ_GENE")
+egs <- keys(up, "GeneID")
 @
 
 Finally, you can loop up whatever combinations of columns, keytypes and keys
 that you need when using \Rfunction{select}.
 
+\emph{Note}. 'ENTREZ_GENE' is now 'GeneID'
+
 <<select>>=
 keys <- c("1","2")
-columns <- c("PDB","HGNC","SEQUENCE")
-kt <- "ENTREZ_GENE"
+columns <- c("xref_pdb", "xref_hgnc", "sequence")
+kt <- "GeneID"
 res <- select(up, keys, columns, kt)
 res
 @
