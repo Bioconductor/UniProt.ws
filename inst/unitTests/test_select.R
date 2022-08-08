@@ -1,115 +1,116 @@
 ##  require(RUnit)
 ##  require(UniProt.ws)
-up <- UniProt.ws(taxId=9606)
 
 
 
-test_newTaxId <- function(){
-  taxId(up)
+test_replaceTaxIdMethod <- function(){
+  up <- UniProt.ws(taxId=9606)
   taxId(up) <- 10090
-  checkTrue(taxId(up) == 10090)
+  checkIdentical(taxId(up), 10090)
 }
 
 
 test_availableUniprotSpecies <-function(){
   res <- availableUniprotSpecies(pattern="Homo")
-  checkTrue(dim(res)[1]>1)
-  checkTrue(dim(res)[2]==2)
+  checkTrue(nrow(res) > 1)
+  checkIdentical(ncol(res), 4L)
 }
 
 
 test_lookupUniprotSpeciesFromTaxId<- function(){
   res <- lookupUniprotSpeciesFromTaxId(9606)
-  checkTrue(res=="Homo sapiens")
-}
-
-
-test_species <- function(){
-  res <- species(up)
   checkIdentical(res, "Homo sapiens")
 }
 
 
-test_cols_and_keytypes <- function(){
- res <- keytypes(up)
- checkTrue(length(res) >1)
- res2 <- columns(up)
- checkTrue(length(res2) >1)
- checkTrue(length(res) != length(res2))
- checkTrue(all(res %in% res2))
+test_species <- function(){
+  up <- UniProt.ws(taxId=9606)
+  res <- species(up)
+  checkIdentical(res, "Homo sapiens (Human)")
 }
 
 
-
+test_keytypes <- function(){
+  res <- keytypes(up)
+  checkTrue(length(res) >1)
+}
 
 test_select_1 <- function(){
-  ## 1st working select example...
-  keys <- c("P31946","P62258","Q04917")
-  kt <- "UniProtKB"
-  cols <- c("PDB","HGNC","SEQUENCE")
-  res <- select(up, keys, cols, kt)
-  checkTrue(dim(res)[1]>0)
-  checkTrue(dim(res)[2]==4)
-  checkIdentical(c("UniProtKB","PDB","HGNC","SEQUENCE"), colnames(res))
+    ## 1st working select example...
+    keys <- c("P31946","P62258","Q04917")
+    kt <- "UniProtKB"
+    cols <- c("xref_pdb","xref_hgnc","sequence")
+    res <- select(x = up, keys = keys, columns = cols, keytype = kt)
+    checkTrue(is.data.frame(res))
+    checkTrue(nrow(res) > 0L)
+    checkIdentical(ncol(res), 5L)
+    checkIdentical(
+        c("From", "Entry", "PDB", "HGNC", "Sequence"), colnames(res)
+    )
 }
+
+# https://rest.uniprot.org/idmapping/uniprotkb/results/stream/b413c90e6fc1e07c5d1792e25e506230bf9070b6?fields=accession%2Cid%2Cgene_names%2Corganism_name%2Clength%2Csequence%2Cgene_synonym%2Cprotein_name%2Cxref_pdb%2Cxref_hgnc&format=tsv
 
 test_select_2 <- function(){
   ## with an alternate keytype (need to think carefully about merge keys here)
   keys <- c('1','2','3','9','10')
-  kt <- "ENTREZ_GENE"
-  cols <- c("PDB","HGNC","SEQUENCE")
-  res <- select(up, keys, cols, kt)
-  checkTrue(dim(res)[1]>0)
-  checkTrue(dim(res)[2]==4)
-  checkIdentical(c("ENTREZ_GENE" ,"PDB","HGNC","SEQUENCE"),
-                 colnames(res))
+  kt <- "GeneID"
+  cols <- c("xref_pdb", "xref_hgnc", "sequence")
+  res <- select(x = up, keys = keys, columns = cols, keytype = kt)
+  checkTrue(nrow(res) > 0)
+  checkIdentical(ncol(res), 5L)
+  checkIdentical(
+      c("From", "Entry", "PDB", "HGNC", "Sequence"), colnames(res)
+  )
 }
 
 test_select_3 <- function(){
-  ## Unit tests I have to make pass:
   keys <- c("P31946","P62258","Q04917")
   kt <- "UniProtKB"
-  cols <- c("VIRUS_HOSTS") ## this is not allowed
-  checkException(res <- select(up, keys, cols, kt))
+  cols <- "virus_hosts" ## this is not allowed
+  res <- select(x = up, keys = keys, columns = cols, keytype = kt)
+  checkTrue(is.data.frame(res))
+  checkTrue(nrow(res) > 0L)
+  checkIdentical(ncol(res), 3L)
+  checkIdentical(
+      c("From", "Entry", "Virus.hosts"), colnames(res)
+  )
 }
 
 test_select_4 <- function(){
   keys <- c("P31946","P62258","Q04917")
   kt <- "UniProtKB"
-  cols <- c("DATABASE(PDB)")
-  res <- select(up, keys, cols, kt)
-  checkTrue(dim(res)[1]>0)
-  checkTrue(dim(res)[2]==2)
-  checkIdentical(c("UniProtKB" ,"DATABASE(PDB)"),
-                 colnames(res))
+  cols <- "xref_pdb"
+  res <- select(x = up, keys = keys, columns = cols, keytype = kt)
+  checkTrue(nrow(res)>0)
+  checkIdentical(ncol(res), 3L)
+  checkIdentical(
+    c("From", "Entry", "PDB"), colnames(res)
+  )
 }
 
 test_select_5 <- function(){
   keys <- c('1','2','3','9','10')
-  kt <- "ENTREZ_GENE"
-  cols <- c("PDB","CLUSTERS")
-  res <- select(up, keys, cols, kt)
-  checkTrue(dim(res)[1]>0)
-  checkTrue(dim(res)[2]==3)
-  checkIdentical(c("ENTREZ_GENE","PDB","CLUSTERS"),
-                 colnames(res))
+  kt <- "GeneID"
+  ## CLUSTERS
+  cols <- c("xref_pdb", "CLUSTERS")
+  res <- select(x = up, keys = keys, columns = cols, keytype = kt)
+  checkTrue(nrow(res) > 0)
+  checkTrue(ncol(res) > 4)
+  checkTrue(all(c("Entry", "From", "PDB", "Cluster.ID") %in% colnames(res)))
 }
-
-## system.time(res <- select(up, keys, cols="EC", kt))
 
 test_select_6 <- function(){
   ## now lets just get a bunch of the sequences.
   keys <- keys(up,keytype="UniProtKB")
-  keys <- head(keys, n=100)
   kt <- "UniProtKB"
-  cols <- c("SEQUENCE")
-  ## cols <- columns(up)[96:126]
-  ## debug(UniProt.ws:::.getSomeUniprotGoodies)
-  res <- select(up, keys, cols, kt)
-  checkTrue(dim(res)[1]>0)
-  checkTrue(dim(res)[2]==2)
-  checkIdentical(c("UniProtKB" ,"SEQUENCE"),
-                 colnames(res))
+  cols <- "sequence"
+  res <- select(x = up, keys = keys, columns = cols, keytype = kt)
+  checkTrue(nrow(res) > 0)
+  checkIdentical(ncol(res), 3L)
+  checkIdentical(
+    c("From", "Entry" ,"Sequence"), colnames(res)
+  )
 }
 
 
@@ -120,27 +121,28 @@ test_select_7 <- function(){
 }
 
 
-
 test_select_8 <- function(){
   ## GENEID was problematic
   ## create test cases to fix
   keys <- c("P31946","P62258","Q04917")
   kt <- "UniProtKB"
-  cols <- c("GENEID")
-  res <- select(up, keys, cols, kt)
-  checkIdentical(c("UniProtKB","GENEID"), colnames(res))
+  cols <- "xref_geneid"
+  res <- select(x = up, keys = keys, columns = cols, keytype = kt)
+  checkIdentical(
+    c("From","Entry", "GeneID"), colnames(res)
+  )
 
-  cols <- c("GENEID", "SEQUENCE")
-  res <- select(up, keys, cols, kt)
-  checkIdentical(c("UniProtKB","GENEID", "SEQUENCE"), colnames(res))
+  cols <- c("xref_geneid", "sequence")
+  res <- select(x = up, keys = keys, columns = cols, keytype = kt)
+  checkIdentical(
+    c("From","Entry", "GeneID", "Sequence"), colnames(res)
+  )
 
-  cols <- c("GENEID", "ENTREZ_GENE", "SEQUENCE")
-  res <- select(up, keys, cols, kt)
-  checkIdentical(c("UniProtKB","GENEID", "SEQUENCE"), colnames(res))
+  cols <- c("GeneID", "sequence")
+  checkException(select(x = up, keys = keys, columns = cols, keytype = kt))
 
-  cols = c("ENTREZ_GENE", "SEQUENCE")
-  res <- select(up, keys, cols, kt)
-  checkIdentical(c("UniProtKB","ENTREZ_GENE", "SEQUENCE"), colnames(res))
+  cols <- c("ENTREZ_GENE", "sequence")
+  checkException(select(x = up, keys = keys, columns = cols, keytype = kt))
 
 }
 
