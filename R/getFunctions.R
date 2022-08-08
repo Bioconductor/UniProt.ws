@@ -6,30 +6,6 @@
   res
 }
 
-## Try five times and give error if all attempts fail.
-.tryGetResult <- function(url, params) {
-    for (i in 1:5) {
-        result <- tryCatch({
-            GET(url, query = as.list(params))
-        }, error=function(err) NULL)
-        if (!is.null(result)) return(result)
-        Sys.sleep(10)
-    }
-    stop("no results after 5 attempts; please try again later")
-}
-
-
-.mapUni <- function(ids, from, to) {
-    ## query starts as a character vector...
-    ## But the URL expects it to be a space separated string.
-    ids <- paste(query, collapse=",")
-    ## url is constant here
-    url <- 'https://rest.uniprot.org/idmapping/run'
-    params <- list(from=from, to = to, ids=ids)
-    res <- .tryGetResult(url, params)
-    .cleanup(content(res, encoding = "UTF-8"), from, to)
-}
-
 .makeChunkVector <- function(chnkSize,query){
   ## how many chunks?
   chnks <- length(query) %/% chnkSize
@@ -143,11 +119,33 @@ allToKeys <- function(fromName = "UniProtKB_AC-ID") {
             paste0("rules[?ruleId == `", ruleId, "`].tos[]")
         )
     )
-    unlist(tos)
+    sort(unlist(tos))
+}
+
+getStreamURL <- function(redirectURL, debug) {
+    url <- gsub(
+        "/idmapping/results/", "/idmapping/stream/", redirectURL, fixed = TRUE
+    )
+    url <- gsub("/results/", "/results/stream/", url, fixed = TRUE)
+    .messageDEBUG(url, debug)
+}
+
+.prepQuery <- function(columns, format = "tsv") {
+    qlist <- list(format = format)
+    if (length(columns))
+        qlist <- c(qlist, fields = paste(columns, collapse = ","))
+    qlist
+}
+
+.messageDEBUG <- function(url, debug) {
+    if (debug)
+        message("Hitting: ", url)
+    url
 }
 
 mapUniprot <- function(
-    from = "UniProtKB_AC-ID", to = "UniRef90", query, verbose = FALSE
+    from = "UniProtKB_AC-ID", to = "UniRef90",
+    columns = character(0L), query, verbose = FALSE, debug = FALSE
 ) {
     stopifnot(
         isScalarCharacter(from), isScalarCharacter(to), isCharacter(query),
@@ -155,7 +153,7 @@ mapUniprot <- function(
     )
     files <- list(ids = paste(query, collapse = ","), from = from, to = to)
     resp <- POST(
-        url = "https://rest.uniprot.org/idmapping/run",
+        url = .messageDEBUG("https://rest.uniprot.org/idmapping/run", debug),
         body = files,
         encode = "multipart",
         accept_json()
@@ -178,11 +176,11 @@ mapUniprot <- function(
     }
 
     url <- paste0("https://rest.uniprot.org/idmapping/details/", jobId)
-    resp <- GET(url = url, accept_json())
+    resp <- GET(url = .messageDEBUG(url, debug), accept_json())
     details <- content(resp, as = "parsed")
     results <- GET(
-        url = details[["redirectURL"]],
-        query = list(format = "tsv"),
+        url = getStreamURL(details[["redirectURL"]], debug),
+        query = .prepQuery(columns),
         accept_json()
     )
     read.delim(text = content(results, encoding = "UTF-8"))
@@ -262,40 +260,22 @@ backFillCols <- function(tab, cols){
 }
 
 getUniprotGoodies <- function(query, cols){
-  dataNibbler(query=query, FUN=.getSomeUniprotGoodies,
-              chnkSize=400, cols=cols)
-}
-
-.availableSpecies <-
-    function()
-{
-    res <- digestspecfile()[, c("taxId", "taxname")]
-    rownames(res) <- NULL
-    colnames(res) <- paste0("V", 1:2)
-    res
+  dataNibbler(query=query, FUN=.getSomeUniprotGoodies, chnkSize=400, cols=cols)
 }
 
 ## Need method to return dataFrame of available species.
-availableUniprotSpecies <- function(pattern="", n=Inf){
-  species <- .availableSpecies()
-  g <- grepl(pattern, species[,2])
-  res <- species[g,]
-  colnames(res) <- c("taxon ID","Species name")
-  rownames(res)<- NULL
-  head(res, n)
+availableUniprotSpecies <- function(pattern="") {
+    specfile <- digestspecfile()
+    specfile[grepl(pattern, specfile[["Official (scientific) name"]]), ]
 }
-
-
-
 
 ## and another method to look up the species name based on the tax ID.
 lookupUniprotSpeciesFromTaxId <- function(taxId){
-  species <- .availableSpecies()
-  g <- species[,1] %in% taxId
-  res <- species[g,2]
-  if(length(res)<1) stop("No species match the requested Tax Id.")
-  if(length(res)>1) stop("There may be a problem with the Tax Id data file.")
-  if(length(res)==1) return(res)
+  specfile <- availableUniprotSpecies("")
+  res <- specfile[
+      specfile[["Taxon Node"]] %in% taxId, "Official (scientific) name"
+  ]
+  res
 }
 
 
@@ -361,14 +341,38 @@ lookupUniprotSpeciesFromTaxId <- function(taxId){
 ## SO I want to format the query like this:
 ## http://www.uniprot.org/uniprot/?query=P04217+or+P30443&format=tab&columns=id,sequence
 
-
 ## I can also do things like this (thus extracting the stuff from other DBs)
 ## http://www.uniprot.org/uniprot/?query=P04217+or+P30443&format=tab&columns=id,database%28interpro%29
 
+## potential values for columns (for use by getUniprotGoodies)  =
+## RETURN and QUERY FIELDS
+## c("citation", "clusters", "comments", "domains", "domain", "ec", "id",
+## "entry name", "existence","families","features","genes","go","go-id",
+## "interpro","interactor","keywords","keyword-id","last-modified","length",
+## "organism","organism-id","pathway","protein names","reviewed","score",
+## "sequence","3d","subcellular locations","taxon","tools","version",
+## "virus hosts","database(pfam)","database(pdb)")
 
+## RETURN ## https://www.uniprot.org/help/return_fields
+# fields
+# citation, lit_pubmed_id
+# clusters, name
+# ec, ec
+# entry name, id
+# id, accession
+# existence, protein_existence
+# families, protein_families
+# features, feature_count
+# genes, gene_names
+# go, go
+# go-id, go_id
+# database(PDB), xref_pdb
 
-
-## potential values for columns (for use by getUniprotGoodies)  = c("citation","clusters","comments","domains","domain","ec","id","entry name","existence","families","features","genes","go","go-id","interpro","interactor","keywords","keyword-id","last-modified","length","organism","organism-id","pathway","protein names","reviewed","score","sequence","3d","subcellular locations","taxon","tools","version","virus hosts","database(pfam)","database(pdb)")
+# ## QUERY ## https://www.uniprot.org/help/query-fields
+# query
+# accession, accession
+# cluster, uniprot_id
+# reviewed, reviewed:true
 
 ## NOTE: parameterized column values have to be "expanded" so database became
 ## database(pfam) and database(pdb)...
