@@ -23,20 +23,20 @@
 .parseSpecfile <-
     function(specfile)
 {
-    my.text <- readLines(specfile)
-
+    rlines <- readLines(specfile)
     pattern <- "^([[:alnum:]]+) +([[:alnum:]]) +([[:digit:]]+): N=(.*)"
-    codetable <- my.text[grepl(pattern, my.text)]
+    codetable <- rlines[grepl(pattern, rlines)]
+    os_name <- sub(pattern, "\\4", codetable)
 
-    codes <- data.frame(
-        domain = factor(sub(pattern, "\\2", codetable)),
-        taxId = as.integer(sub(pattern, "\\3", codetable)),
-        taxname = sub(pattern, "\\4", codetable),
-        row.names = sub(pattern, "\\1", codetable),
-        stringsAsFactors = FALSE
+    data.frame(
+        Code = sub(pattern, "\\1", codetable),
+        kingdom = factor(sub(pattern, "\\2", codetable)),
+        `Taxon Node` = as.integer(sub(pattern, "\\3", codetable)),
+        ## removing strain/isolate information in parentheses
+        `Official (scientific) name` = sub(" +\\(.*", "\\1", os_name),
+        stringsAsFactors = FALSE,
+        check.names = FALSE
     )
-    codes$species <- sub(" +\\(.*", "\\1", codes$taxname)
-    codes
 }
 
 digestspecfile <- local({
@@ -76,7 +76,7 @@ digestspecfile <- local({
 #
 taxname2species <- function(taxname, specfile) {
     codetable <- digestspecfile(specfile)
-    specnames <- codetable[taxname,"species"]
+    specnames <- codetable[taxname,"Official (scientific) name"]
     specnames
 }
 
@@ -84,12 +84,12 @@ taxname2species <- function(taxname, specfile) {
 #
 taxname2taxid  <- function(taxname, specfile) {
     codetable <- digestspecfile(specfile)
-    taxids <- codetable[taxname,"taxId"]
+    taxids <- codetable[taxname,"Taxon Node"]
     taxids
 }
 
-# Converting UniProt taxonomy names to taxonomical domains: taxname2domain(). This function helps
-# to map those taxon names to these domains:
+# Converting UniProt taxonomy names to taxonomical domains: taxname2domain().
+# This function helps to map those taxon names to these domains:
 #   'A' for archaea (=archaebacteria)
 #   'B' for bacteria (=prokaryota or eubacteria)
 #   'E' for eukaryota (=eukarya)
@@ -98,6 +98,6 @@ taxname2taxid  <- function(taxname, specfile) {
 
 taxname2domain <- function(taxname, specfile) {
     codetable <- digestspecfile(specfile)
-    domains <- codetable[taxname,"domain"]
+    domains <- codetable[taxname,"kingdom"]
     domains
 }
