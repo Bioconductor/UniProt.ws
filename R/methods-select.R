@@ -13,27 +13,20 @@ setMethod("columns", "UniProt.ws", function(x) {
 
 ## http://www.UniProt.org/UniProt/?query=organism:9606&format=tab&columns=id,sequence
 
-## To make keys work I just want to return what was asked for...
-.keys <- function(x, keytype) {
-  if(!any(keytypes(x) %in% keytype)) {
-    stop("keytype argument MUST match a value returned by keytypes method")
-  }
-  dat <- taxIdUniprots(x) ## pre-cached
-  if (keytype == "UniProtKB"){
-    return(dat)
-  }else{
-    ## then convert this to be the keytype requested...
-    dat2 <- mapUniprot(from="UniProtKB_AC-ID", to=keytype, query=dat)
-    return(unique(dat2[["Entry"]]))
-  }
-}
-
-setMethod("keys", "UniProt.ws",
-    function(x, keytype){
-      if(missing(keytype)){stop("Please supply a keytype argument.")}
-      .keys(x, keytype)
+setMethod("keys", "UniProt.ws", function(x, keytype) {
+    if (missing(keytype))
+        stop("Please supply a keytype argument.")
+    if (!any(keytypes(x) %in% keytype))
+        stop("keytype argument MUST match a value returned by keytypes method")
+    dat <- taxIdUniprots(x) ## pre-cached
+    if (identical(keytype, "UniProtKB")) {
+        dat
+    } else {
+        ## then convert this to be the keytype requested...
+        dat2 <- mapUniprot(from="UniProtKB_AC-ID", to=keytype, query=dat)
+        unique(dat2[["To"]])
     }
-)
+})
 
 .mergeList <- function(list, joinType="left"){
   for(i in seq_len(length(list))){
@@ -58,100 +51,47 @@ setMethod("keys", "UniProt.ws",
   .mergeList(res, joinType="all")
 }
 
+OLD_IDS <- c("ACC+ID", "ENTREZ_GENE", "GeneID")
+
 ## Here is the business end of my select method.
 ## The big plan is to call mapUniprot() and getUniprotGoodies()
 ## (merging when necessary)
 .select <- function(x, keys, cols, keytype){
-  if(!any(keytypes(x) %in% keytype)){
-    stop("keytype argument MUST match a value returned by keytypes method")
+  if (!keytype %in% keytypes(x)) {
+      stop("'keytype' must be one of 'keytypes(x)'")
   }
-  if(!any(columns(x) %in% cols)){
-    stop("columns argument MUST match a value returned by columns method")
-  }
-
-  max_key_length <- 100
-  if(length(keys) > max_key_length)
-  {
-    message("Uniprot limits queries with a large amount of keys. ",
-            "It's recommended that the select method be invoked ",
-            "with fewer than ", max_key_length," keys or the query ",
-            "may fail.")
-  }
-
-  if(all(c("GENEID", "ENTREZ_GENE") %in% cols)){
-      message("GENEID and ENTREZ_GENE are the same.\n",
-              "  returning only GENEID in results.")
-      cols = cols[-which(cols == "ENTREZ_GENE")]
-  }
-
-  ## process columns
-  oriTabCols <- unique(c(keytype,cols))
-  cols <- cols[!(cols %in% keytype)]  ## remove keytype from cols
+  cols <- cols[!cols %in% keytype]  ## remove keytype from cols
   if (!length(cols))
       stop("'columns' should be different from 'keytype'")
   trueKeys <- keys ## may change depending on keytype.
-  ## split into 2 groups: cols in keytypeKeys and cols in extraCols
-  colMappers <- cols[cols %in% keytypeKeysDat[,1]]
-  colUPGoodies <- cols[cols %in% extraColsDat[,1]]
-  ## then convert those into the internally used IDs
-  colMappers <- keytypeKeysDat[keytypeKeysDat[,1] %in% colMappers, 2]
-  ## Don't want ACC+ID in colMappers:
-  colMappers <- colMappers[colMappers != "ACC+ID"]
-  colUPGoodies <- extraColsDat[extraColsDat[,1] %in% colUPGoodies, 2]
-  res <- list()
-  if(keytype!="UniProtKB" ){
-    kt <- keytypeKeysDat[keytypeKeysDat[,1] %in% keytype,2]
-    dat <- mapUniprot(from=kt, to="ACC", query=keys)
-    colnames(dat)[2] <-  "ACC+ID" ## always the 2nd one...
-    ## capture UniProts as keys from this point on
-    keys <- unique(dat[["ACC+ID"]])
-    res <- c(res, list(dat))
+  hasOLDID <- cols %in% OLD_IDS
+  oldids <- paste0(cols[hasOLDID], collapse = ", ")
+  if (any(hasOLDID))
+      stop("Unsupported identifiers -\n ", oldids,
+          "\n See https://www.uniprot.org/help",
+          call. = FALSE
+      )
+  if (!"accession" %in% cols)
+      cols <- c("accession", cols)
+  if (identical(keytype, "UniProtKB"))
+      keytype <- "UniProtKB_AC-ID"
+  if (!keytype %in% allFromKeys())
+      stop("'", keytype, "' is not a valid 'from' key")
+  if ("clusters" %in% tolower(cols) && !identical(keytype, "UniProtKB")) {
+      cols <- cols[tolower(cols) != "clusters"]
+      dat <- mapUniprot(from=keytype, to="UniProtKB", query=keys, columns = cols)
+      dat2 <- mapUniprot(
+          from = "UniProtKB_AC-ID", to = "UniRef100", query = dat[["Entry"]]
+      )
+      dat <- merge(dat, dat2, by.x = "Entry", by.y = "From")
+  } else {
+      dat <- mapUniprot(from=keytype, to="UniProtKB", query=keys, columns = cols)
   }
-
-  ## All the (UNIPROTKB) possible keys for this organism
-  orgSpecificKeys <- keys(x, keytype="UniProtKB")
-  ## Now filter keys with orgSpecificKeys (uniprots intersected with uniprots)
-  keys <- intersect(keys, orgSpecificKeys)
-  if(length(keys)==0) stop("No data is available for the keys provided.")
-
-  ## now get the other data (depending what was asked for)
-  if (length(colMappers))
-      res <- c(res, list(.getUPMappdata(colMappers, keys)))
-  if (length(colUPGoodies) > 0) {
-    dat <- getUniprotGoodies(keys, colUPGoodies)
-    colnames(dat)[1] <- "ACC+ID" ## always the 1st
-    res <- c(res, list(dat))
+  .blankToNA <- function(col) {
+      gsub(pattern="^$",replacement=NA_character_, col)
   }
-  ## At this point I have some results, Now I just need to merge them base on
-  ## UniProt IDs (and upon whether or not they are real)
-  tab <- .mergeList(res, joinType="all")
-  ## rename cols:
-  rosetta <- rbind(keytypeKeysDat, extraColsDat)
-  ## We need the third col of rosetta to tell us what the cols will come back
-  ## from the service as
-  ## match does not suffice - duplicate entries in rosetta[,3] only picks up
-  ## first match
-
-  idx <- match(colnames(tab), rosetta[,3])
-  colnames(tab) <- rosetta[idx,1]
-  if(("ENTREZ_GENE" %in% colnames(tab)) && !("ENTREZ_GENE" %in% oriTabCols))
-      colnames(tab)[which(colnames(tab) == "ENTREZ_GENE")] = "GENEID"
-
-  ## unique to this web service is the fact that I sometimes will have an
-  ## extra UNIPROTKB col.  Regardless, we ONLY want the cols we asked for..
-  ## BUT: we also can't try this if the above code has failed to rename anything
-  if (all(!is.na(colnames(tab))))
-    tab <- tab[,colnames(tab) %in% oriTabCols]
-  ## resort
-  tab <- resort_base(tab, trueKeys, keytype, oriTabCols)
-  ## Now one last cast to make NAs (and all cols) and make things "uniform"
-  cnames <- colnames(tab)
-  .blankToNA <- function(row){
-      gsub(pattern="^$",replacement=as.character(NA),row)}
-  tab <- data.frame( t(apply(tab,MARGIN=1,.blankToNA)), stringsAsFactors=FALSE)
-  colnames(tab) <- cnames
-  ## then return
-  tab
+  dat[] <- lapply(dat, .blankToNA)
+  dat
 }
 
 setMethod("select", "UniProt.ws",
