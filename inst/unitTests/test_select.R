@@ -1,7 +1,4 @@
-##  require(RUnit)
-##  require(UniProt.ws)
-
-
+up <- UniProt.ws(taxId=9606)
 
 test_replaceTaxIdMethod <- function(){
   up <- UniProt.ws(taxId=9606)
@@ -9,26 +6,22 @@ test_replaceTaxIdMethod <- function(){
   checkIdentical(taxId(up), 10090)
 }
 
-
 test_availableUniprotSpecies <-function(){
   res <- availableUniprotSpecies(pattern="Homo")
   checkTrue(nrow(res) > 1)
   checkIdentical(ncol(res), 4L)
 }
 
-
 test_lookupUniprotSpeciesFromTaxId<- function(){
   res <- lookupUniprotSpeciesFromTaxId(9606)
   checkIdentical(res, "Homo sapiens")
 }
-
 
 test_species <- function(){
   up <- UniProt.ws(taxId=9606)
   res <- species(up)
   checkIdentical(res, "Homo sapiens (Human)")
 }
-
 
 test_keytypes <- function(){
   res <- keytypes(up)
@@ -113,13 +106,11 @@ test_select_6 <- function(){
   )
 }
 
-
 test_select_7 <- function(){
   ## test that we fail when the pass in bad keytype
   kt = "UNIPROT"
   checkException(select(up, keys, cols, kt))
 }
-
 
 test_select_8 <- function(){
   ## GENEID was problematic
@@ -145,8 +136,6 @@ test_select_8 <- function(){
   checkException(select(x = up, keys = keys, columns = cols, keytype = kt))
 
 }
-
-
 
 ## keys with ecs:
 ## keys = c("Q06278","Q9BRR6","Q86V24")
