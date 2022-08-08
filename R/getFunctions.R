@@ -75,11 +75,18 @@ dataNibbler <- function(query, FUN, chnkSize=400, ...){
 }
 
 .checkResponse <- function(response) {
-    if (!is.null(response[["messages"]]))
-        message(response[["messages"]])
+    msgs <- response[["messages"]]
+    if (!is.null(msgs)) {
+        if (grepl("Resource not found", msgs))
+            stop(msgs)
+        else
+            message(response[["messages"]])
+    }
     if (!is.null(response[["failedIds"]]))
-        message(
-            "IDs not mapped: ", paste(response[["failedIds"]], collapse = ", ")
+        warning(
+            "IDs not mapped: ",
+            paste(response[["failedIds"]], collapse = ", "),
+            call. = FALSE
         )
     is.null(response[["results"]])
 }
