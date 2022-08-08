@@ -168,21 +168,17 @@ up
 ## list the possible key types
 head(keytypes(up))
 
-## list the columns that can be retreived
-head(columns(up))
-
-## list all possible keys of type entrez gene ID.
-## (this process is not instantaneous)
-if(interactive()){
-  egs = keys(up, "ENTREZ_GENE")
-}
+## list all possible keys of type entrez gene ID
+egs <- keys(up, "GeneID")
 
 ## use select to extract some data
-res <- select(up,
-              keys = c("22627","22629"),
-              columns = c("PDB","HGNC","SEQUENCE"),
-              keytype = "ENTREZ_GENE")
-head(res)
+res <- select(
+    x = up,
+    keys = c("22627","22629"),
+    columns = c("xref_pdb","xref_hgnc","sequence"),
+    keytype = "GeneID"
+)
+res
 }
 
 
