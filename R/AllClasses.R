@@ -90,7 +90,7 @@ setReplaceMethod("taxId", "UniProt.ws", function(x, value) {
         qlist = paste0("taxonomy_id:", value),
         fields = "accession,organism_name"
     )
-    BiocBaseUtils::setSlots(x,
+    setSlots(x,
         taxId = value,
         taxIdUniprots = results[["Entry"]],
         organism = unique(results[["Organism"]])
