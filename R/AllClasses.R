@@ -1,43 +1,36 @@
 ## Class to allow interaction with Uniprot Web services.
-
 setOldClass("package_version")  ## For S3
 
-setClass("UniProt.ws",
-         representation(taxId="numeric", db="character",
-                        taxIdUniprots="character"),
-         prototype(db=character(0), taxIdUniprots=character(0)))
+.UniProt.ws <- setClass(
+    Class = "UniProt.ws",
+    slots = c(
+        taxId="numeric",
+        db="character",
+        taxIdUniprots="character",
+        organism="character"
+    )
+)
 
-## even though it's a singleton, I CANNOT initialize the tempfile() in the
-## prototype.  R is somehow creating the stuff that is done in prototype
-## during package INSTALLATION.  Which is interesting...
-
-
-
-## I want a real constructor function because of all the argument "deduction"
-UniProt.ws <- function(taxId=9606, ...)
-{
-    ## deduce db and taxIdUniprots from the taxId and pre-cache them
-    ## into the object.
-##     db <- .getMatchingDbPkg(taxId)
-    taxIdUniprots <- .getUniprots(taxId)
-    new("UniProt.ws", taxId=taxId, taxIdUniprots=taxIdUniprots, ...)
+UniProt.ws <- function(taxId=9606, ...) {
+    ## pre-cache taxIdUniprots from the taxId
+    taxId <- as.numeric(taxId)
+    results <- .queryUniProt(
+        qlist = paste0("taxonomy_id:", taxId),
+        fields = "accession,organism_name"
+    )
+    taxIdUniprots <- results[["Entry"]]
+    organism <- unique(results[["Organism"]])
+    .UniProt.ws(
+        taxId = taxId, taxIdUniprots = taxIdUniprots, organism = organism, ...
+    )
 }
 
-
-
-
-setMethod("show", "UniProt.ws",
-          function(object)
-          {
-            cat("\"", class(object), "\" object:\n", sep="")
-            cat("An interface object for UniProt web services")
-            cat("\nCurrent Taxonomy ID:\n")
-            cat(object@taxId)
-            cat("\nCurrent Species name:\n")
-            cat(lookupUniprotSpeciesFromTaxId(object@taxId))
-            cat("\nTo change Species see: help('availableUniprotSpecies')\n")
-          }
-)
+setMethod("show", "UniProt.ws", function(object) {
+    cat(class(object), "interface object:")
+    cat("\nTaxonomy ID:", object@taxId)
+    cat("\nSpecies name:", object@organism)
+    cat("\nList species with 'availableUniprotSpecies()'\n")
+})
 
 ## getters
 setMethod("taxId", "UniProt.ws",
@@ -70,61 +63,38 @@ setMethod("taxIdUniprots", "UniProt.ws",
                        "sqlite"), collapse=".")
 }
 
-## ## helper for taxId replace Method.
-## .getMatchingDbPkg <- function(taxId){
-##   ## get pkgs and deps
-##   pkgs <- data.frame(installed.packages())[,c("Package","Depends")]
-##   ## prefilter/remove pkgs that don't depend on UniProt.ws
-##   pkgs <- pkgs[grep(pattern="UniProt.ws",x=pkgs$Depends),]
-##   ## Now make expected PkgName and pkgDbName
-##   pkgName <- .makePkgName(taxId)
-##   pkgDbName <- .makeDbPkgName(taxId)
-##   ## and if that package is in our list then we have it, if not, we don't...
-##   if(any(pkgName %in% pkgs$Package)){
-##     return(pkgDbName)
-##   }else{
-##     return(character(0))
-##   }
-## }
-
-
-## Helper to retrieve Uniprot IDs and cache them
-.getUniprots <- function(taxId=9606) {
+## General helper to query UniProt
+.queryUniProt <- function(
+    qlist = character(0L), fields = c("accession", "id")
+) {
+    stopifnot(isCharacter(qlist), isCharacter(fields))
+    if (!length(qlist))
+        stop("<internal> 'qlist' must be populated with queries")
     resp <- GET("https://rest.uniprot.org/uniprotkb/search",
         query = list(
-            query = paste0("taxonomy_id:", taxId), format = "tsv",
-            fields = "accession"
+            query = as.list(qlist),
+            fields = paste(fields, collapse = ","),
+            format = "tsv"
         )
     )
-    read.delim(text = content(resp, encoding = "UTF-8"))[["Entry"]]
+    read.delim(text = content(resp, encoding = "UTF-8"))
 }
 
+setReplaceMethod("taxId", "UniProt.ws", function(x, value) {
+    value <- as.numeric(value)
+    ## make sure that there is a record for the suggested taxId
+    species <- lookupUniprotSpeciesFromTaxId(value)
+    if (!length(species))
+        stop("No species were found with the given 'taxId'")
+    results <- .queryUniProt(
+        qlist = paste0("taxonomy_id:", value),
+        fields = "accession,organism_name"
+    )
+    BiocBaseUtils::setSlots(x,
+        taxId = value,
+        taxIdUniprots = results[["Entry"]],
+        organism = unique(results[["Organism"]])
+    )
+})
 
-## This method also has to be responsible for checking if there are any dbs
-## available.  If there are, then we also need to set the value for db.
-setReplaceMethod("taxId", "UniProt.ws",
-    function(x, value)
-    {
-      value <- as.numeric(value)
-      ## make sure that there is a record for the suggested taxId
-      res <- lookupUniprotSpeciesFromTaxId(value)
-      if(is.character(res) && length(res)==1){
-        x@taxId <- value
-        ## Here: do some checking and set x@db (if possible)
-        ## otherwise set x@db = character(0)
-##         x@db <- .getMatchingDbPkg(value)
-        ## Now get the list of acceptable uniprot IDs for this
-        ## organism and cache them in a slot.
-        x@taxIdUniprots <- .getUniprots(x@taxId)
-      }else(stop("Please verify that this is a legitimate taxId"))
-      x
-    }
-)
-
-setMethod("species", "UniProt.ws",
-          function(object){lookupUniprotSpeciesFromTaxId(object@taxId)}
-)
-
-
-
-
+setMethod("species", "UniProt.ws", function(object) { object@organism })
