@@ -101,7 +101,7 @@
   species(object)
   taxId(x)
 
-  availableUniprotSpecies(pattern, n=Inf)
+  availableUniprotSpecies(pattern)
   lookupUniprotSpeciesFromTaxId(taxId)
   UniProt.ws(taxId, ...)
 }
@@ -120,7 +120,6 @@
     indicate which kind of keys are desired from \code{keys}
   }
   \item{pattern}{A string passed in to limit the results}
-  \item{n}{the maximim number of results to return.}
   \item{taxId}{a taxonomy id}
   \item{...}{other arguments}
 }
