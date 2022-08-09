@@ -1,11 +1,3 @@
-## Some code to make the string into a data.frame...
-.cleanup <- function(str, from, to){
-  res <- read.delim(text = gsub("[\t]+", "\t", readLines(textConnection(str)), perl = TRUE), sep = "\t")
-  res <- res[,c(1, 2)]
-  colnames(res) <- c(from, to)
-  res
-}
-
 .makeChunkVector <- function(chnkSize,query){
   ## how many chunks?
   chnks <- length(query) %/% chnkSize
@@ -242,28 +234,12 @@ backFillCols <- function(tab, cols){
 
 ## A function that take UniProt IDs and gets supplementary cols back
 .getSomeUniprotGoodies  <- function(query, cols){
-    message(
-        "Getting extra data for ",
-        paste(head(query, 3), collapse=", "),
-        if (length(query) > 3)
-            paste0("... (", length(query), " total)")
-    )
-  ## query and cols start as a character vectors
-  qstring <- paste(query, collapse="+or+")
-  cstring <- paste(cols, collapse=",")
-  url <- 'https://www.uniprot.org/uniprot/?query='
-  fullUrl <- paste0(url,qstring,'&format=tab&columns=id,',cstring)
-  ## This step may need to repeat (in the event that it fails).
-  dat <- .tryReadResult(fullUrl)
-  ## read.delim will name mangle if colnames have repeats or [CC]:
-  colnames(dat) <- sub("\\.\\d","",colnames(dat))
-  colnames(dat) <- sub("\\.\\.CC\\.", "", colnames(dat))
-  ## now remove things that were not in the specific original query...
-  dat <- dat[dat[,1] %in% query,,drop=FALSE]
-  if(dim(dat)[2]< (length(cols)+1)){## we have some empty cols.
-    dat <- backFillCols(dat, cols=c("id",cols))
-  }
-  dat
+    ## query and cols start as a character vectors
+    qstring <- paste(query, collapse=" OR ")
+    if (!all(c("accession", "id") %in% cols))
+        cols <- union(c("accession", "id"), cols)
+    cstring <- paste(cols, collapse=",")
+    .queryUniProt(qlist = qstring, fields = cstring)
 }
 
 getUniprotGoodies <- function(query, cols){
