@@ -9,6 +9,7 @@ Suggests: RUnit, BiocStyle, knitr
 Authors@R: c(person("Marc", "Carlson", role="aut",
         email="maintainer@bioconductor.org"),
     person("Csaba", "Ortutay", role="ctb"),
+    person("Marcel", "Ramos", role="ctb"),
     person("Bioconductor Package", "Maintainer", role=c("aut", "cre"),
         email="maintainer@bioconductor.org"))
 Description: A collection of functions for retrieving, processing and
