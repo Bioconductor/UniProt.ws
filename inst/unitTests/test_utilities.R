@@ -1,11 +1,10 @@
-org <- c("PIG", "YEAST", "HUMAN", "MOUSE", "TRIHA", "THEAS", "SIVAM", "AERPX")
-
 test_taxname2species <- function() {
   res <- taxname2species("PIG")
   checkIdentical(res, "Sus scrofa")
 }
 
 test_taxname2species_vec <- function() {
+  org <- c("PIG", "YEAST", "HUMAN", "MOUSE", "TRIHA", "THEAS", "SIVAM", "AERPX")
   res <- taxname2species(org)
   checkIdentical(
       res,
@@ -22,6 +21,7 @@ test_taxname2taxid <- function() {
 }
 
 test_taxname2taxid_vec <- function() {
+  org <- c("PIG", "YEAST", "HUMAN", "MOUSE", "TRIHA", "THEAS", "SIVAM", "AERPX")
   res <- taxname2taxid(org)
   checkIdentical(
       res,
@@ -35,6 +35,7 @@ test_taxname2domain <- function() {
 }
 
 test_taxname2domain_vec <- function() {
+  org <- c("PIG", "YEAST", "HUMAN", "MOUSE", "TRIHA", "THEAS", "SIVAM", "AERPX")
   res <- taxname2domain(c(org, "MYCGI"))
   checkIdentical(
       res,
