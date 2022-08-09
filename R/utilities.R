@@ -29,7 +29,7 @@
     os_name <- sub(pattern, "\\4", codetable)
 
     data.frame(
-        Code = sub(pattern, "\\1", codetable),
+        row.names = sub(pattern, "\\1", codetable),
         kingdom = factor(sub(pattern, "\\2", codetable)),
         `Taxon Node` = as.integer(sub(pattern, "\\3", codetable)),
         ## removing strain/isolate information in parentheses
@@ -76,7 +76,7 @@ digestspecfile <- local({
 #
 taxname2species <- function(taxname, specfile) {
     codetable <- digestspecfile(specfile)
-    specnames <- codetable[taxname,"Official (scientific) name"]
+    specnames <- codetable[taxname, "Official (scientific) name" ]
     specnames
 }
 
@@ -84,7 +84,7 @@ taxname2species <- function(taxname, specfile) {
 #
 taxname2taxid  <- function(taxname, specfile) {
     codetable <- digestspecfile(specfile)
-    taxids <- codetable[taxname,"Taxon Node"]
+    taxids <- codetable[taxname, "Taxon Node"]
     taxids
 }
 
@@ -98,6 +98,6 @@ taxname2taxid  <- function(taxname, specfile) {
 
 taxname2domain <- function(taxname, specfile) {
     codetable <- digestspecfile(specfile)
-    domains <- codetable[taxname,"kingdom"]
+    domains <- codetable[taxname, "kingdom"]
     domains
 }
