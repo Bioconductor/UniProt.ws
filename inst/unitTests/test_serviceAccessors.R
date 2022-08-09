@@ -11,23 +11,26 @@ test_mapUniprot <- function(){
         query=c('P13368','P20806','Q9UM73','P97793','Q17192')
     )
     .check_rect_result(res)
-    checkTrue(res[1,1]=='P13368')
-    checkTrue(res[1,2]=='NP_511114.2')
+    checkIdentical(res[1,"From"], 'P13368')
+    checkIdentical(res[1,"To"], 'NP_511114.2')
 
     ## what if I have entrezGene IDs and I want UniProts?
     res <- mapUniprot(
         from='GeneID', to='UniProtKB', query=c('1','2','3','9','10')
     )
     .check_rect_result(res)
-    checkTrue(res[1,1]=='1')
-    checkTrue(res[1,2]=='P04217')
+    checkIdentical(res[1,"From"], 1L)
+    checkIdentical(res[1,"Entry"], 'P04217')
 
     ## I can then map UniProt accessions to Unigene IDs
     res <- mapUniprot(
-        from='ACC',to='GENENAME',
+        from='UniProtKB_AC-ID',
+        to='GeneID',
         query=c('P04217','P01023','F5H5R8','P18440','Q400J6')
     )
     .check_rect_result(res)
+    checkIdentical(res[1,"To"], 1L)
+    checkIdentical(res[1,"From"], 'P04217')
 }
 
 test_getUniprotGoodies <- function(){
@@ -47,6 +50,7 @@ test_getUniprotGoodies <- function(){
     checkIdentical(ncol(res), 3L)
 
     ## OR extract a number of other things... ## taxon (?)
+    query <- c('P13368','P20806','Q9UM73','P97793','Q17192')
     cols <- c('structure_3d','go_id')
     res <- UniProt.ws:::getUniprotGoodies(query, cols)
     checkTrue(is(res, "data.frame"))

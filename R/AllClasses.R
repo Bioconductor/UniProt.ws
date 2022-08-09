@@ -14,9 +14,9 @@ setOldClass("package_version")  ## For S3
 UniProt.ws <- function(taxId=9606, ...) {
     ## pre-cache taxIdUniprots from the taxId
     taxId <- as.numeric(taxId)
-    results <- .queryUniProt(
-        qlist = paste0("taxonomy_id:", taxId),
-        fields = "accession,organism_name"
+    results <- queryUniProt(
+        query = paste0("taxonomy_id:", taxId),
+        fields = c("accession", "organism_name")
     )
     taxIdUniprots <- results[["Entry"]]
     organism <- unique(results[["Organism"]])
@@ -64,15 +64,15 @@ setMethod("taxIdUniprots", "UniProt.ws",
 }
 
 ## General helper to query UniProt
-.queryUniProt <- function(
-    qlist = character(0L), fields = c("accession", "id")
+queryUniProt <- function(
+    query = character(0L), fields = c("accession", "id"), collapse = " OR "
 ) {
-    stopifnot(isCharacter(qlist), isCharacter(fields))
-    if (!length(qlist))
+    stopifnot(isCharacter(query), isCharacter(fields))
+    if (!length(query))
         stop("<internal> 'qlist' must be populated with queries")
     resp <- GET("https://rest.uniprot.org/uniprotkb/search",
         query = list(
-            query = as.list(qlist),
+            query = paste(query, collapse = collapse),
             fields = paste(fields, collapse = ","),
             format = "tsv"
         )
@@ -86,9 +86,9 @@ setReplaceMethod("taxId", "UniProt.ws", function(x, value) {
     species <- lookupUniprotSpeciesFromTaxId(value)
     if (!length(species))
         stop("No species were found with the given 'taxId'")
-    results <- .queryUniProt(
-        qlist = paste0("taxonomy_id:", value),
-        fields = "accession,organism_name"
+    results <- queryUniProt(
+        query = paste0("taxonomy_id:", value),
+        fields = c("accession", "organism_name")
     )
     setSlots(x,
         taxId = value,

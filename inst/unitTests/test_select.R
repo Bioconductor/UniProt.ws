@@ -9,7 +9,7 @@ test_replaceTaxIdMethod <- function(){
 test_availableUniprotSpecies <-function(){
   res <- availableUniprotSpecies(pattern="Homo")
   checkTrue(nrow(res) > 1)
-  checkIdentical(ncol(res), 4L)
+  checkIdentical(ncol(res), 3L)
 }
 
 test_lookupUniprotSpeciesFromTaxId<- function(){
