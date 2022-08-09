@@ -205,45 +205,16 @@ mapUniProt <- function(
  stop("no results after 5 attempts; please try again later")
 }
 
-## helper to fill back in missing cols.
-backFillCols <- function(tab, cols){
-  ## 1st we need to translate cols to be the expected headers for tab.
-  ecols <- extraColsDat[,3][match(cols, extraColsDat[,2])]
-  ## Get vector with NAs where we need replacement cols
-  ind = match(ecols,colnames(tab))
-  ## Make a blank col
-  blank <- data.frame(val=rep(NA,times=dim(tab)[1]))
-  ## then loop to place it whenever needed.
-  res <- data.frame()
-  for(i in seq_len(length(ind))){
-    if(i==1){
-      res <- tab[,1,drop=FALSE] ## 1st one is always the ids
-    }
-    else{
-      if(!is.na(ind[i])){
-        res <- cbind(res,tab[,ind[i],drop=FALSE])
-      }else{
-        res <- cbind(res, blank)
-      }
-    }
-  }
-  colnames(res) <- ecols
-  res
-}
-
-
 ## A function that take UniProt IDs and gets supplementary cols back
-.getSomeUniprotGoodies  <- function(query, cols){
+.getSomeUniProtGoodies  <- function(query, cols){
     ## query and cols start as a character vectors
-    qstring <- paste(query, collapse=" OR ")
     if (!all(c("accession", "id") %in% cols))
         cols <- union(c("accession", "id"), cols)
-    cstring <- paste(cols, collapse=",")
-    .queryUniProt(qlist = qstring, fields = cstring)
+    queryUniProt(query = qstring, fields = cols, collapse = " OR ")
 }
 
 getUniprotGoodies <- function(query, cols){
-  dataNibbler(query=query, FUN=.getSomeUniprotGoodies, chnkSize=400, cols=cols)
+  dataNibbler(query=query, FUN=.getSomeUniProtGoodies, chnkSize=400, cols=cols)
 }
 
 ## Need method to return dataFrame of available species.

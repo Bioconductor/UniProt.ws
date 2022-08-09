@@ -28,29 +28,6 @@ setMethod("keys", "UniProt.ws", function(x, keytype) {
     }
 })
 
-.mergeList <- function(list, joinType="left"){
-  for(i in seq_len(length(list))){
-    if(i==1){
-      fin <- list[[1]]
-    }else{
-      if(joinType=="left"){
-        fin <- merge(fin, list[[i]], by="ACC+ID", all.x=TRUE) ## left outer join
-      }
-      else if(joinType=="all"){
-        fin <- merge(fin, list[[i]], by="ACC+ID", all=TRUE) ## full outer join
-      }
-    }
-  }
-  fin
-}
-
-.getUPMappdata <- function(colMappers, keys){
-  ## get a list of mapping results (as data.frames)
-  res <- lapply(colMappers, FUN=mapUniprot, from="ACC+ID", query=keys)
-  ## Them merge all these mappings together based on UniProt.
-  .mergeList(res, joinType="all")
-}
-
 OLD_IDS <- c("ACC+ID", "ENTREZ_GENE", "GeneID")
 
 ## Here is the business end of my select method.
