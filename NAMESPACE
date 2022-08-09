@@ -12,9 +12,6 @@ importFrom(
     BiocFileCache, bfcquery, bfcnew, bfcneedsupdate, bfcdownload, bfcadd,
     bfcrpath
 )
-importFrom(BiocBaseUtils,
-    isScalarCharacter, isCharacter, isTRUEorFALSE, setSlots
-)
 
 exportMethods(keytypes,
               columns,
