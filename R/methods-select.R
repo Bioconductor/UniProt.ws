@@ -23,7 +23,7 @@ setMethod("keys", "UniProt.ws", function(x, keytype) {
         dat
     } else {
         ## then convert this to be the keytype requested...
-        dat2 <- mapUniprot(from="UniProtKB_AC-ID", to=keytype, query=dat)
+        dat2 <- mapUniProt(from="UniProtKB_AC-ID", to=keytype, query=dat)
         unique(dat2[["To"]])
     }
 })
@@ -31,7 +31,7 @@ setMethod("keys", "UniProt.ws", function(x, keytype) {
 OLD_IDS <- c("ACC+ID", "ENTREZ_GENE", "GeneID")
 
 ## Here is the business end of my select method.
-## The big plan is to call mapUniprot() and getUniprotGoodies()
+## The big plan is to call mapUniProt() and getUniProtGoodies()
 ## (merging when necessary)
 .select <- function(x, keys, cols, keytype){
   if (!keytype %in% keytypes(x)) {
@@ -56,13 +56,13 @@ OLD_IDS <- c("ACC+ID", "ENTREZ_GENE", "GeneID")
       stop("'", keytype, "' is not a valid 'from' key")
   if ("clusters" %in% tolower(cols) && !identical(keytype, "UniProtKB")) {
       cols <- cols[tolower(cols) != "clusters"]
-      dat <- mapUniprot(from=keytype, to="UniProtKB", query=keys, columns = cols)
-      dat2 <- mapUniprot(
+      dat <- mapUniProt(from=keytype, to="UniProtKB", query=keys, columns = cols)
+      dat2 <- mapUniProt(
           from = "UniProtKB_AC-ID", to = "UniRef100", query = dat[["Entry"]]
       )
       dat <- merge(dat, dat2, by.x = "Entry", by.y = "From")
   } else {
-      dat <- mapUniprot(from=keytype, to="UniProtKB", query=keys, columns = cols)
+      dat <- mapUniProt(from=keytype, to="UniProtKB", query=keys, columns = cols)
   }
   .blankToNA <- function(col) {
       gsub(pattern="^$",replacement=NA_character_, col)

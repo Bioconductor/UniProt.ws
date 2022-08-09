@@ -210,10 +210,10 @@ mapUniProt <- function(
     ## query and cols start as a character vectors
     if (!all(c("accession", "id") %in% cols))
         cols <- union(c("accession", "id"), cols)
-    queryUniProt(query = qstring, fields = cols, collapse = " OR ")
+    queryUniProt(query = query, fields = cols, collapse = " OR ")
 }
 
-getUniprotGoodies <- function(query, cols){
+getUniProtGoodies <- function(query, cols){
   dataNibbler(query=query, FUN=.getSomeUniProtGoodies, chnkSize=400, cols=cols)
 }
 
@@ -298,7 +298,7 @@ lookupUniprotSpeciesFromTaxId <- function(taxId){
 ## I can also do things like this (thus extracting the stuff from other DBs)
 ## http://www.uniprot.org/uniprot/?query=P04217+or+P30443&format=tab&columns=id,database%28interpro%29
 
-## potential values for columns (for use by getUniprotGoodies)  =
+## potential values for columns (for use by getUniProtGoodies)  =
 ## RETURN and QUERY FIELDS
 ## c("citation", "clusters", "comments", "domains", "domain", "ec", "id",
 ## "entry name", "existence","families","features","genes","go","go-id",

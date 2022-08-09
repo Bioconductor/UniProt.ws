@@ -3,7 +3,6 @@
 \alias{queryUniProt}
 \alias{allToKeys}
 \alias{allFromKeys}
-\alias{keytypes}
 \alias{cols}
 \title{
 Mapping identifiers with the UniProt API
@@ -22,7 +21,7 @@ mapUniProt(
     verbose = FALSE,
     debug = FALSE
 )
-queryUniprot(
+queryUniProt(
     query = character(0L),
     fields = c("accession", "id"),
     collapse = " OR "
@@ -43,7 +42,7 @@ allFromKeys()
     those returned by \code{allToKeys} from the appropriate \code{fromName}
     argument.
   }
-  \item{columns}{
+  \item{columns,fields}{
     character() Additional information to be retreived from UniProt service.
     See a full list of possible input return fields at
     \url{https://www.uniprot.org/help/return_fields}. Example fields include,
@@ -55,7 +54,15 @@ allFromKeys()
     for a list of query fields. A typical query may only include UniProt
     accession identifiers, i.e., \code{c("A0A0C5B5G6", "A0A1B0GTW7", "A0JNW5",
     "A0JP26", "A0PK11", "A1A4S6")}
-}
+  }
+  \item{collapse}{
+    character(1) A string indicating either \code{" OR "} or \code{" AND "}
+    for combining \code{query} clauses.
+  }
+  \item{fromName}{
+    character(1) A \code{from} key to use as the basis of mapping to other
+    keys, by default, \code{"UniProtKB_AC-ID"}.
+  }
   \item{verbose}{
     logical(1) whether the operations should provide verbose updates (default
     \code{FALSE}).
@@ -77,8 +84,8 @@ allFromKeys()
   \item{allFromKeys}{A sorted character vector of possible "From" keytypes}
 }
 }
-\seealso{
-  \code{\link{UniProtKB}}
+\author{
+  Marcel Ramos
 }
 \examples{
 mapUniProt(
@@ -97,15 +104,15 @@ mapUniProt(
     columns = c("accession", "id", "xref_pdb", "xref_hgnc", "sequence")
 )
 
-queryUniprot(
+queryUniProt(
     query = c("accession:A5YMT3", "organism_id:9606"),
     fields = c("accession", "id", "reviewed"),
     collapse = " AND "
 )
 
-head(allToKeys())
+allToKeys(fromName = "UniRef100")
 
-allFromKeys(fromName = "UniRef100")
+head(allFromKeys())
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % Add one or more standard keywords, see file 'KEYWORDS' in the

@@ -17,7 +17,6 @@
 
 
 % select and select related methods
-\alias{cols}
 \alias{columns}
 \alias{columns,UniProt.ws-method}
 
