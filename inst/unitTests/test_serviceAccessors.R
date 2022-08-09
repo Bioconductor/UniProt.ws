@@ -1,6 +1,3 @@
-##  require(RUnit)
-##  require(UniProt.ws)
-
 .check_rect_result <- function(res) {
     checkTrue(
         nrow(res) > 1 && ncol(res) >= 2L
@@ -33,27 +30,26 @@ test_mapUniprot <- function(){
     .check_rect_result(res)
 }
 
-
 test_getUniprotGoodies <- function(){
-  query <- c('P04217','P30443')
-  cols <- 'sequence'
-  res <- UniProt.ws:::getUniprotGoodies(query, cols)
-  checkTrue(is(res, "data.frame"))
-  checkIdentical(nrow(res), 2L)
-  checkIdentical(ncol(res), 3L)
+    query <- c('P04217','P30443')
+    cols <- 'sequence'
+    res <- UniProt.ws:::getUniprotGoodies(query, cols)
+    checkTrue(is(res, "data.frame"))
+    checkIdentical(nrow(res), 2L)
+    checkIdentical(ncol(res), 3L)
 
-  ## can also be used to extract interpro IDs
-  query <- c('P13368','P20806','Q9UM73','P97793','Q17192')
-  cols <- 'xref_interpro'
-  res <- UniProt.ws:::getUniprotGoodies(query, cols)
-  checkTrue(is(res, "data.frame"))
-  checkIdentical(nrow(res), 5L)
-  checkIdentical(ncol(res), 3L)
+    ## can also be used to extract interpro IDs
+    query <- c('P13368','P20806','Q9UM73','P97793','Q17192')
+    cols <- 'xref_interpro'
+    res <- UniProt.ws:::getUniprotGoodies(query, cols)
+    checkTrue(is(res, "data.frame"))
+    checkIdentical(nrow(res), 5L)
+    checkIdentical(ncol(res), 3L)
 
-  ## OR extract a number of other things... ## taxon (?)
-  cols <- c('structure_3d','go_id')
-  res <- UniProt.ws:::getUniprotGoodies(query, cols)
-  checkTrue(is(res, "data.frame"))
-  checkIdentical(nrow(res), 5L)
-  checkIdentical(ncol(res), 4L)
+    ## OR extract a number of other things... ## taxon (?)
+    cols <- c('structure_3d','go_id')
+    res <- UniProt.ws:::getUniprotGoodies(query, cols)
+    checkTrue(is(res, "data.frame"))
+    checkIdentical(nrow(res), 5L)
+    checkIdentical(ncol(res), 4L)
 }
