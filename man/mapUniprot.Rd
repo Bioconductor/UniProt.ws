@@ -49,11 +49,12 @@ allFromKeys()
     "accession", "id", "gene_names", "xref_pdb", "xref_hgnc", "sequence", etc.
   }
   \item{query}{
-    character() A string that would indicate the target query based on the
-    available query fields. See \url{https://www.uniprot.org/help/query-fields}
-    for a list of query fields. A typical query may only include UniProt
-    accession identifiers, i.e., \code{c("A0A0C5B5G6", "A0A1B0GTW7", "A0JNW5",
-    "A0JP26", "A0PK11", "A1A4S6")}
+    character() or named list() Typically, a string that would indicate the target
+    accession identifiers but can also be a named list based on the available
+    query fields. See \url{https://www.uniprot.org/help/query-fields}
+    for a list of query fields. The typical query might only include a
+    character vector of UniProt accession identifiers, e.g.,
+    \code{c("A0A0C5B5G6", "A0A1B0GTW7", "A0JNW5", "A0JP26", "A0PK11", "A1A4S6")}
   }
   \item{collapse}{
     character(1) A string indicating either \code{" OR "} or \code{" AND "}
@@ -96,6 +97,13 @@ mapUniProt(
 
 mapUniProt(
     from='GeneID', to='UniProtKB', query=c('1','2','3','9','10')
+)
+
+mapUniProt(
+    from = "UniProtKB_AC-ID",
+    to = "UniProtKB",
+    columns = c("accession", "id"),
+    query = list(organism_id = 10090, ids = c('Q7TPG8', 'P63318'))
 )
 
 mapUniProt(

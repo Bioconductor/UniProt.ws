@@ -147,10 +147,14 @@ mapUniProt <- function(
     columns = character(0L), query, verbose = FALSE, debug = FALSE
 ) {
     stopifnot(
-        isScalarCharacter(from), isScalarCharacter(to), isCharacter(query),
-        isTRUEorFALSE(verbose)
+        isScalarCharacter(from), isScalarCharacter(to),
+        isCharacter(query) || is.list(query), isTRUEorFALSE(verbose)
     )
-    files <- list(ids = paste(query, collapse = ","), from = from, to = to)
+    if (is.character(query))
+        query <- list(ids = paste(query, collapse = ","))
+    else if (is.list(query))
+        query[["ids"]] <- paste(query[["ids"]], collapse = ",")
+    files <- c(query, list(from = from, to = to))
     resp <- POST(
         url = .messageDEBUG("https://rest.uniprot.org/idmapping/run", debug),
         body = files,

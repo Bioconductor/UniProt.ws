@@ -40,7 +40,6 @@ OLD_IDS <- c("ACC+ID", "ENTREZ_GENE", "GeneID")
   cols <- cols[!cols %in% keytype]  ## remove keytype from cols
   if (!length(cols))
       stop("'columns' should be different from 'keytype'")
-  trueKeys <- keys ## may change depending on keytype.
   hasOLDID <- cols %in% OLD_IDS
   oldids <- paste0(cols[hasOLDID], collapse = ", ")
   if (any(hasOLDID))
@@ -54,6 +53,7 @@ OLD_IDS <- c("ACC+ID", "ENTREZ_GENE", "GeneID")
       keytype <- "UniProtKB_AC-ID"
   if (!keytype %in% allFromKeys())
       stop("'", keytype, "' is not a valid 'from' key")
+  keys <- list(organism_id = x@taxId, ids = paste(keys, collapse = ","))
   if ("clusters" %in% tolower(cols) && !identical(keytype, "UniProtKB")) {
       cols <- cols[tolower(cols) != "clusters"]
       dat <- mapUniProt(from=keytype, to="UniProtKB", query=keys, columns = cols)
