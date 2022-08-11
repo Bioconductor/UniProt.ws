@@ -106,7 +106,7 @@ egs <- keys(up, "GeneID")
 Finally, you can loop up whatever combinations of columns, keytypes and keys
 that you need when using \Rfunction{select}.
 
-\emph{Note}. 'ENTREZ_GENE' is now 'GeneID'
+\emph{Note}. 'ENTREZ\_GENE' is now 'GeneID'
 
 <<select>>=
 keys <- c("1","2")
