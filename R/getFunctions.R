@@ -102,7 +102,7 @@ allFromKeys <- function() {
 allToKeys <- function(fromName = "UniProtKB_AC-ID") {
     results <- content(
         httpcache::GET(
-            UNIPROT_REST_URL, "configure/idmapping/fields",
+            paste0(UNIPROT_REST_URL, "configure/idmapping/fields"),
             content_type("application/json")
         ), as = "text", encoding = "UTF-8"
     )
