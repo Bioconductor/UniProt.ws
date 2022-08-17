@@ -56,13 +56,17 @@ OLD_IDS <- c("ACC+ID", "ENTREZ_GENE", "GeneID")
   keys <- list(organism_id = x@taxId, ids = paste(keys, collapse = ","))
   if ("clusters" %in% tolower(cols) && !identical(keytype, "UniProtKB")) {
       cols <- cols[tolower(cols) != "clusters"]
-      dat <- mapUniProt(from=keytype, to="UniProtKB", query=keys, columns = cols)
+      dat <- mapUniProt(
+          from = keytype, to = "UniProtKB", query = keys, columns = cols
+      )
       dat2 <- mapUniProt(
           from = "UniProtKB_AC-ID", to = "UniRef100", query = dat[["Entry"]]
       )
       dat <- merge(dat, dat2, by.x = "Entry", by.y = "From")
   } else {
-      dat <- mapUniProt(from=keytype, to="UniProtKB", query=keys, columns = cols)
+      dat <- mapUniProt(
+          from = keytype, to = "UniProtKB", query = keys, columns = cols
+      )
   }
   .blankToNA <- function(col) {
       gsub(pattern="^$",replacement=NA_character_, col)

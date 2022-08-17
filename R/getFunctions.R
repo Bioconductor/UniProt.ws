@@ -60,8 +60,10 @@ dataNibbler <- function(query, FUN, chnkSize=400, ...){
   )
 }
 
+UNIPROT_REST_URL <- "https://rest.uniprot.org/"
+
 .getResponse <- function(jobId) {
-    url <- paste0("https://rest.uniprot.org/idmapping/status/", jobId)
+    url <- paste0(UNIPROT_REST_URL, "idmapping/status/", jobId)
     resp <- GET(url = url, accept_json())
     content(resp, as = "parsed")
 }
@@ -85,7 +87,8 @@ dataNibbler <- function(query, FUN, chnkSize=400, ...){
 
 allFromKeys <- function() {
     results <- content(
-        httpcache::GET("https://rest.uniprot.org/configure/idmapping/fields",
+        httpcache::GET(
+            paste0(UNIPROT_REST_URL, "configure/idmapping/fields"),
             content_type("application/json")
         ), as = "text", encoding = "UTF-8"
     )
@@ -98,7 +101,8 @@ allFromKeys <- function() {
 
 allToKeys <- function(fromName = "UniProtKB_AC-ID") {
     results <- content(
-        httpcache::GET("https://rest.uniprot.org/configure/idmapping/fields",
+        httpcache::GET(
+            UNIPROT_REST_URL, "configure/idmapping/fields",
             content_type("application/json")
         ), as = "text", encoding = "UTF-8"
     )
@@ -156,7 +160,7 @@ mapUniProt <- function(
         query[["ids"]] <- paste(query[["ids"]], collapse = ",")
     files <- c(query, list(from = from, to = to))
     resp <- POST(
-        url = .messageDEBUG("https://rest.uniprot.org/idmapping/run", debug),
+        url = .messageDEBUG(paste0(UNIPROT_REST_URL, "idmapping/run"), debug),
         body = files,
         encode = "multipart",
         accept_json()
@@ -178,7 +182,7 @@ mapUniProt <- function(
       cat("\n")
     }
 
-    url <- paste0("https://rest.uniprot.org/idmapping/details/", jobId)
+    url <- paste0(UNIPROT_REST_URL, "idmapping/details/", jobId)
     resp <- GET(url = .messageDEBUG(url, debug), accept_json())
     details <- content(resp, as = "parsed")
     results <- GET(

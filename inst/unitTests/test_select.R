@@ -42,8 +42,6 @@ test_select_1 <- function(){
     )
 }
 
-# https://rest.uniprot.org/idmapping/uniprotkb/results/stream/b413c90e6fc1e07c5d1792e25e506230bf9070b6?fields=accession%2Cid%2Cgene_names%2Corganism_name%2Clength%2Csequence%2Cgene_synonym%2Cprotein_name%2Cxref_pdb%2Cxref_hgnc&format=tsv
-
 test_select_2 <- function(){
   ## with an alternate keytype (need to think carefully about merge keys here)
   keys <- c('1','2','3','9','10')

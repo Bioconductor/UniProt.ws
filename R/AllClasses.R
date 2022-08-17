@@ -70,7 +70,8 @@ queryUniProt <- function(
     stopifnot(isCharacter(query), isCharacter(fields))
     if (!length(query))
         stop("<internal> 'qlist' must be populated with queries")
-    resp <- GET("https://rest.uniprot.org/uniprotkb/search",
+    resp <- GET(
+        paste0(UNIPROT_REST_URL, "uniprotkb/search"),
         query = list(
             query = paste(query, collapse = collapse),
             fields = paste(fields, collapse = ","),
