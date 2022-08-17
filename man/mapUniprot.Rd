@@ -19,7 +19,9 @@ mapUniProt(
     columns = character(0L),
     query,
     verbose = FALSE,
-    debug = FALSE
+    debug = FALSE,
+    paginate = TRUE,
+    pageSize = 500
 )
 queryUniProt(
     query = character(0L),
@@ -65,13 +67,22 @@ allFromKeys()
     keys, by default, \code{"UniProtKB_AC-ID"}.
   }
   \item{verbose}{
-    logical(1) whether the operations should provide verbose updates (default
+    logical(1) Whether the operations should provide verbose updates (default
     \code{FALSE}).
   }
   \item{debug}{
-    logical(1) whether to display the URL API endpoints, for advanced debugging
+    logical(1) Whether to display the URL API endpoints, for advanced debugging
     (default \code{FALSE})
-}
+  }
+  \item{paginate}{
+    logical(1) Whether to use the pagination API (i.e., "results" vs "stream")
+    in the request responses. For performance, it is set to \code{TRUE} by
+    default.
+  }
+  \item{pageSize}{
+    numeric(1) The size of each page when \code{paginate} is enabled
+    (default 500); otherwise, it is ignored.
+  }
 }
 \details{
   Note that \code{mapUniProt} is used internally by the \code{select} method

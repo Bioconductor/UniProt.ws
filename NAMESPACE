@@ -5,7 +5,7 @@ import(RSQLite)
 importFrom(cellxgenedp, jmespath)
 importFrom(jsonlite, parse_json)
 importFrom(progress, progress_bar)
-importFrom(httr, GET, POST, content, content_type, accept_json)
+importFrom(httr, GET, POST, content, content_type, accept_json, headers)
 importFrom(AnnotationDbi, keytypes, columns, keys, select, resort_base)
 importFrom(
     BiocFileCache,
