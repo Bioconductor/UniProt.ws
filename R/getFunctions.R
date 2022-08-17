@@ -125,18 +125,22 @@ allToKeys <- function(fromName = "UniProtKB_AC-ID") {
     sort(unlist(tos))
 }
 
-getStreamURL <- function(redirectURL, debug) {
-    url <- gsub(
-        "/idmapping/results/", "/idmapping/stream/", redirectURL, fixed = TRUE
-    )
-    url <- gsub("/results/", "/results/stream/", url, fixed = TRUE)
-    .messageDEBUG(url, debug)
+.getResultsURL <- function(redurl, paginate, debug) {
+    if (!paginate) {
+        redurl <- gsub(
+            "/idmapping/results/", "/idmapping/stream/", redurl, fixed = TRUE
+        )
+        redurl <- gsub("/results/", "/results/stream/", redurl, fixed = TRUE)
+    }
+    .messageDEBUG(redurl, debug)
 }
 
-.prepQuery <- function(columns, format = "tsv") {
+.prepQuery <- function(columns, format = "tsv", paginate, pageSize) {
     qlist <- list(format = format)
     if (length(columns))
         qlist <- c(qlist, fields = paste(columns, collapse = ","))
+    if (paginate)
+        qlist <- c(qlist, size = pageSize)
     qlist
 }
 
@@ -146,9 +150,24 @@ getStreamURL <- function(redirectURL, debug) {
     url
 }
 
+.handleResults <- function(results, debug) {
+    rdata <- read.delim(text = content(results, encoding = "UTF-8"))
+    while (length(headers(results)$link)) {
+        nextlink <- headers(results)$link
+        results <- GET(
+            .messageDEBUG(gsub("<(.*)>.*", "\\1", nextlink), debug),
+            accept_json()
+        )
+        result <- read.delim(text = content(results, encoding = "UTF-8"))
+        rdata <- do.call(rbind.data.frame, list(rdata, result))
+    }
+    rdata
+}
+
 mapUniProt <- function(
     from = "UniProtKB_AC-ID", to = "UniRef90",
-    columns = character(0L), query, verbose = FALSE, debug = FALSE
+    columns = character(0L), query, verbose = FALSE, debug = FALSE,
+    paginate = TRUE, pageSize = 500
 ) {
     stopifnot(
         isScalarCharacter(from), isScalarCharacter(to),
@@ -185,12 +204,14 @@ mapUniProt <- function(
     url <- paste0(UNIPROT_REST_URL, "idmapping/details/", jobId)
     resp <- GET(url = .messageDEBUG(url, debug), accept_json())
     details <- content(resp, as = "parsed")
+    resurl <- .getResultsURL(details[["redirectURL"]], paginate, debug)
     results <- GET(
-        url = getStreamURL(details[["redirectURL"]], debug),
-        query = .prepQuery(columns),
+        url = resurl,
+        query = .prepQuery(columns, pageSize = pageSize, paginate = paginate),
         accept_json()
     )
-    read.delim(text = content(results, encoding = "UTF-8"))
+    httr::stop_for_status(results)
+    .handleResults(results, debug)
 }
 
 
