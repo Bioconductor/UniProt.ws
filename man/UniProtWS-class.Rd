@@ -167,6 +167,9 @@ up
 ## list the possible key types
 head(keytypes(up))
 
+## list of possible columns
+head(columns(up))
+
 ## list all possible keys of type entrez gene ID
 egs <- keys(up, "GeneID")
 
