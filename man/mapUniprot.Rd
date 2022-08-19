@@ -3,6 +3,7 @@
 \alias{queryUniProt}
 \alias{allToKeys}
 \alias{allFromKeys}
+\alias{returnFields}
 \alias{cols}
 \title{
 Mapping identifiers with the UniProt API
@@ -98,7 +99,7 @@ returnFields()
       on the given "From" type}
     \item{allFromKeys}{A sorted character vector of possible "From" keytypes}
     \item{returnFields}{A data.frame of entries for the columns input in
-      \code{mapUniprot}}
+      \code{mapUniprot}; see 'name' column}
   }
 }
 \author{
