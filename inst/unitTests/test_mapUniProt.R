@@ -21,3 +21,9 @@ test_mapUniProt <- function() {
     checkIdentical(nrow(res), 2L)
     checkIdentical(colnames(res), c("From", "Entry", "Entry.Name"))
 }
+
+test_returnFields <- function() {
+    rf <- returnFields()
+    checkIdentical(names(rf), c("groupName", "label", "name"))
+    checkTrue(is.data.frame(rf))
+}

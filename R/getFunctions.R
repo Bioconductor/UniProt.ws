@@ -125,6 +125,32 @@ allToKeys <- function(fromName = "UniProtKB_AC-ID") {
     sort(unlist(tos))
 }
 
+returnFields <- function() {
+    results <- content(
+        httpcache::GET(
+            paste0(UNIPROT_REST_URL, "configure/uniprotkb/result-fields"),
+            content_type("application/json")
+        ), as = "text", encoding = "UTF-8"
+    )
+    gnames <- parse_json(
+        jmespath(results, "[].groupName[]"), simplifyVector = TRUE
+    )
+    glengths <- parse_json(
+        jmespath(results, "[].length(fields)"), simplifyVector = TRUE
+    )
+    labname <- parse_json(
+        jmespath(
+            results,
+            "[].fields[].[label, name]"
+        ),
+        simplifyVector = TRUE
+    )
+    labname <- as.data.frame(labname)
+    names(labname) <- c("label", "name")
+    groupName <- rep(gnames, times = glengths)
+    data.frame(groupName = groupName, labname)
+}
+
 .getResultsURL <- function(redurl, paginate, debug) {
     if (!paginate) {
         redurl <- gsub(

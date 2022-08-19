@@ -30,6 +30,7 @@ queryUniProt(
 )
 allToKeys(fromName = "UniProtKB_AC-ID")
 allFromKeys()
+returnFields()
 }
 \arguments{
   \item{from}{
@@ -86,15 +87,19 @@ allFromKeys()
 }
 \details{
   Note that \code{mapUniProt} is used internally by the \code{select} method
-  but made available for API queries with finer control.
+  but made available for API queries with finer control. Provide values from
+  the \code{name} column in \code{returnFields} as the \code{columns} input
+  in either \code{mapUniProt} or \code{select} method.
 }
 \value{
-\itemize{
-  \item{mapUniProt}{A data.frame of returned results}
-  \item{allToKeys}{A sorted character vector of possible "To" keytypes based
-    on the given "From" type}
-  \item{allFromKeys}{A sorted character vector of possible "From" keytypes}
-}
+  \itemize{
+    \item{mapUniProt}{A data.frame of returned results}
+    \item{allToKeys}{A sorted character vector of possible "To" keytypes based
+      on the given "From" type}
+    \item{allFromKeys}{A sorted character vector of possible "From" keytypes}
+    \item{returnFields}{A data.frame of entries for the columns input in
+      \code{mapUniprot}}
+  }
 }
 \author{
   Marcel Ramos
@@ -132,6 +137,8 @@ queryUniProt(
 allToKeys(fromName = "UniRef100")
 
 head(allFromKeys())
+
+head(returnFields())
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % Add one or more standard keywords, see file 'KEYWORDS' in the

@@ -4,11 +4,7 @@ setMethod("keytypes", "UniProt.ws", function(x) {
 })
 
 setMethod("columns", "UniProt.ws", function(x) {
-    warning(
-        "'columns' is deprecated.\n",
-        "The 'columns' method is out of date with the new API.\n",
-        "See the full list at https://www.uniprot.org/help/return_fields"
-    )
+    returnFields()
 })
 
 ## http://www.UniProt.org/UniProt/?query=organism:9606&format=tab&columns=id,sequence
