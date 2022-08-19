@@ -4,7 +4,7 @@ setMethod("keytypes", "UniProt.ws", function(x) {
 })
 
 setMethod("columns", "UniProt.ws", function(x) {
-    returnFields()
+    returnFields()[["name"]]
 })
 
 ## http://www.UniProt.org/UniProt/?query=organism:9606&format=tab&columns=id,sequence
