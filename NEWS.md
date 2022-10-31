@@ -3,12 +3,12 @@ Changes VERSION 2.38.0
 
 USER VISIBLE CHANGES
 
-    o `UniProt.ws` uses the https://rest.uniprot.org/ API interface for queries.
-    o `mapUniprot` is an exported function to directly map identifiers via
+    - `UniProt.ws` uses the https://rest.uniprot.org/ API interface for queries.
+    - `mapUniprot` is an exported function to directly map identifiers via
     UniProt and is used by the `select` method.
-    o `allToKeys` and `allFromKeys` provide all the available `to` and `from`
+    - `allToKeys` and `allFromKeys` provide all the available `to` and `from`
     keys for mapping identifiers
-    o `returnFields` provides all the possible inputs to the `columns` argument
+    - `returnFields` provides all the possible inputs to the `columns` argument
     in the `select` and `mapUniProt` functions (ids in the `name` column)
 
 Changes VERSION 2.27.0
