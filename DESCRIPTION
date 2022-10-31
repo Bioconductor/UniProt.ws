@@ -1,7 +1,7 @@
 Package: UniProt.ws
 Type: Package
 Title: R Interface to UniProt Web Services
-Version: 2.37.7
+Version: 2.37.8
 Depends: methods, utils, RSQLite, BiocGenerics (>= 0.13.8)
 Imports: AnnotationDbi, BiocFileCache, BiocBaseUtils, rjsoncons, jsonlite,
   httr, httpcache, progress
@@ -9,11 +9,14 @@ Suggests: RUnit, BiocStyle, knitr
 Authors@R: c(person("Marc", "Carlson", role="aut",
         email="maintainer@bioconductor.org"),
     person("Csaba", "Ortutay", role="ctb"),
-    person("Marcel", "Ramos", role="ctb"),
-    person("Bioconductor Package", "Maintainer", role=c("aut", "cre"),
-        email="maintainer@bioconductor.org"))
-Description: A collection of functions for retrieving, processing and
-    repackaging the UniProt web services.
+    person("Marcel", "Ramos", , "marcel.ramos@roswellpark.org",
+        c("aut","cre"), c(ORCID = "0000-0002-3242-0582"))
+    )
+Description: The Universal Protein Resource (UniProt) is a comprehensive
+  resource for protein sequence and annotation data. This package provides a
+  collection of functions for retrieving, processing, and re-packaging UniProt
+  web services. The package makes use of UniProt's modernized REST API and
+  allows mapping of identifiers accross different databases.
 Collate: AllGenerics.R
     AllClasses.R 
     getFunctions.R 
