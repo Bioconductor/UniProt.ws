@@ -9,9 +9,9 @@ Suggests: RUnit, BiocStyle, knitr
 Authors@R: c(person("Marc", "Carlson", role="aut",
         email="maintainer@bioconductor.org"),
     person("Csaba", "Ortutay", role="ctb"),
-    person("Marcel", "Ramos", role="ctb"),
-    person("Bioconductor Package", "Maintainer", role=c("aut", "cre"),
-        email="maintainer@bioconductor.org"))
+    person("Marcel", "Ramos", , "marcel.ramos@roswellpark.org",
+        c("aut","cre"), c(ORCID = "0000-0002-3242-0582"))
+    )
 Description: A collection of functions for retrieving, processing and
     repackaging the UniProt web services.
 Collate: AllGenerics.R
