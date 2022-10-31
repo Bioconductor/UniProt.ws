@@ -12,8 +12,11 @@ Authors@R: c(person("Marc", "Carlson", role="aut",
     person("Marcel", "Ramos", , "marcel.ramos@roswellpark.org",
         c("aut","cre"), c(ORCID = "0000-0002-3242-0582"))
     )
-Description: A collection of functions for retrieving, processing and
-    repackaging the UniProt web services.
+Description: The Universal Protein Resource (UniProt) is a comprehensive
+  resource for protein sequence and annotation data. This package provides a
+  collection of functions for retrieving, processing, and re-packaging UniProt
+  web services. The package makes use of UniProt's modernized REST API and
+  allows mapping of identifiers accross different databases.
 Collate: AllGenerics.R
     AllClasses.R 
     getFunctions.R 
