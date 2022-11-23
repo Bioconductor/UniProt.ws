@@ -11,7 +11,7 @@
     cache <- tools::R_user_dir("UniProt.ws", "cache")
     bfc <- BiocFileCache(cache, ask=FALSE)
     rpath <- BiocFileCache::bfcrpath(
-        bfc, rname = url, exact = TRUE, download = TRUE, rtype = "web"
+        bfc, rnames = url, exact = TRUE, download = TRUE, rtype = "web"
     )
     update <- bfcneedsupdate(bfc, names(rpath))
     if (update)
