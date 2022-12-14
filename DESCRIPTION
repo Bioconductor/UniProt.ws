@@ -25,4 +25,3 @@ Collate: AllGenerics.R
 License: Artistic-2.0
 biocViews: Annotation, Infrastructure, GO, KEGG, BioCarta
 VignetteBuilder: knitr
-LazyLoad: yes
