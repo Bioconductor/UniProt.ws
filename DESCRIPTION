@@ -39,4 +39,7 @@ Collate: AllGenerics.R
     utilities.R
 License: Artistic-2.0
 biocViews: Annotation, Infrastructure, GO, KEGG, BioCarta
+BugReports: https://github.com/Bioconductor/UniProt.ws/issues
+URL: https://github.com/Bioconductor/UniProt.ws
+Encoding: UTF-8
 VignetteBuilder: knitr
