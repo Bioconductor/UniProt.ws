@@ -22,7 +22,7 @@ Collate: AllGenerics.R
     getFunctions.R 
     methods-select.R 
     utilities.R
-License: Artistic License 2.0
+License: Artistic-2.0
 biocViews: Annotation, Infrastructure, GO, KEGG, BioCarta
 VignetteBuilder: knitr
 LazyLoad: yes
