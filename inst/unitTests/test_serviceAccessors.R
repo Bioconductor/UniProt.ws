@@ -40,7 +40,7 @@ test_getUniProtGoodies <- function(){
     cols <- 'sequence'
     res <- getUniProtGoodies(query, cols)
     checkTrue(is(res, "data.frame"))
-    checkIdentical(nrow(res), 2L)
+    checkTrue(nrow(res) >= 2L)
     checkIdentical(ncol(res), 3L)
 
     ## can also be used to extract interpro IDs
@@ -48,7 +48,7 @@ test_getUniProtGoodies <- function(){
     cols <- 'xref_interpro'
     res <- getUniProtGoodies(query, cols)
     checkTrue(is(res, "data.frame"))
-    checkIdentical(nrow(res), 5L)
+    checkTrue(nrow(res) >= 5L)
     checkIdentical(ncol(res), 3L)
 
     ## OR extract a number of other things... ## taxon (?)
@@ -56,6 +56,6 @@ test_getUniProtGoodies <- function(){
     cols <- c('structure_3d','go_id')
     res <- getUniProtGoodies(query, cols)
     checkTrue(is(res, "data.frame"))
-    checkIdentical(nrow(res), 5L)
+    checkTrue(nrow(res) >= 5L)
     checkIdentical(ncol(res), 4L)
 }
