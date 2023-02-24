@@ -33,6 +33,32 @@ test_mapUniProt <- function(){
     .check_rect_result(res)
     checkIdentical(res[1,"To"], 1L)
     checkIdentical(res[1,"From"], 'P04217')
+
+    ## from = "Gene_Name" can restrict by taxId in query
+    res <- mapUniProt(
+        from='Gene_Name',
+        to = "UniProtKB-Swiss-Prot",
+        query=list(ids = "TP53", taxId = 9606),
+        columns = c("accession", "id", "organism_id")
+    )
+    checkTrue(is(res, "data.frame"))
+    checkIdentical(nrow(res), 1L)
+    checkIdentical(ncol(res), 4L)
+    checkTrue(
+        all(names(res) %in%  c("From", "Entry", "Entry.Name", "Organism..ID."))
+    )
+
+    res <- mapUniProt(
+        from='Gene_Name',
+        to = "UniProtKB",
+        query=list(ids = "TP53", taxId = 9606),
+        columns = c("accession", "id", "organism_id")
+    )
+    checkTrue(is(res, "data.frame"))
+    checkIdentical(ncol(res), 4L)
+    checkTrue(
+        all(names(res) %in%  c("From", "Entry", "Entry.Name", "Organism..ID."))
+    )
 }
 
 test_getUniProtGoodies <- function(){

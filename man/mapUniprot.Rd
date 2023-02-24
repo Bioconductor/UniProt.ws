@@ -91,6 +91,10 @@ returnFields()
   but made available for API queries with finer control. Provide values from
   the \code{name} column in \code{returnFields} as the \code{columns} input
   in either \code{mapUniProt} or \code{select} method.
+
+  When using \code{from='Gene_Name'}, you may restrict the search results
+  to a specific organism by including e.g., \code{taxId=9606} in the query
+  as a named list element. See examples below.
 }
 \value{
   \itemize{
@@ -121,6 +125,14 @@ mapUniProt(
     to = "UniProtKB",
     columns = c("accession", "id"),
     query = list(organism_id = 10090, ids = c('Q7TPG8', 'P63318'))
+)
+
+## restrict 'from = Gene_Name' result to taxId 9606
+mapUniProt(
+    from = "Gene_Name",
+    to = "UniProtKB-Swiss-Prot",
+    columns = c("accession", "id"),
+    query = list(taxId = 9606, ids = 'TP53')
 )
 
 mapUniProt(
