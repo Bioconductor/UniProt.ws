@@ -43,10 +43,7 @@ digestspecfile <- local({
     db <- new.env(parent=emptyenv())
     function(specfile) {
         if (missing(specfile)) {
-            specfile <- paste0(
-                "https://ftp.uniprot.org/pub/databases/uniprot/",
-                "current_release/knowledgebase/complete/docs/speclist"
-            )
+            specfile <- "https://www.UniProt.org/docs/speclist.txt"
             if (is.null(db[[specfile]])) {
                 rsrc <- .getSpecfile(specfile)
                 db[[specfile]] <- .parseSpecfile(rsrc)
