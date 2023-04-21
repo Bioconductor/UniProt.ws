@@ -1,3 +1,15 @@
+Changes VERSION 2.40.0
+----------------------
+
+USER VISIBLE CHANGES
+
+    - Convert vignette from RSweave to web-based RMarkdown
+
+BUG FIXES AND MINOR IMPROVEMENTS
+
+    - Increase fault tolerance of unit tests
+    - Add examples to `mapUniProt` documentation
+
 Changes VERSION 2.38.0
 ----------------------
 
