@@ -65,20 +65,75 @@ setMethod("taxIdUniprots", "UniProt.ws",
 
 ## General helper to query UniProt
 queryUniProt <- function(
-    query = character(0L), fields = c("accession", "id"), collapse = " OR "
+    query = character(0L), fields = c("accession", "id"), collapse = " OR ",
+    n = Inf, pageSize = 25
 ) {
     stopifnot(isCharacter(query), isCharacter(fields))
     if (!length(query))
         stop("<internal> 'qlist' must be populated with queries")
-    resp <- GET(
-        paste0(UNIPROT_REST_URL, "uniprotkb/search"),
-        query = list(
-            query = paste(query, collapse = collapse),
-            fields = paste(fields, collapse = ","),
-            format = "tsv"
-        )
+    .uniprot_pages(
+        FUN = .search_paged1, query = query, fields = fields,
+        collapse = collapse, n = n, pageSize = pageSize
     )
-    read.delim(text = content(resp, encoding = "UTF-8"))
+}
+
+.uniprot_pages <- function(FUN, ..., n, pageSize) {
+    result <- NULL
+    bar <- NULL
+    repeat {
+        response <- FUN(url = result$url, ..., pageSize = pageSize)
+        result <- rbind.data.frame(result, response$results)
+
+        if (is.null(bar)) {
+          max <- max(min(n, as.numeric(response$totalResults)), 1L)
+          bar <- txtProgressBar(max = max, style = 3L)
+          on.exit(close(bar))
+        }
+        setTxtProgressBar(bar, min(NROW(result), n))
+        test <-
+            !grepl("\"next\"", response$headerLink, fixed = TRUE) ||
+            (NROW(result) >= n)
+        if (test)
+            break
+    }
+    head(result, n)
+}
+
+.extract_link <- function(txt) {
+    link <- vapply(strsplit(txt, ";"), `[[`, character(1L), 1L)
+    gsub("^<(.*)>$", "\\1", link)
+}
+
+.search_paged1 <- function(url, query, fields, collapse, pageSize) {
+    if (is.null(url))
+        resp <- GET(
+            url = paste0(UNIPROT_REST_URL, "uniprotkb/search"),
+            query = list(
+                query = paste(query, collapse = collapse),
+                fields = paste(fields, collapse = ","),
+                format = "tsv",
+                size = pageSize
+            )
+        )
+    else
+        resp <- GET(url)
+
+    .stop_for_status(resp, "queryUniProt_paged")
+
+    lst <- as.list(resp)
+
+    resdata <- content(resp, encoding = "UTF-8")
+    if (length(resdata))
+        results <- read.delim(text = resdata)
+    else
+        results <- data.frame()
+
+    list(
+        url = .extract_link(resp$headers$link),
+        headerLink = resp$headers$link,
+        totalResults = resp$headers$`x-total-results`,
+        results = results
+    )
 }
 
 setReplaceMethod("taxId", "UniProt.ws", function(x, value) {
