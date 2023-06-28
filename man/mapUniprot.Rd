@@ -22,12 +22,14 @@ mapUniProt(
     verbose = FALSE,
     debug = FALSE,
     paginate = TRUE,
-    pageSize = 500
+    pageSize = 500L
 )
 queryUniProt(
     query = character(0L),
     fields = c("accession", "id"),
-    collapse = " OR "
+    collapse = " OR ",
+    n = Inf,
+    pageSize = 25L
 )
 allToKeys(fromName = "UniProtKB_AC-ID")
 allFromKeys()
@@ -64,6 +66,9 @@ returnFields()
     character(1) A string indicating either \code{" OR "} or \code{" AND "}
     for combining \code{query} clauses.
   }
+  \item{n}{
+    numeric(1) Maximum number of rows to return
+  }
   \item{fromName}{
     character(1) A \code{from} key to use as the basis of mapping to other
     keys, by default, \code{"UniProtKB_AC-ID"}.
@@ -82,8 +87,8 @@ returnFields()
     default.
   }
   \item{pageSize}{
-    numeric(1) The size of each page when \code{paginate} is enabled
-    (default 500); otherwise, it is ignored.
+    integer(1) number of records per page. It corresponds to the \code{size}
+    parameter in the API request.
   }
 }
 \details{

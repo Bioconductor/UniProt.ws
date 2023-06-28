@@ -193,7 +193,7 @@ returnFields <- function() {
 mapUniProt <- function(
     from = "UniProtKB_AC-ID", to = "UniRef90",
     columns = character(0L), query, verbose = FALSE, debug = FALSE,
-    paginate = TRUE, pageSize = 500
+    paginate = TRUE, pageSize = 500L
 ) {
     stopifnot(
         isScalarCharacter(from), isScalarCharacter(to),
