@@ -1,7 +1,7 @@
 Package: UniProt.ws
 Type: Package
 Title: R Interface to UniProt Web Services
-Version: 2.41.2
+Version: 2.41.3
 Authors@R: c(person("Marc", "Carlson", role="aut",
         email="maintainer@bioconductor.org"),
     person("Csaba", "Ortutay", role="ctb"),
