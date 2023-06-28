@@ -59,14 +59,14 @@ PKG FEATURES
     o When the package loads there will be acces to a Uniprot.ws
     object, this object has select, keys, cols and keytypes methods
     that behave the way these methods normally do for the other
-    annotation packages.  
+    annotation packages.
 
     o One important difference from other packages is that the user
     must use the species method to set the species to their organism
     of choice (by default it is set for humans).  This is because the
     web resource is too big to return values for all these species at
     the same time.  Uniprot currently has support for over 21,000
-    different species.  
+    different species.
 
     o Please see the manual pages and associated vignette for more
     detailed information about how to use this resource.
