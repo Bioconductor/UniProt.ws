@@ -80,7 +80,7 @@ queryUniProt <- function(
 }
 
 .uniprotPages <- function(FUN, ..., n, pageSize) {
-    url <- paste0(UNIPROT_REST_URL, "uniprotkb/search")
+    url <- paste0(.UNIPROT_REST_URL, "uniprotkb/search")
     response <- FUN(url = url, ..., pageSize = pageSize)
     result <- response$results
     bar <- NULL

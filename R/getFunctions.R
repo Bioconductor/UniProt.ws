@@ -60,10 +60,10 @@ dataNibbler <- function(query, FUN, chnkSize=400, ...){
   )
 }
 
-UNIPROT_REST_URL <- "https://rest.uniprot.org/"
+.UNIPROT_REST_URL <- "https://rest.uniprot.org/"
 
 .getResponse <- function(jobId) {
-    url <- paste0(UNIPROT_REST_URL, "idmapping/status/", jobId)
+    url <- paste0(.UNIPROT_REST_URL, "idmapping/status/", jobId)
     resp <- GET(url = url, accept_json())
     content(resp, as = "parsed")
 }
@@ -88,7 +88,7 @@ UNIPROT_REST_URL <- "https://rest.uniprot.org/"
 allFromKeys <- function() {
     results <- content(
         httpcache::GET(
-            paste0(UNIPROT_REST_URL, "configure/idmapping/fields"),
+            paste0(.UNIPROT_REST_URL, "configure/idmapping/fields"),
             content_type("application/json")
         ), as = "text", encoding = "UTF-8"
     )
@@ -102,7 +102,7 @@ allFromKeys <- function() {
 allToKeys <- function(fromName = "UniProtKB_AC-ID") {
     results <- content(
         httpcache::GET(
-            paste0(UNIPROT_REST_URL, "configure/idmapping/fields"),
+            paste0(.UNIPROT_REST_URL, "configure/idmapping/fields"),
             content_type("application/json")
         ), as = "text", encoding = "UTF-8"
     )
@@ -128,7 +128,7 @@ allToKeys <- function(fromName = "UniProtKB_AC-ID") {
 returnFields <- function() {
     results <- content(
         httpcache::GET(
-            paste0(UNIPROT_REST_URL, "configure/uniprotkb/result-fields"),
+            paste0(.UNIPROT_REST_URL, "configure/uniprotkb/result-fields"),
             content_type("application/json")
         ), as = "text", encoding = "UTF-8"
     )
@@ -205,7 +205,7 @@ mapUniProt <- function(
         query[["ids"]] <- paste(query[["ids"]], collapse = ",")
     files <- c(query, list(from = from, to = to))
     resp <- httpcache::POST(
-        url = .messageDEBUG(paste0(UNIPROT_REST_URL, "idmapping/run"), debug),
+        url = .messageDEBUG(paste0(.UNIPROT_REST_URL, "idmapping/run"), debug),
         body = files,
         encode = "multipart",
         accept_json()
@@ -227,7 +227,7 @@ mapUniProt <- function(
       cat("\n")
     }
 
-    url <- paste0(UNIPROT_REST_URL, "idmapping/details/", jobId)
+    url <- paste0(.UNIPROT_REST_URL, "idmapping/details/", jobId)
     resp <- GET(url = .messageDEBUG(url, debug), accept_json())
     .stop_for_status(resp, "idmapping/details_query")
     details <- content(resp, as = "parsed")
