@@ -204,7 +204,7 @@ mapUniProt <- function(
     else if (is.list(query))
         query[["ids"]] <- paste(query[["ids"]], collapse = ",")
     files <- c(query, list(from = from, to = to))
-    resp <- POST(
+    resp <- httpcache::POST(
         url = .messageDEBUG(paste0(UNIPROT_REST_URL, "idmapping/run"), debug),
         body = files,
         encode = "multipart",
