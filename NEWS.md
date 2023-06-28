@@ -1,3 +1,17 @@
+Changes VERSION 2.40.1
+----------------------
+
+USER VISIBLE CHANGES
+
+    - `pageSize` and `n` arguments added to `queryUniProt` to expose
+    underlying API request defaults. It is recommended to set the pageSize
+    to a large value e.g. 500 for large queries.
+
+BUG FIXES AND MINOR IMPROVEMENTS
+
+    - Fixed issue with pagination with large queries (over 25 results) in
+    `queryUniProt` (@jdreyf, #23)
+
 Changes VERSION 2.40.0
 ----------------------
 
