@@ -5,7 +5,11 @@ import(RSQLite)
 importFrom(rjsoncons, jmespath)
 importFrom(jsonlite, parse_json)
 importFrom(progress, progress_bar)
-importFrom(httr, GET, POST, content, content_type, accept_json, headers)
+importFrom(
+    httr,
+    GET, POST, content, content_type, accept_json, headers,
+    status_code, http_condition
+)
 importFrom(AnnotationDbi, keytypes, columns, keys, select, resort_base)
 importFrom(
     BiocFileCache,
