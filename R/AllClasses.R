@@ -73,13 +73,13 @@ queryUniProt <- function(
     stopifnot(isCharacter(query), isCharacter(fields))
     if (!length(query))
         stop("<internal> 'qlist' must be populated with queries")
-    .uniprot_pages(
-        FUN = .search_paged1, query = query, fields = fields,
+    .uniprotPages(
+        FUN = .searchPaged, query = query, fields = fields,
         collapse = collapse, n = n, pageSize = pageSize
     )
 }
 
-.uniprot_pages <- function(FUN, ..., n, pageSize) {
+.uniprotPages <- function(FUN, ..., n, pageSize) {
     url <- paste0(UNIPROT_REST_URL, "uniprotkb/search")
     response <- FUN(url = url, ..., pageSize = pageSize)
     result <- response$results
@@ -102,12 +102,16 @@ queryUniProt <- function(
     head(result, n)
 }
 
-.extract_link <- function(txt) {
-    link <- vapply(strsplit(txt, ";"), `[[`, character(1L), 1L)
-    gsub("^<(.*)>$", "\\1", link)
+.extractLink <- function(txt) {
+    if (!is.null(txt)) {
+        link <- vapply(strsplit(txt, ";"), `[[`, character(1L), 1L)
+        gsub("^<(.*)>$", "\\1", link)
+    } else {
+        NULL
+    }
 }
 
-.search_paged1 <- function(url, query, fields, collapse, pageSize) {
+.searchPaged <- function(url, query, fields, collapse, pageSize) {
     resp <- httpcache::GET(
         url = url,
         query = list(
@@ -129,7 +133,7 @@ queryUniProt <- function(
         results <- data.frame()
 
     list(
-        url = .extract_link(resp$headers$link),
+        url = .extractLink(resp$headers$link),
         headerLink = resp$headers$link,
         totalResults = resp$headers$`x-total-results`,
         results = results
