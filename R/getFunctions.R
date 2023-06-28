@@ -229,6 +229,7 @@ mapUniProt <- function(
 
     url <- paste0(UNIPROT_REST_URL, "idmapping/details/", jobId)
     resp <- GET(url = .messageDEBUG(url, debug), accept_json())
+    .stop_for_status(resp, "idmapping/details_query")
     details <- content(resp, as = "parsed")
     resurl <- .getResultsURL(details[["redirectURL"]], paginate, debug)
     results <- GET(
@@ -236,7 +237,7 @@ mapUniProt <- function(
         query = .prepQuery(columns, pageSize = pageSize, paginate = paginate),
         accept_json()
     )
-    httr::stop_for_status(results)
+    .stop_for_status(results, "redirectURL_query")
     .handleResults(results, debug)
 }
 
