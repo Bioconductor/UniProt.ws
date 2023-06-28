@@ -16,7 +16,9 @@ UniProt.ws <- function(taxId=9606, ...) {
     taxId <- as.numeric(taxId)
     results <- queryUniProt(
         query = paste0("taxonomy_id:", taxId),
-        fields = c("accession", "organism_name")
+        fields = c("accession", "organism_name"),
+        n = 25,
+        pageSize = 25
     )
     taxIdUniprots <- results[["Entry"]]
     organism <- unique(results[["Organism"]])
@@ -66,7 +68,7 @@ setMethod("taxIdUniprots", "UniProt.ws",
 ## General helper to query UniProt
 queryUniProt <- function(
     query = character(0L), fields = c("accession", "id"), collapse = " OR ",
-    n = Inf, pageSize = 25
+    n = Inf, pageSize = 25L
 ) {
     stopifnot(isCharacter(query), isCharacter(fields))
     if (!length(query))
@@ -78,10 +80,16 @@ queryUniProt <- function(
 }
 
 .uniprot_pages <- function(FUN, ..., n, pageSize) {
-    result <- NULL
+    url <- paste0(UNIPROT_REST_URL, "uniprotkb/search")
+    response <- FUN(url = url, ..., pageSize = pageSize)
+    result <- response$results
     bar <- NULL
-    repeat {
-        response <- FUN(url = result$url, ..., pageSize = pageSize)
+    while(
+        (!is.null(response$headerLink) &&
+            grepl("\"next\"", response$headerLink, fixed = TRUE)) &&
+        (NROW(result) < n)
+    ) {
+        response <- FUN(url = response$url, ..., pageSize = pageSize)
         result <- rbind.data.frame(result, response$results)
 
         if (is.null(bar)) {
@@ -90,11 +98,6 @@ queryUniProt <- function(
           on.exit(close(bar))
         }
         setTxtProgressBar(bar, min(NROW(result), n))
-        test <-
-            !grepl("\"next\"", response$headerLink, fixed = TRUE) ||
-            (NROW(result) >= n)
-        if (test)
-            break
     }
     head(result, n)
 }
@@ -105,18 +108,15 @@ queryUniProt <- function(
 }
 
 .search_paged1 <- function(url, query, fields, collapse, pageSize) {
-    if (is.null(url))
-        resp <- GET(
-            url = paste0(UNIPROT_REST_URL, "uniprotkb/search"),
-            query = list(
-                query = paste(query, collapse = collapse),
-                fields = paste(fields, collapse = ","),
-                format = "tsv",
-                size = pageSize
-            )
+    resp <- httpcache::GET(
+        url = url,
+        query = list(
+            query = paste(query, collapse = collapse),
+            fields = paste(fields, collapse = ","),
+            format = "tsv",
+            size = pageSize
         )
-    else
-        resp <- GET(url)
+    )
 
     .stop_for_status(resp, "queryUniProt_paged")
 
@@ -144,7 +144,9 @@ setReplaceMethod("taxId", "UniProt.ws", function(x, value) {
         stop("No species were found with the given 'taxId'")
     results <- queryUniProt(
         query = paste0("taxonomy_id:", value),
-        fields = c("accession", "organism_name")
+        fields = c("accession", "organism_name"),
+        n = 25,
+        pageSize = 25L
     )
     setSlots(x,
         taxId = value,
