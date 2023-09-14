@@ -210,6 +210,7 @@ mapUniProt <- function(
         encode = "multipart",
         accept_json()
     )
+    .stop_for_status(resp, "idmapping_run")
     submission <- content(resp, as = "parsed")
     jobId <- submission[["jobId"]]
     if (verbose)
@@ -229,7 +230,7 @@ mapUniProt <- function(
 
     url <- paste0(.UNIPROT_REST_URL, "idmapping/details/", jobId)
     resp <- GET(url = .messageDEBUG(url, debug), accept_json())
-    .stop_for_status(resp, "idmapping/details_query")
+    .stop_for_status(resp, "idmapping_details_query")
     details <- content(resp, as = "parsed")
     resurl <- .getResultsURL(details[["redirectURL"]], paginate, debug)
     results <- GET(
