@@ -68,17 +68,12 @@ OLD_IDS <- c("ACC+ID", "ENTREZ_GENE", "GeneID")
           from = keytype, to = tokey, query = keys, columns = cols
       )
   }
-  .blankToNA <- function(col) {
-      gsub(pattern="^$",replacement=NA_character_, col)
-  }
-  dat[] <- lapply(dat, .blankToNA)
+  dat[] <- lapply(dat, function(col) { gsub("^$", NA_character_, col) })
   dat
 }
 
-setMethod("select", "UniProt.ws",
-    function(x, keys, columns, keytype, ...){
-          if (missing(keytype))
-              keytype <- "UniProtKB"
-          .select(x, keys, columns, keytype)
-        }
-)
+setMethod("select", "UniProt.ws", function(x, keys, columns, keytype, ...) {
+    if (missing(keytype))
+        keytype <- "UniProtKB"
+    .select(x, keys, columns, keytype, ...)
+})
