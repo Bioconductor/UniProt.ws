@@ -37,6 +37,10 @@ OLD_IDS <- c("ACC+ID", "ENTREZ_GENE", "GeneID")
   if (!keytype %in% keytypes(x)) {
       stop("'keytype' must be one of 'keytypes(x)'")
   }
+  if (missing(cols))
+      cols <- "accession"
+  else if (!"accession" %in% cols)
+      cols <- c("accession", cols)
   cols <- cols[!cols %in% keytype]  ## remove keytype from cols
   if (!length(cols))
       stop("'columns' should be different from 'keytype'")
@@ -47,8 +51,6 @@ OLD_IDS <- c("ACC+ID", "ENTREZ_GENE", "GeneID")
           "\n See https://www.uniprot.org/help",
           call. = FALSE
       )
-  if (!"accession" %in% cols)
-      cols <- c("accession", cols)
   if (identical(keytype, "UniProtKB"))
       keytype <- "UniProtKB_AC-ID"
   if (!keytype %in% allFromKeys())
