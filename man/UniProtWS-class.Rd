@@ -181,6 +181,14 @@ res <- select(
     keytype = "GeneID"
 )
 res
+
+univals <- c("A0A0C5B5G6", "A0A1B0GTW7", "A0JNW5", "A0JP26", "A0PK11")
+res <- select(
+    x = up,
+    keys = univals,
+    to = "Ensembl"
+)
+res
 }
 
 
