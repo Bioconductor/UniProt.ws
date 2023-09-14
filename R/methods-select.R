@@ -29,7 +29,11 @@ OLD_IDS <- c("ACC+ID", "ENTREZ_GENE", "GeneID")
 ## Here is the business end of my select method.
 ## The big plan is to call mapUniProt() and getUniProtGoodies()
 ## (merging when necessary)
-.select <- function(x, keys, cols, keytype){
+.select <- function(x, keys, cols, keytype, ...) {
+  args <- list(...)
+  tokey <- args[["to"]]
+  if (is.null(tokey))
+      tokey <- "UniProtKB"
   if (!keytype %in% keytypes(x)) {
       stop("'keytype' must be one of 'keytypes(x)'")
   }
@@ -53,7 +57,7 @@ OLD_IDS <- c("ACC+ID", "ENTREZ_GENE", "GeneID")
   if ("clusters" %in% tolower(cols) && !identical(keytype, "UniProtKB")) {
       cols <- cols[tolower(cols) != "clusters"]
       dat <- mapUniProt(
-          from = keytype, to = "UniProtKB", query = keys, columns = cols
+          from = keytype, to = tokey, query = keys, columns = cols
       )
       dat2 <- mapUniProt(
           from = "UniProtKB_AC-ID", to = "UniRef100", query = dat[["Entry"]]
@@ -61,7 +65,7 @@ OLD_IDS <- c("ACC+ID", "ENTREZ_GENE", "GeneID")
       dat <- merge(dat, dat2, by.x = "Entry", by.y = "From")
   } else {
       dat <- mapUniProt(
-          from = keytype, to = "UniProtKB", query = keys, columns = cols
+          from = keytype, to = tokey, query = keys, columns = cols
       )
   }
   .blankToNA <- function(col) {
