@@ -1,7 +1,7 @@
 Package: UniProt.ws
 Type: Package
 Title: R Interface to UniProt Web Services
-Version: 2.47.1
+Version: 2.47.2
 Description: The Universal Protein Resource (UniProt) is a comprehensive
   resource for protein sequence and annotation data. This package provides a
   collection of functions for retrieving, processing, and re-packaging UniProt
@@ -44,4 +44,4 @@ BugReports: https://github.com/Bioconductor/UniProt.ws/issues
 URL: https://github.com/Bioconductor/UniProt.ws
 Encoding: UTF-8
 VignetteBuilder: knitr
-Date: 2024-11-05
+Date: 2024-11-07
