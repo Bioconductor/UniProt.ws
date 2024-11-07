@@ -107,10 +107,9 @@ queryUniProt <- function(
 .extractLink <- function(txt) {
     if (!is.null(txt)) {
         link <- vapply(strsplit(txt, ";"), `[[`, character(1L), 1L)
-        gsub("^<(.*)>$", "\\1", link)
-    } else {
-        NULL
+        txt <- gsub("^<(.*)>$", "\\1", link)
     }
+    txt
 }
 
 .searchPaged <- function(url, query, fields, collapse, pageSize) {
