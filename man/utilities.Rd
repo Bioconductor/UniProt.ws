@@ -45,7 +45,7 @@ store. These taxon names are used also in the protein names (not in the UniProt
 IDs!). These functions help to translate those names to standard scientific
 (Latin) taxon names and other useful identifiers.
 
-\itemize{
+\describe{
   \item{taxname2species():}{
     converts UniProt taxonomy names to scientific species names
   }

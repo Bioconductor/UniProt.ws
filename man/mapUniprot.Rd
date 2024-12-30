@@ -102,14 +102,12 @@ returnFields()
   as a named list element. See examples below.
 }
 \value{
-  \itemize{
     \item{mapUniProt}{A data.frame of returned results}
     \item{allToKeys}{A sorted character vector of possible "To" keytypes based
       on the given "From" type}
     \item{allFromKeys}{A sorted character vector of possible "From" keytypes}
     \item{returnFields}{A data.frame of entries for the columns input in
       \code{mapUniprot}; see 'name' column}
-  }
 }
 \author{
   Marcel Ramos
