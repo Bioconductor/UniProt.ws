@@ -76,7 +76,7 @@ res <- select(x = up, keys = keys, columns = cols, keytype = kt)
 expect_true(nrow(res) > 0)
 expect_identical(ncol(res), 3L)
 expect_identical(
-  c("From", "Entry" ,"Sequence"), colnames(res)
+    c("From", "Entry" ,"Sequence"), colnames(res)
 )
 
 ## test that we fail when the pass in bad keytype
@@ -90,13 +90,13 @@ kt <- "UniProtKB"
 cols <- "xref_geneid"
 res <- select(x = up, keys = keys, columns = cols, keytype = kt)
 expect_identical(
-  c("From","Entry", "GeneID"), colnames(res)
+    c("From","Entry", "GeneID"), colnames(res)
 )
 
 cols <- c("xref_geneid", "sequence")
 res <- select(x = up, keys = keys, columns = cols, keytype = kt)
 expect_identical(
-  c("From","Entry", "GeneID", "Sequence"), colnames(res)
+    c("From","Entry", "GeneID", "Sequence"), colnames(res)
 )
 
 cols <- c("GeneID", "sequence")

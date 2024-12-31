@@ -5,10 +5,12 @@ org <- c("PIG", "YEAST", "HUMAN", "MOUSE", "TRIHA", "THEAS", "SIVAM", "AERPX")
 res <- taxname2species(org)
 expect_identical(
     res,
-    c("Sus scrofa","Saccharomyces cerevisiae","Homo sapiens",
-      "Mus musculus","Trichoderma harzianum",
-      "Thermanaerovibrio acidaminovorans",
-      "Simian immunodeficiency virus","Aeropyrum pernix")
+    c(
+        "Sus scrofa","Saccharomyces cerevisiae","Homo sapiens",
+        "Mus musculus","Trichoderma harzianum",
+        "Thermanaerovibrio acidaminovorans",
+        "Simian immunodeficiency virus","Aeropyrum pernix"
+    )
 )
 
 res <- taxname2taxid("PIG")
