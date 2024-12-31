@@ -30,7 +30,7 @@ Suggests:
   BiocStyle,
   knitr,
   rmarkdown,
-  RUnit
+  tinytest
 Collate:
   UniProt.ws-package.R
   UniProt.ws-class.R
