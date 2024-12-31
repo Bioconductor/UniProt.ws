@@ -19,19 +19,20 @@
 \arguments{
 \item{x}{a \code{UniProt.ws} object.}
 
-\item{keytype}{the keytype that matches the keys used.  For the \code{select}
-methods, this is used to indicate the kind of ID being used with the keys
-argument. For the \code{keys} method this is used to indicate which kind of keys
-are desired from \code{keys}}
+\item{keytype}{\code{character(1)} The keytype that matches the keys used. For the
+\code{select} methods, this is used to indicate the kind of ID being used with
+the keys argument. For the \code{keys} method this is used to indicate which
+kind of keys are desired from \code{keys}}
 
-\item{keys}{the keys to select records for from the database. All possible
-keys are returned by using the \code{keys} method.}
+\item{keys}{\code{character()} the keys to select records for from the database.
+All possible keys are returned by using the \code{keys} method.}
 
-\item{columns}{the columns or kinds of things that can be retrieved from the
-database.  As with \code{keys}, all possible columns are returned by using the
-\code{columns} method.}
+\item{columns}{\code{character()} The columns or kinds of things that can be
+retrieved from the database.  As with \code{keys}, all possible columns are
+returned by using the \code{columns} method.}
 
-\item{...}{other arguments}
+\item{...}{Additional arguments passed to lower level functions, mainly used
+for the \code{to} input to \code{mapUniProt}.}
 }
 \value{
 \itemize{
