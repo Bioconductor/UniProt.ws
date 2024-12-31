@@ -4,7 +4,6 @@
     )
 }
 
-getUniProtGoodies <- UniProt.ws:::getUniProtGoodies
 mapUniProt <- UniProt.ws:::mapUniProt
 
 test_mapUniProt <- function(){
@@ -61,27 +60,3 @@ test_mapUniProt <- function(){
     )
 }
 
-test_getUniProtGoodies <- function(){
-    query <- c('P04217','P30443')
-    cols <- 'sequence'
-    res <- getUniProtGoodies(query, cols)
-    checkTrue(is(res, "data.frame"))
-    checkTrue(nrow(res) >= 2L)
-    checkIdentical(ncol(res), 3L)
-
-    ## can also be used to extract interpro IDs
-    query <- c('P13368','P20806','Q9UM73','P97793','Q17192')
-    cols <- 'xref_interpro'
-    res <- getUniProtGoodies(query, cols)
-    checkTrue(is(res, "data.frame"))
-    checkTrue(nrow(res) >= 5L)
-    checkIdentical(ncol(res), 3L)
-
-    ## OR extract a number of other things... ## taxon (?)
-    query <- c('P13368','P20806','Q9UM73','P97793','Q17192')
-    cols <- c('structure_3d','go_id')
-    res <- getUniProtGoodies(query, cols)
-    checkTrue(is(res, "data.frame"))
-    checkTrue(nrow(res) >= 5L)
-    checkIdentical(ncol(res), 4L)
-}
