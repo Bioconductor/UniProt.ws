@@ -164,33 +164,6 @@ lookupUniprotSpeciesFromTaxId <- function(taxId){
     res
 }
 
-.searchPaged <- function(url, query, fields, collapse, pageSize) {
-    resp <- httpcache::GET(
-        url = url,
-        query = list(
-            query = paste(query, collapse = collapse),
-            fields = paste(fields, collapse = ","),
-            format = "tsv",
-            size = pageSize
-        )
-    )
-
-    avstop_for_status(resp, "queryUniProt_paged")
-
-    resdata <- content(resp, encoding = "UTF-8")
-    if (length(resdata))
-        results <- read.delim(text = resdata)
-    else
-        results <- data.frame()
-
-    list(
-        url = .extractLink(resp$headers$link),
-        headerLink = resp$headers$link,
-        totalResults = resp$headers$`x-total-results`,
-        results = results
-    )
-}
-
 #' @export
 setGeneric(
     "taxId<-", signature="x", function(x, value) standardGeneric("taxId<-")

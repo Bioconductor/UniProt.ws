@@ -8,14 +8,11 @@
 
 .UNIPROT_REST_URL <- "https://rest.uniprot.org/"
 
-#' @importFrom httr GET accept_json content
-.getResponse <- function(jobId) {
-    url <- paste0(.UNIPROT_REST_URL, "idmapping/status/", jobId)
-    resp <- GET(url = url, accept_json())
-    content(resp, as = "parsed")
-}
-
-.checkResponse <- function(response) {
+.checkResponse <- function(jobId) {
+    response <- request(.UNIPROT_REST_URL) |>
+        req_template("idmapping/status/{jobId}") |>
+        req_perform() |>
+        resp_body_json()
     msgs <- response[["messages"]]
     if (!is.null(msgs)) {
         if (grepl("Resource not found", msgs))
@@ -36,16 +33,14 @@
 #'
 #' @importFrom rjsoncons jmespath
 #' @importFrom jsonlite parse_json
-#' @importFrom httr content content_type
+#' @importFrom httr2 request req_template req_perform resp_body_string
 #'
 #' @export
 allFromKeys <- function() {
-    results <- content(
-        httpcache::GET(
-            paste0(.UNIPROT_REST_URL, "configure/idmapping/fields"),
-            content_type("application/json")
-        ), as = "text", encoding = "UTF-8"
-    )
+    results <- request(.UNIPROT_REST_URL) |>
+        req_template("configure/idmapping/fields") |>
+        req_perform() |>
+        resp_body_string()
     allnames <- jmespath(
         results,
         paste0("groups[].items[?from==`true`].name[]")
@@ -56,12 +51,10 @@ allFromKeys <- function() {
 #' @rdname mapUniProt
 #' @export
 allToKeys <- function(fromName = "UniProtKB_AC-ID") {
-    results <- content(
-        httpcache::GET(
-            paste0(.UNIPROT_REST_URL, "configure/idmapping/fields"),
-            content_type("application/json")
-        ), as = "text", encoding = "UTF-8"
-    )
+    results <- request(.UNIPROT_REST_URL) |>
+        req_template("configure/idmapping/fields") |>
+        req_perform() |>
+        resp_body_string()
     from <- jmespath(
         results,
         paste0("groups[].items[?name=='", fromName, "'].from[]|[0]")
@@ -84,12 +77,10 @@ allToKeys <- function(fromName = "UniProtKB_AC-ID") {
 #' @rdname mapUniProt
 #' @export
 returnFields <- function() {
-    results <- content(
-        httpcache::GET(
-            paste0(.UNIPROT_REST_URL, "configure/uniprotkb/result-fields"),
-            content_type("application/json")
-        ), as = "text", encoding = "UTF-8"
-    )
+    results <- request(.UNIPROT_REST_URL) |>
+        req_template("configure/uniprotkb/result-fields") |>
+        req_perform() |>
+        resp_body_string()
     gnames <- parse_json(
         jmespath(results, "[].groupName[]"), simplifyVector = TRUE
     )
@@ -116,7 +107,7 @@ returnFields <- function() {
         )
         redurl <- gsub("/results/", "/results/stream/", redurl, fixed = TRUE)
     }
-    .messageDEBUG(redurl, debug)
+    redurl
 }
 
 .prepQuery <- function(columns, format = "tsv", paginate, pageSize) {
@@ -128,26 +119,35 @@ returnFields <- function() {
     qlist
 }
 
-.messageDEBUG <- function(url, debug) {
-    if (debug)
-        message("Hitting: ", url)
-    url
+.extract_link <- function(linkElement) {
+    gsub("^<(.*)>.*", "\\1", linkElement)
 }
 
-#' @importFrom httr headers
-#' @importFrom utils read.delim
-.handleResults <- function(results, debug) {
-    rdata <- read.delim(text = content(results, encoding = "UTF-8"))
-    while (length(headers(results)$link)) {
-        nextlink <- headers(results)$link
-        results <- GET(
-            .messageDEBUG(gsub("<(.*)>.*", "\\1", nextlink), debug),
-            accept_json()
-        )
-        result <- read.delim(text = content(results, encoding = "UTF-8"))
+#' @importFrom httr2 resp_header
+#' @importFrom utils read.delim head
+.resp_bind_pages <- function(response, n = Inf) {
+    rdata <- resp_body_string(response) |>
+        read.delim(text = _)
+    pb <- progress_bar$new(
+        format = "  (:spin) binding paginated requests:dots :elapsedfull",
+        total = NA, clear = FALSE
+    )
+    on.exit(pb$terminate())
+    step <- 1L
+    while (length(resp_header(response, "link")) && NROW(rdata) < n) {
+        response <- .extract_link(
+                resp_header(response, "link")
+            ) |>
+            request() |>
+            req_perform()
+        result <- resp_body_string(response) |>
+            read.delim(text = _)
         rdata <- do.call(rbind.data.frame, list(rdata, result))
+        step <- step + 1
+        ndots <- step %% 11
+        pb$tick(tokens = list(dots = .dotter(ndots, 10)))
     }
-    rdata
+    head(rdata, n)
 }
 
 #' Mapping identifiers with the UniProt API
@@ -220,6 +220,8 @@ returnFields <- function() {
 #' @importFrom progress progress_bar
 #' @importFrom AnVILBase avstop_for_status
 #' @importFrom BiocBaseUtils isScalarCharacter isTRUEorFALSE
+#' @importFrom httr2 req_body_multipart resp_body_json req_url_query
+#'
 #' @examples
 #'
 #' mapUniProt(
@@ -280,42 +282,47 @@ mapUniProt <- function(
     else if (is.list(query))
         query[["ids"]] <- paste(query[["ids"]], collapse = ",")
     files <- c(query, list(from = from, to = to))
-    resp <- httpcache::POST(
-        url = .messageDEBUG(paste0(.UNIPROT_REST_URL, "idmapping/run"), debug),
-        body = files,
-        encode = "multipart",
-        accept_json()
-    )
-    avstop_for_status(resp, "idmapping_run")
-    submission <- content(resp, as = "parsed")
-    jobId <- submission[["jobId"]]
+    resp <- request(.UNIPROT_REST_URL) |>
+        req_template("idmapping/run") |>
+        req_body_multipart(
+            ids = query[["ids"]], from = from, to = to
+        ) |>
+        req_perform() |>
+        resp_body_json()
+    jobId <- resp[["jobId"]]
     if (verbose)
         message("ID Mapping jobId: ", jobId)
     pb <- progress_bar$new(
         format = "  (:spin) waiting for query completion:dots :elapsedfull",
         total = NA, clear = FALSE
     )
+    on.exit(pb$terminate())
 
-    while (.checkResponse(.getResponse(jobId))) {
+    while (.checkResponse(jobId)) {
         for (ndot in seq(0, 10)) {
             pb$tick(tokens = list(dots = .dotter(ndot, 10)))
-            Sys.sleep(2/8)
         }
-        cat("\n")
     }
 
-    url <- paste0(.UNIPROT_REST_URL, "idmapping/details/", jobId)
-    resp <- GET(url = .messageDEBUG(url, debug), accept_json())
-    avstop_for_status(resp, "idmapping_details_query")
-    details <- content(resp, as = "parsed")
-    resurl <- .getResultsURL(details[["redirectURL"]], paginate, debug)
-    results <- GET(
-        url = resurl,
-        query = .prepQuery(columns, pageSize = pageSize, paginate = paginate),
-        accept_json()
-    )
-    avstop_for_status(results, "redirectURL_query")
-    .handleResults(results, debug)
+    details <- request(.UNIPROT_REST_URL) |>
+        req_template("idmapping/details/{jobId}") |>
+        req_perform() |>
+        resp_body_json()
+
+    if (length(columns))
+        columns <- paste(columns, collapse = ",")
+    if (!paginate)
+        pageSize <- NULL
+
+    .getResultsURL(details[["redirectURL"]], paginate) |>
+        request() |>
+        req_url_query(
+            format = "tsv",
+            fields = columns,
+            pageSize = pageSize
+        ) |>
+        req_perform() |>
+        .resp_bind_pages(n = Inf)
 }
 
 #' @rdname mapUniProt
@@ -330,32 +337,15 @@ queryUniProt <- function(
     stopifnot(isCharacter(query), isCharacter(fields))
     if (!length(query))
         stop("<internal> 'qlist' must be populated with queries")
-    .uniprotPages(
-        FUN = .searchPaged, query = query, fields = fields,
-        collapse = collapse, n = n, pageSize = pageSize
-    )
-}
 
-#' @importFrom utils txtProgressBar setTxtProgressBar head
-.uniprotPages <- function(FUN, ..., n, pageSize) {
-    url <- paste0(.UNIPROT_REST_URL, "uniprotkb/search")
-    response <- FUN(url = url, ..., pageSize = pageSize)
-    result <- response$results
-    bar <- NULL
-    while(
-        (!is.null(response$headerLink) &&
-            grepl("\"next\"", response$headerLink, fixed = TRUE)) &&
-        (NROW(result) < n)
-    ) {
-        response <- FUN(url = response$url, ..., pageSize = pageSize)
-        result <- rbind.data.frame(result, response$results)
-
-        if (is.null(bar)) {
-            max <- max(min(n, as.numeric(response$totalResults)), 1L)
-            bar <- txtProgressBar(max = max, style = 3L)
-            on.exit(close(bar))
-        }
-        setTxtProgressBar(bar, min(NROW(result), n))
-    }
-    head(result, n)
+    request(.UNIPROT_REST_URL) |>
+        req_template("uniprotkb/search") |>
+        req_url_query(
+            query = paste(query, collapse = collapse),
+            fields = paste(fields, collapse = ","),
+            format = "tsv",
+            size = pageSize
+        ) |>
+        req_perform() |>
+        .resp_bind_pages(n = n)
 }
