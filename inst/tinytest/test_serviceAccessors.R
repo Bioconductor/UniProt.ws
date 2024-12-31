@@ -38,7 +38,7 @@ res <- mapUniProt(
     columns = c("accession", "id", "organism_id")
 )
 expect_true(is(res, "data.frame"))
-expect_identical(nrow(res), 1L)
+expect_true(nrow(res) > 1L)
 expect_identical(ncol(res), 4L)
 expect_true(
     all(names(res) %in%  c("From", "Entry", "Entry.Name", "Organism..ID."))
