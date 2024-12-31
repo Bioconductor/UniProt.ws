@@ -1,139 +1,109 @@
 up <- UniProt.ws(taxId=9606)
+taxId(up) <- 10090
+expect_identical(taxId(up), 10090)
 
-test_replaceTaxIdMethod <- function(){
-  up <- UniProt.ws(taxId=9606)
-  taxId(up) <- 10090
-  checkIdentical(taxId(up), 10090)
-}
+res <- availableUniprotSpecies(pattern="Homo")
+expect_true(nrow(res) > 1)
+expect_identical(ncol(res), 3L)
 
-test_availableUniprotSpecies <-function(){
-  res <- availableUniprotSpecies(pattern="Homo")
-  checkTrue(nrow(res) > 1)
-  checkIdentical(ncol(res), 3L)
-}
+res <- lookupUniprotSpeciesFromTaxId(9606)
+expect_identical(res, "Homo sapiens")
 
-test_lookupUniprotSpeciesFromTaxId<- function(){
-  res <- lookupUniprotSpeciesFromTaxId(9606)
-  checkIdentical(res, "Homo sapiens")
-}
+up <- UniProt.ws(taxId=9606)
+res <- species(up)
+expect_identical(res, "Homo sapiens (Human)")
 
-test_species <- function(){
-  up <- UniProt.ws(taxId=9606)
-  res <- species(up)
-  checkIdentical(res, "Homo sapiens (Human)")
-}
+res <- keytypes(up)
+expect_true(length(res) >1)
 
-test_keytypes <- function(){
-  res <- keytypes(up)
-  checkTrue(length(res) >1)
-}
+keys <- c("P31946","P62258","Q04917")
+kt <- "UniProtKB"
+cols <- c("xref_pdb","xref_hgnc","sequence")
+res <- select(x = up, keys = keys, columns = cols, keytype = kt)
+expect_true(is.data.frame(res))
+expect_true(nrow(res) > 0L)
+expect_identical(ncol(res), 5L)
+expect_identical(
+    c("From", "Entry", "PDB", "HGNC", "Sequence"), colnames(res)
+)
 
-test_select_1 <- function(){
-    ## 1st working select example...
-    keys <- c("P31946","P62258","Q04917")
-    kt <- "UniProtKB"
-    cols <- c("xref_pdb","xref_hgnc","sequence")
-    res <- select(x = up, keys = keys, columns = cols, keytype = kt)
-    checkTrue(is.data.frame(res))
-    checkTrue(nrow(res) > 0L)
-    checkIdentical(ncol(res), 5L)
-    checkIdentical(
-        c("From", "Entry", "PDB", "HGNC", "Sequence"), colnames(res)
-    )
-}
+## with an alternate keytype (need to think carefully about merge keys here)
+keys <- c('1','2','3','9','10')
+kt <- "GeneID"
+cols <- c("xref_pdb", "xref_hgnc", "sequence")
+res <- select(x = up, keys = keys, columns = cols, keytype = kt)
+expect_true(nrow(res) > 0)
+expect_identical(ncol(res), 5L)
+expect_identical(
+    c("From", "Entry", "PDB", "HGNC", "Sequence"), colnames(res)
+)
 
-test_select_2 <- function(){
-  ## with an alternate keytype (need to think carefully about merge keys here)
-  keys <- c('1','2','3','9','10')
-  kt <- "GeneID"
-  cols <- c("xref_pdb", "xref_hgnc", "sequence")
-  res <- select(x = up, keys = keys, columns = cols, keytype = kt)
-  checkTrue(nrow(res) > 0)
-  checkIdentical(ncol(res), 5L)
-  checkIdentical(
-      c("From", "Entry", "PDB", "HGNC", "Sequence"), colnames(res)
-  )
-}
+keys <- c("P31946","P62258","Q04917")
+kt <- "UniProtKB"
+cols <- "virus_hosts" ## this is not allowed
+res <- select(x = up, keys = keys, columns = cols, keytype = kt)
+expect_true(is.data.frame(res))
+expect_true(nrow(res) > 0L)
+expect_identical(ncol(res), 3L)
+expect_identical(
+    c("From", "Entry", "Virus.hosts"), colnames(res)
+)
 
-test_select_3 <- function(){
-  keys <- c("P31946","P62258","Q04917")
-  kt <- "UniProtKB"
-  cols <- "virus_hosts" ## this is not allowed
-  res <- select(x = up, keys = keys, columns = cols, keytype = kt)
-  checkTrue(is.data.frame(res))
-  checkTrue(nrow(res) > 0L)
-  checkIdentical(ncol(res), 3L)
-  checkIdentical(
-      c("From", "Entry", "Virus.hosts"), colnames(res)
-  )
-}
+keys <- c("P31946","P62258","Q04917")
+kt <- "UniProtKB"
+cols <- "xref_pdb"
+res <- select(x = up, keys = keys, columns = cols, keytype = kt)
+expect_true(nrow(res)>0)
+expect_identical(ncol(res), 3L)
+expect_identical(
+  c("From", "Entry", "PDB"), colnames(res)
+)
 
-test_select_4 <- function(){
-  keys <- c("P31946","P62258","Q04917")
-  kt <- "UniProtKB"
-  cols <- "xref_pdb"
-  res <- select(x = up, keys = keys, columns = cols, keytype = kt)
-  checkTrue(nrow(res)>0)
-  checkIdentical(ncol(res), 3L)
-  checkIdentical(
-    c("From", "Entry", "PDB"), colnames(res)
-  )
-}
+keys <- c('1','2','3','9','10')
+kt <- "GeneID"
+## CLUSTERS
+cols <- c("xref_pdb", "CLUSTERS")
+res <- select(x = up, keys = keys, columns = cols, keytype = kt)
+expect_true(nrow(res) > 0)
+expect_true(ncol(res) > 4)
+expect_true(all(c("Entry", "From", "PDB", "Cluster.ID") %in% colnames(res)))
 
-test_select_5 <- function(){
-  keys <- c('1','2','3','9','10')
-  kt <- "GeneID"
-  ## CLUSTERS
-  cols <- c("xref_pdb", "CLUSTERS")
-  res <- select(x = up, keys = keys, columns = cols, keytype = kt)
-  checkTrue(nrow(res) > 0)
-  checkTrue(ncol(res) > 4)
-  checkTrue(all(c("Entry", "From", "PDB", "Cluster.ID") %in% colnames(res)))
-}
+## now lets just get a bunch of the sequences.
+keys <- keys(up,keytype="UniProtKB")
+kt <- "UniProtKB"
+cols <- "sequence"
+res <- select(x = up, keys = keys, columns = cols, keytype = kt)
+expect_true(nrow(res) > 0)
+expect_identical(ncol(res), 3L)
+expect_identical(
+  c("From", "Entry" ,"Sequence"), colnames(res)
+)
 
-test_select_6 <- function(){
-  ## now lets just get a bunch of the sequences.
-  keys <- keys(up,keytype="UniProtKB")
-  kt <- "UniProtKB"
-  cols <- "sequence"
-  res <- select(x = up, keys = keys, columns = cols, keytype = kt)
-  checkTrue(nrow(res) > 0)
-  checkIdentical(ncol(res), 3L)
-  checkIdentical(
-    c("From", "Entry" ,"Sequence"), colnames(res)
-  )
-}
+## test that we fail when the pass in bad keytype
+kt = "UNIPROT"
+expect_error(select(up, keys, cols, kt))
 
-test_select_7 <- function(){
-  ## test that we fail when the pass in bad keytype
-  kt = "UNIPROT"
-  checkException(select(up, keys, cols, kt))
-}
+## GENEID was problematic
+## create test cases to fix
+keys <- c("P31946","P62258","Q04917")
+kt <- "UniProtKB"
+cols <- "xref_geneid"
+res <- select(x = up, keys = keys, columns = cols, keytype = kt)
+expect_identical(
+  c("From","Entry", "GeneID"), colnames(res)
+)
 
-test_select_8 <- function(){
-  ## GENEID was problematic
-  ## create test cases to fix
-  keys <- c("P31946","P62258","Q04917")
-  kt <- "UniProtKB"
-  cols <- "xref_geneid"
-  res <- select(x = up, keys = keys, columns = cols, keytype = kt)
-  checkIdentical(
-    c("From","Entry", "GeneID"), colnames(res)
-  )
+cols <- c("xref_geneid", "sequence")
+res <- select(x = up, keys = keys, columns = cols, keytype = kt)
+expect_identical(
+  c("From","Entry", "GeneID", "Sequence"), colnames(res)
+)
 
-  cols <- c("xref_geneid", "sequence")
-  res <- select(x = up, keys = keys, columns = cols, keytype = kt)
-  checkIdentical(
-    c("From","Entry", "GeneID", "Sequence"), colnames(res)
-  )
+cols <- c("GeneID", "sequence")
+expect_error(select(x = up, keys = keys, columns = cols, keytype = kt))
 
-  cols <- c("GeneID", "sequence")
-  checkException(select(x = up, keys = keys, columns = cols, keytype = kt))
-
-  cols <- c("ENTREZ_GENE", "sequence")
-  checkException(select(x = up, keys = keys, columns = cols, keytype = kt))
-
-}
+cols <- c("ENTREZ_GENE", "sequence")
+expect_error(select(x = up, keys = keys, columns = cols, keytype = kt))
 
 ## keys with ecs:
 ## keys = c("Q06278","Q9BRR6","Q86V24")
@@ -153,9 +123,9 @@ test_select_8 <- function(){
 
 ##   keytype = "ENTREZ_GENE"
 ##   egs = keys(up, keytype)
-##   checkTrue(any("282126" %in% egs))
-##   checkTrue(is.character(egs))
-##   checkTrue(length(egs)>1)
+##   expect_true(any("282126" %in% egs))
+##   expect_true(is.character(egs))
+##   expect_true(length(egs)>1)
 ## }
 
 
@@ -227,10 +197,4 @@ test_select_8 <- function(){
 ## select(up, keys=c(216, 3679, 55607), columns=c("ID", "ORGANISM"), "ENTREZ_GENE")
 
 ## ANSWER: I don't think you can.  The web service does not seem to want to make a distinction.
-
-
-
-
-## Faster testing:
-## BiocGenerics:::testPackage(pattern="^test_select.*\\.R$")
 

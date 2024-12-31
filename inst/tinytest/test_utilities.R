@@ -1,47 +1,35 @@
-test_taxname2species <- function() {
-  res <- taxname2species("PIG")
-  checkIdentical(res, "Sus scrofa")
-}
+res <- taxname2species("PIG")
+expect_identical(res, "Sus scrofa")
 
-test_taxname2species_vec <- function() {
-  org <- c("PIG", "YEAST", "HUMAN", "MOUSE", "TRIHA", "THEAS", "SIVAM", "AERPX")
-  res <- taxname2species(org)
-  checkIdentical(
-      res,
-      c("Sus scrofa","Saccharomyces cerevisiae","Homo sapiens",
-        "Mus musculus","Trichoderma harzianum",
-        "Thermanaerovibrio acidaminovorans",
-        "Simian immunodeficiency virus","Aeropyrum pernix")
-  )
-}
+org <- c("PIG", "YEAST", "HUMAN", "MOUSE", "TRIHA", "THEAS", "SIVAM", "AERPX")
+res <- taxname2species(org)
+expect_identical(
+    res,
+    c("Sus scrofa","Saccharomyces cerevisiae","Homo sapiens",
+      "Mus musculus","Trichoderma harzianum",
+      "Thermanaerovibrio acidaminovorans",
+      "Simian immunodeficiency virus","Aeropyrum pernix")
+)
 
-test_taxname2taxid <- function() {
-  res <- taxname2taxid("PIG")
-  checkTrue(res == "9823")
-}
+res <- taxname2taxid("PIG")
+expect_true(res == "9823")
 
-test_taxname2taxid_vec <- function() {
-  org <- c("PIG", "YEAST", "HUMAN", "MOUSE", "TRIHA", "THEAS", "SIVAM", "AERPX")
-  res <- taxname2taxid(org)
-  checkIdentical(
-      res,
-      as.integer(c(9823, 559292, 9606, 10090, 5544, 525903, 36378, 56636))
-  )
-}
+org <- c("PIG", "YEAST", "HUMAN", "MOUSE", "TRIHA", "THEAS", "SIVAM", "AERPX")
+res <- taxname2taxid(org)
+expect_identical(
+    res,
+    as.integer(c(9823, 559292, 9606, 10090, 5544, 525903, 36378, 56636))
+)
 
-test_taxname2domain <- function() {
-  res <- taxname2domain("PIG")
-  checkTrue(res == "E")
-}
+res <- taxname2domain("PIG")
+expect_true(res == "E")
 
-test_taxname2domain_vec <- function() {
-  org <- c("PIG", "YEAST", "HUMAN", "MOUSE", "TRIHA", "THEAS", "SIVAM", "AERPX")
-  res <- taxname2domain(c(org, "MYCGI"))
-  checkIdentical(
-      res,
-      factor(
-          c("E","E","E","E","E","B","V","A","B"),
-          levels = c("A", "B", "E", "V", "X")
-      )
-  )
-}
+org <- c("PIG", "YEAST", "HUMAN", "MOUSE", "TRIHA", "THEAS", "SIVAM", "AERPX")
+res <- taxname2domain(c(org, "MYCGI"))
+expect_identical(
+    res,
+    factor(
+        c("E","E","E","E","E","B","V","A","B"),
+        levels = c("A", "B", "E", "V", "X")
+    )
+)
