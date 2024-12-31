@@ -1,16 +1,64 @@
-#########################################################################
-## Helper functions for UniProt.ws
-## These functions translate UniProt taxon names to scientific names,
-## taxids, or domain codes.
-## Contributed by Csaba Ortutay; csaba.ortutay@gmail.com, 17.10.2016
-#########################################################################
+#' @name utilities
+#'
+#' @title Translate UniProt taxon names to scientific names, taxids, or domain
+#'   codes
+#'
+#' @description UniProt uses custom coding of organism names from which protein
+#'   sequences they store. These taxon names are used also in the protein names
+#'   (not in the UniProt IDs!). These functions help to translate those names to
+#'   standard scientific (Latin) taxon names and other useful identifiers.
+#'
+#' * taxname2species(): converts UniProt taxonomy names to
+#'   scientific species names
+#' * taxname2taxid(): converts UniProt taxonomy names to NCBI Taxonomy IDs
+#' * taxname2domain(): converts UniProt taxonomy names to the following
+#'   taxonomical domains:
+#'     * 'A' for archaea (=archaebacteria)
+#'     * 'B' for bacteria (=prokaryota or eubacteria)
+#'     * 'E' for eukaryota (=eukarya)
+#'     * 'V' for viruses and phages (=viridae)
+#'     * 'O' for others (such as artificial sequences)
+#'
+#' @param taxname Character string up to 6 uppercase characters, like HUMAN,
+#'   MOUSE, or AERPX. Also works for a vector of such taxon names.
+#'
+#' @param specfile An optional local file where speclist.RData is saved from
+#'   UniProt.org.  When `specfile` is missing, a cached file from the extdata/
+#'   package directory is used.
+#'
+#' @returns * `taxname2species`: a character vector of scientific taxon names
+#'   matching to the UniProt taxon names supplied as `taxname`.
+#'   * `taxname2taxid`: a numeric vector of Taxonomy IDs matching to the
+#'   UniProt taxon names supplied as `taxname`.
+#'   * `taxname2domain`: a character vector of one letter domain
+#'   symbols matching to the UniProt taxon names supplied as `taxname`.
+#'
+#' @author Csaba Ortutay
+#'
+#' @seealso [UniProt controlled vocabulary of
+#'   species](https://www.uniprot.org/docs/speclist.txt), which defines the
+#'   taxon names.
+#'
+#' @examples
+#'
+#' taxname2species("PIG")
+#' taxname2species(c("PIG","HUMAN","TRIHA"))
+#'
+#' taxname2taxid("PIG")
+#' taxname2taxid(c("PIG","HUMAN","TRIHA"))
+#'
+#' taxname2domain("PIG")
+#' taxname2domain(c("PIG","HUMAN","TRIHA"))
+#'
+NULL
 
+#' @importFrom BiocFileCache BiocFileCache bfcneedsupdate bfcrpath bfcdownload
 .getSpecfile <-
     function(url)
 {
     cache <- tools::R_user_dir("UniProt.ws", "cache")
     bfc <- BiocFileCache(cache, ask=FALSE)
-    rpath <- BiocFileCache::bfcrpath(
+    rpath <- bfcrpath(
         bfc, rnames = url, exact = TRUE, download = TRUE, rtype = "web"
     )
     update <- bfcneedsupdate(bfc, names(rpath))
@@ -19,7 +67,6 @@
     rpath
 }
 
-## digest specfile
 .parseSpecfile <-
     function(specfile)
 {
@@ -55,75 +102,34 @@ digestspecfile <- local({
             specfile <- db[[specfile]]
         }
         if (!is(specfile, "data.frame"))
-            stop("'specfile' must be the name of a local file or ",
-                 "(advanced use) a 'data.frame' of appropriate format")
+            stop(
+                "'specfile' must be the name of a local file or ",
+                "(advanced use) a 'data.frame' of appropriate format"
+            )
         specfile
     }
 })
 
-# Utility functions
-#
-# UniProt uses custom coding of organism names from which protein sequences
-# they store. These taxon names are used also in the protein names (not in the
-# UniProt IDs!). These functions help to translate those names to standard
-# scientific (Latin) taxon names and other useful identifiers.
-#
-# Converting UniProt taxonomy names to scientific species names:
-# taxname2species()
-#
+#' @rdname utilities
+#' @export
 taxname2species <- function(taxname, specfile) {
     codetable <- digestspecfile(specfile)
     specnames <- codetable[taxname, "Official (scientific) name" ]
     specnames
 }
 
-# Converting UniProt taxonomy names to NCBI Taxonomy IDs: taxname2taxid()
-#
+#' @rdname utilities
+#' @export
 taxname2taxid  <- function(taxname, specfile) {
     codetable <- digestspecfile(specfile)
     taxids <- codetable[taxname, "Taxon Node"]
     taxids
 }
 
-# Converting UniProt taxonomy names to taxonomical domains: taxname2domain().
-# This function helps to map those taxon names to these domains:
-#   'A' for archaea (=archaebacteria)
-#   'B' for bacteria (=prokaryota or eubacteria)
-#   'E' for eukaryota (=eukarya)
-#   'V' for viruses and phages (=viridae)
-#   'O' for others (such as artificial sequences)
-
+#' @rdname utilities
+#' @export
 taxname2domain <- function(taxname, specfile) {
     codetable <- digestspecfile(specfile)
     domains <- codetable[taxname, "kingdom"]
     domains
-}
-
-.stop_for_status <-
-    function(response, op)
-{
-    status <- status_code(response)
-    if (status < 400L)
-        return(invisible(response))
-
-    cond <- http_condition(status, "error")
-    type <- headers(response)[["content-type"]]
-    msg <- NULL
-    if (nzchar(type) && grepl("application/json", type)) {
-        content <- as.list(response)
-        msg <- content[["message"]]
-        if (is.null(msg))
-            ## e.g., from bond DRS server
-            msg <- content$response$text
-    } else if (nzchar(type) && grepl("text/html", type)) {
-        ## these pages can be too long for a standard 'stop()' message
-        cat(as.character(response), file = stderr())
-    }
-
-    message <- paste0(
-        "'", op, "' failed:\n  ",
-        conditionMessage(cond),
-        if (!is.null(msg)) "\n  ", msg
-    )
-    stop(message, call.=FALSE)
 }

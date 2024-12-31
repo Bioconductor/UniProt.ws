@@ -13,30 +13,29 @@ Authors@R: c(
   person("Marcel", "Ramos", , "marcel.ramos@sph.cuny.edu",
       c("aut","cre"), c(ORCID = "0000-0002-3242-0582"))
   )
-Depends:
-  BiocGenerics,
-  methods,
-  RSQLite,
-  utils
 Imports:
   AnnotationDbi,
+  AnVILBase,
   BiocFileCache,
   BiocBaseUtils,
+  BiocGenerics,
   httr,
   httpcache,
   jsonlite,
+  methods,
   progress,
-  rjsoncons
+  rjsoncons,
+  utils
 Suggests:
   BiocStyle,
   knitr,
   rmarkdown,
   RUnit
 Collate:
-  AllGenerics.R
-  AllClasses.R 
-  getFunctions.R 
-  methods-select.R 
+  UniProt.ws-package.R
+  UniProt.ws-class.R
+  mapUniProt.R
+  UniProt.ws-methods.R
   utilities.R
 License: Artistic-2.0
 biocViews: Annotation, Infrastructure, GO, KEGG, BioCarta
@@ -45,3 +44,5 @@ URL: https://github.com/Bioconductor/UniProt.ws
 Encoding: UTF-8
 VignetteBuilder: knitr
 Date: 2024-12-30
+RoxygenNote: 7.3.2
+Roxygen: list(markdown = TRUE)
