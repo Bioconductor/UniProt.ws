@@ -125,7 +125,7 @@ returnFields <- function() {
 
 #' @importFrom httr2 resp_header
 #' @importFrom utils read.delim head
-.resp_bind_pages <- function(response, n = Inf) {
+.resp_bind_pages <- function(response, n) {
     rdata <- resp_body_string(response) |>
         read.delim(text = _)
     pb <- progress_bar$new(
@@ -147,7 +147,7 @@ returnFields <- function() {
         ndots <- step %% 11
         pb$tick(tokens = list(dots = .dotter(ndots, 10)))
     }
-    head(rdata, n)
+    head(rdata, n = n)
 }
 
 #' Mapping identifiers with the UniProt API
