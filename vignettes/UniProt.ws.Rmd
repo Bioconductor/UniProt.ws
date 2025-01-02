@@ -22,7 +22,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("UniProt.ws")
 ```
 
-## Configuring `uniport.ws`
+## Configuring `UniProt.ws`
 
 The `r Biocpkg("UniProt.ws")` package provides a `select`
 interface to the UniProt web service.
