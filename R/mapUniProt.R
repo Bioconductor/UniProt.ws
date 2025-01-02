@@ -301,6 +301,7 @@ mapUniProt <- function(
     while (.checkResponse(jobId)) {
         for (ndot in seq(0, 10)) {
             pb$tick(tokens = list(dots = .dotter(ndot, 10)))
+            Sys.sleep(2/8)
         }
     }
 
