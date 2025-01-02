@@ -140,6 +140,15 @@ queryUniProt(
     collapse = " AND "
 )
 
+queryUniProt(
+    query = c("organism_id:9606", "gene_exact:A2M"),
+    fields = c(
+        "id", "accession", "gene_primary",
+        "organism_name", "protein_name", "reviewed"
+    ),
+    collapse = " OR ", n = 3, pageSize = 3
+)
+
 allToKeys(fromName = "UniRef100")
 
 head(allFromKeys())
