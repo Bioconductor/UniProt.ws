@@ -14,7 +14,7 @@ vignette: >
 library(BiocStyle)
 ```
 
-# Installation
+# `UniProt.ws`
 
 ```{r,eval=FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE))
