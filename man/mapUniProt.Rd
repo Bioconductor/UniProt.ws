@@ -28,7 +28,7 @@ mapUniProt(
 queryUniProt(
   query = character(0L),
   fields = c("accession", "id"),
-  collapse = " OR ",
+  collapse = c(" OR ", " AND "),
   n = Inf,
   pageSize = 25L
 )

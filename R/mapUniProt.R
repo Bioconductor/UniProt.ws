@@ -332,13 +332,15 @@ mapUniProt <- function(
 #"
 #' @export
 queryUniProt <- function(
-    query = character(0L), fields = c("accession", "id"), collapse = " OR ",
+    query = character(0L), fields = c("accession", "id"),
+    collapse = c(" OR ", " AND "),
     n = Inf, pageSize = 25L
 ) {
     stopifnot(isCharacter(query), isCharacter(fields))
     if (!length(query))
         stop("<internal> 'qlist' must be populated with queries")
 
+    collapse <- match.arg(collapse)
     request(.UNIPROT_REST_URL) |>
         req_template("uniprotkb/search") |>
         req_url_query(
