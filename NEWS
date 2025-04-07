@@ -1,3 +1,33 @@
+CHANGES IN VERSION 2.48.0
+-------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+  o Switched to using the `httr2` package for making HTTP requests
+  o Reorganized and renamed documentation for the `UniProt.ws` class and its
+  methods
+  o Converted unit testing framework from `testthat` to `tinytest`
+  o Added the `README.md` file from the vignette
+  o Improved handling of API responses: empty results with code 200 are
+  now caught and handled properly
+  o The `collapse` argument in `queryUniProt` now shows both `OR` and `AND`
+  options
+
+BUG FIXES AND MINOR IMPROVEMENTS
+
+  o Added an example to `queryUniProt()`
+  o Fixed formatting issues in unit tests and corrected indentation in code
+  o Adjusted internal logic to support queries returning larger result sets
+  o Re-added `Sys.sleep()` call to respect rate limits
+  o Set `n` argument in internal use of `head()`
+
+CHANGES IN VERSION 2.46.0
+-------------------------
+
+BUG FIXES AND MINOR IMPROVEMENTS
+
+    o No significant changes.
+
 CHANGES IN VERSION 2.44.0
 -------------------------
 
