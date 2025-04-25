@@ -178,13 +178,12 @@ returnFields <- function() {
 #'   <https://www.uniprot.org/help/return_fields>. Example fields include,
 #'   "accession", "id", "gene_names", "xref_pdb", "xref_hgnc", "sequence", etc.
 #'
-#' @param query `character()` or named `list()` Typically, a string that would
-#'   indicate the target accession identifiers but can also be a named list
-#'   based on the available query fields. See
-#'   <https://www.uniprot.org/help/query-fields> for a list of query fields. The
-#'   typical query might only include a character vector of UniProt accession
-#'   identifiers, e.g., `c("A0A0C5B5G6", "A0A1B0GTW7", "A0JNW5", "A0JP26",
-#'   "A0PK11", "A1A4S6")`
+#' @param query `character()` or named `list()` Typically, a string
+#'   of `from=` identifiers for ID mapping (`mapUniProt`). For the
+#'   `uniprotkb/search` endpoint (`queryUniProt`), `query` can be a string of
+#'   colon separated key-value pairs (e.g., `"organism_id:9606"`) or a named
+#'   list of available query fields (`queryUniProt`). See
+#'   <https://www.uniprot.org/help/query-fields> for a list of query fields.
 #'
 #' @param collapse `character(1)` A string indicating either `" OR "` or
 #'   `" AND "` for combining `query` clauses.
@@ -218,6 +217,7 @@ returnFields <- function() {
 #' @author M. Ramos
 #'
 #' @importFrom progress progress_bar
+#' @importFrom rlang !!!
 #' @importFrom AnVILBase avstop_for_status
 #' @importFrom BiocBaseUtils isScalarCharacter isTRUEorFALSE
 #' @importFrom httr2 req_body_multipart resp_body_json req_url_query
@@ -255,14 +255,16 @@ returnFields <- function() {
 #'     query = c("P31946", "P62258")
 #' )
 #'
+#' ## query as character
 #' queryUniProt(
 #'     query = c("accession:A5YMT3", "organism_id:9606"),
 #'     fields = c("accession", "id", "reviewed"),
 #'     collapse = " AND "
 #' )
 #'
+#' ## query as list
 #' queryUniProt(
-#'     query = c("organism_id:9606", "gene_exact:A2M"),
+#'     query = list(organism_id = 9606, gene_exact = "A2M"),
 #'     fields = c(
 #'         "id", "accession", "gene_primary",
 #'         "organism_name", "protein_name", "reviewed"
@@ -288,13 +290,21 @@ mapUniProt <- function(
     )
     if (is.character(query))
         query <- list(ids = paste(query, collapse = ","))
-    else if (is.list(query))
-        query[["ids"]] <- paste(query[["ids"]], collapse = ",")
+    else if (is.list(query)) {
+        query[["ids"]] <- paste(
+            Filter(nzchar, query[["ids"]]), # remove empty elements
+            collapse = ","
+        )
+        query <- lapply(query, as.character)
+    }
+
+    if (is.null(query[["ids"]]) || !all(nzchar(query[["ids"]])))
+        stop("'ids' must be a non-zero character vector in 'query' list")
+
+    multipart_body <- c(query, list(from = from, to = to))
     resp <- request(.UNIPROT_REST_URL) |>
         req_template("idmapping/run") |>
-        req_body_multipart(
-            ids = query[["ids"]], from = from, to = to
-        ) |>
+        req_body_multipart(!!!multipart_body) |>
         req_perform() |>
         resp_body_json()
     jobId <- resp[["jobId"]]
@@ -344,15 +354,21 @@ queryUniProt <- function(
     collapse = c(" OR ", " AND "),
     n = Inf, pageSize = 25L
 ) {
-    stopifnot(isCharacter(query), isCharacter(fields))
+    stopifnot(isCharacter(query) || is.list(query), isCharacter(fields))
     if (!length(query))
-        stop("<internal> 'qlist' must be populated with queries")
+        stop("'query' is a zero length character vector")
 
     collapse <- match.arg(collapse)
+
+    if (is.character(query))
+        query <- paste(query, collapse = collapse)
+    else if (is.list(query))
+        query <- paste(names(query), query, sep = ":", collapse = collapse)
+
     request(.UNIPROT_REST_URL) |>
         req_template("uniprotkb/search") |>
         req_url_query(
-            query = paste(query, collapse = collapse),
+            query = query,
             fields = paste(fields, collapse = ","),
             format = "tsv",
             size = pageSize

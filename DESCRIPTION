@@ -24,6 +24,7 @@ Imports:
   methods,
   progress,
   rjsoncons,
+  rlang,
   utils
 Suggests:
   BiocStyle,

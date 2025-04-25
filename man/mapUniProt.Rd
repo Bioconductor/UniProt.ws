@@ -50,12 +50,12 @@ from UniProt service.  See a full list of possible input return fields at
 \url{https://www.uniprot.org/help/return_fields}. Example fields include,
 "accession", "id", "gene_names", "xref_pdb", "xref_hgnc", "sequence", etc.}
 
-\item{query}{\code{character()} or named \code{list()} Typically, a string that would
-indicate the target accession identifiers but can also be a named list
-based on the available query fields. See
-\url{https://www.uniprot.org/help/query-fields} for a list of query fields. The
-typical query might only include a character vector of UniProt accession
-identifiers, e.g., \code{c("A0A0C5B5G6", "A0A1B0GTW7", "A0JNW5", "A0JP26", "A0PK11", "A1A4S6")}}
+\item{query}{\code{character()} or named \code{list()} Typically, a string
+of \verb{from=} identifiers for ID mapping (\code{mapUniProt}). For the
+\code{uniprotkb/search} endpoint (\code{queryUniProt}), \code{query} can be a string of
+colon separated key-value pairs (e.g., \code{"organism_id:9606"}) or a named
+list of available query fields (\code{queryUniProt}). See
+\url{https://www.uniprot.org/help/query-fields} for a list of query fields.}
 
 \item{verbose}{\code{logical(1)} Whether the operations should provide verbose
 updates (default \code{FALSE}).}
@@ -134,14 +134,16 @@ mapUniProt(
     query = c("P31946", "P62258")
 )
 
+## query as character
 queryUniProt(
     query = c("accession:A5YMT3", "organism_id:9606"),
     fields = c("accession", "id", "reviewed"),
     collapse = " AND "
 )
 
+## query as list
 queryUniProt(
-    query = c("organism_id:9606", "gene_exact:A2M"),
+    query = list(organism_id = 9606, gene_exact = "A2M"),
     fields = c(
         "id", "accession", "gene_primary",
         "organism_name", "protein_name", "reviewed"
