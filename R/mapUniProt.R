@@ -251,8 +251,8 @@ returnFields <- function() {
 #'
 #' mapUniProt(
 #'     from = "UniProtKB_AC-ID", to = "UniProtKB",
-#'     query = c("P31946", "P62258"),
-#'     columns = c("accession", "id", "xref_pdb", "xref_hgnc", "sequence")
+#'     columns = c("accession", "id", "xref_pdb", "xref_hgnc", "sequence"),
+#'     query = c("P31946", "P62258")
 #' )
 #'
 #' queryUniProt(
@@ -290,7 +290,6 @@ mapUniProt <- function(
         query <- list(ids = paste(query, collapse = ","))
     else if (is.list(query))
         query[["ids"]] <- paste(query[["ids"]], collapse = ",")
-    files <- c(query, list(from = from, to = to))
     resp <- request(.UNIPROT_REST_URL) |>
         req_template("idmapping/run") |>
         req_body_multipart(
@@ -338,7 +337,7 @@ mapUniProt <- function(
 #' @rdname mapUniProt
 #'
 #' @importFrom BiocBaseUtils isCharacter
-#"
+#'
 #' @export
 queryUniProt <- function(
     query = character(0L), fields = c("accession", "id"),

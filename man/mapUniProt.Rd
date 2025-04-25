@@ -130,8 +130,8 @@ mapUniProt(
 
 mapUniProt(
     from = "UniProtKB_AC-ID", to = "UniProtKB",
-    query = c("P31946", "P62258"),
-    columns = c("accession", "id", "xref_pdb", "xref_hgnc", "sequence")
+    columns = c("accession", "id", "xref_pdb", "xref_hgnc", "sequence"),
+    query = c("P31946", "P62258")
 )
 
 queryUniProt(
