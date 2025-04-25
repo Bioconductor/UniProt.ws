@@ -298,7 +298,7 @@ mapUniProt <- function(
         query <- lapply(query, as.character)
     }
 
-    if (is.null(query[["ids"]]) || !all(nzchar(query[["ids"]])))
+    if (!all(nzchar(query[["ids"]])))
         stop("'ids' must be a non-zero character vector in 'query' list")
 
     multipart_body <- c(query, list(from = from, to = to))
