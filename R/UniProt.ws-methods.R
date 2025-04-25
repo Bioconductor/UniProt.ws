@@ -122,7 +122,7 @@ setMethod("keys", "UniProt.ws", function(x, keytype) {
     dat
 })
 
-OLD_IDS <- c("ACC+ID", "ENTREZ_GENE", "GeneID")
+.OLD_IDS <- c("ACC+ID", "ENTREZ_GENE", "GeneID")
 
 #' @describeIn UniProt.ws-methods Select columns from keys
 #'
@@ -146,7 +146,7 @@ setMethod("select", "UniProt.ws", function(x, keys, columns, keytype, ...) {
     columns <- columns[!columns %in% keytype]
     if (!length(columns))
         stop("'columns' should be different from 'keytype'")
-    hasOLDID <- columns %in% OLD_IDS
+    hasOLDID <- columns %in% .OLD_IDS
     oldids <- paste0(columns[hasOLDID], collapse = ", ")
     if (any(hasOLDID))
         stop("Unsupported identifiers -\n ", oldids,
