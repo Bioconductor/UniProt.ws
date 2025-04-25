@@ -185,8 +185,8 @@ returnFields <- function() {
 #'   list of available query fields (`queryUniProt`). See
 #'   <https://www.uniprot.org/help/query-fields> for a list of query fields.
 #'
-#' @param collapse `character(1)` A string indicating either `" OR "` or
-#'   `" AND "` for combining `query` clauses.
+#' @param collapse `character(1)` A string indicating either `"OR"` or
+#'   `"AND"` for combining `query` clauses (case-insensitive).
 #'
 #' @param n `numeric(1)` Maximum number of rows to return
 #'
@@ -259,7 +259,7 @@ returnFields <- function() {
 #' queryUniProt(
 #'     query = c("accession:A5YMT3", "organism_id:9606"),
 #'     fields = c("accession", "id", "reviewed"),
-#'     collapse = " AND "
+#'     collapse = "AND"
 #' )
 #'
 #' ## query as list
@@ -269,7 +269,7 @@ returnFields <- function() {
 #'         "id", "accession", "gene_primary",
 #'         "organism_name", "protein_name", "reviewed"
 #'     ),
-#'     collapse = " OR ", n = 3, pageSize = 3
+#'     collapse = "OR", n = 3, pageSize = 3
 #' )
 #'
 #' allToKeys(fromName = "UniRef100")
@@ -351,14 +351,19 @@ mapUniProt <- function(
 #' @export
 queryUniProt <- function(
     query = character(0L), fields = c("accession", "id"),
-    collapse = c(" OR ", " AND "),
+    collapse = c("OR", "AND"),
     n = Inf, pageSize = 25L
 ) {
     stopifnot(isCharacter(query) || is.list(query), isCharacter(fields))
     if (!length(query))
         stop("'query' is a zero length character vector")
 
-    collapse <- match.arg(collapse)
+    if (missing(collapse))
+        collapse <- match.arg(collapse)
+    collapse <- toupper(trimws(collapse))
+    if (!collapse %in% c("OR", "AND"))
+        stop("'collapse' must be one of 'OR' or 'AND'")
+    collapse <- paste0(" ", collapse, " ")
 
     if (is.character(query))
         query <- paste(query, collapse = collapse)

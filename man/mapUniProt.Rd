@@ -28,7 +28,7 @@ mapUniProt(
 queryUniProt(
   query = character(0L),
   fields = c("accession", "id"),
-  collapse = c(" OR ", " AND "),
+  collapse = c("OR", "AND"),
   n = Inf,
   pageSize = 25L
 )
@@ -70,8 +70,8 @@ to \code{TRUE} by default.}
 \item{pageSize}{\code{integer(1)} number of records per page. It corresponds to
 the \code{size} parameter in the API request.}
 
-\item{collapse}{\code{character(1)} A string indicating either \code{" OR "} or
-\code{" AND "} for combining \code{query} clauses.}
+\item{collapse}{\code{character(1)} A string indicating either \code{"OR"} or
+\code{"AND"} for combining \code{query} clauses (case-insensitive).}
 
 \item{n}{\code{numeric(1)} Maximum number of rows to return}
 }
@@ -138,7 +138,7 @@ mapUniProt(
 queryUniProt(
     query = c("accession:A5YMT3", "organism_id:9606"),
     fields = c("accession", "id", "reviewed"),
-    collapse = " AND "
+    collapse = "AND"
 )
 
 ## query as list
@@ -148,7 +148,7 @@ queryUniProt(
         "id", "accession", "gene_primary",
         "organism_name", "protein_name", "reviewed"
     ),
-    collapse = " OR ", n = 3, pageSize = 3
+    collapse = "OR", n = 3, pageSize = 3
 )
 
 allToKeys(fromName = "UniRef100")
