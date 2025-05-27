@@ -218,7 +218,6 @@ returnFields <- function() {
 #'
 #' @importFrom progress progress_bar
 #' @importFrom rlang !!!
-#' @importFrom AnVILBase avstop_for_status
 #' @importFrom BiocBaseUtils isScalarCharacter isTRUEorFALSE
 #' @importFrom httr2 req_body_multipart resp_body_json req_url_query
 #'

@@ -16,7 +16,6 @@ Authors@R: c(
 Depends: R (>= 4.5.0)
 Imports:
   AnnotationDbi,
-  AnVILBase,
   BiocFileCache,
   BiocBaseUtils,
   BiocGenerics,
