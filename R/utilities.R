@@ -62,7 +62,7 @@ NULL
         bfc, rnames = url, exact = TRUE, download = TRUE, rtype = "web"
     )
     update <- bfcneedsupdate(bfc, names(rpath))
-    if (update)
+    if (isTRUE(update))
         bfcdownload(bfc, names(rpath), ask = FALSE)
     rpath
 }
