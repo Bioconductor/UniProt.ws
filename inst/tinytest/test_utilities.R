@@ -32,6 +32,6 @@ expect_identical(
     res,
     factor(
         c("E","E","E","E","E","B","V","A","B"),
-        levels = c("A", "B", "E", "V", "X")
+        levels = c("A", "B", "E", "O", "V", "X")
     )
 )
