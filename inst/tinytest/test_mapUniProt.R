@@ -44,13 +44,14 @@ expect_error(
     "'ids' must be a non-zero character vector"
 )
 
-keys <- list(taxId = 9606, ids = c("TP53", ""))
+## FIX: repeat TP53 due to single ID bug in API
+keys <- list(taxId = 9606, ids = c("TP53", "TP53", ""))
 ## filters out nzchars
 res <- mapUniProt(
     from = "Gene_Name",
     to = "UniProtKB-Swiss-Prot",
     columns = c("accession", "id"),
-    query = list(taxId = 9606, ids = c("TP53", ""))
+    query = keys
 )
 expect_true(is.data.frame(res))
 expect_identical(nrow(res), 1L)
