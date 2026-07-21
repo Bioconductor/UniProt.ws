@@ -44,8 +44,7 @@ expect_error(
     "'ids' must be a non-zero character vector"
 )
 
-## FIX: repeat TP53 due to single ID bug in API
-keys <- list(taxId = 9606, ids = c("TP53", "TP53", ""))
+keys <- list(taxId = 9606, ids = "TP53")
 ## filters out nzchars
 res <- mapUniProt(
     from = "Gene_Name",

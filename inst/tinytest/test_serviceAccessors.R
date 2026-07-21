@@ -30,9 +30,8 @@ res <- mapUniProt(
 expect_identical(res[1,"To"], 1L)
 expect_identical(res[1,"From"], 'P04217')
 
-## FIX: repeat TP53 due to single ID bug in API
 ## from = "Gene_Name" can restrict by taxId in query
-keys <- list(ids = c("TP53", "TP53"), taxId = 9606)
+keys <- list(ids = "TP53", taxId = 9606)
 res <- mapUniProt(
     from='Gene_Name',
     to = "UniProtKB-Swiss-Prot",
@@ -46,7 +45,6 @@ expect_true(
     all(names(res) %in%  c("From", "Entry", "Entry.Name", "Organism..ID."))
 )
 
-## FIX: repeat TP53 due to single ID bug in API
 res <- mapUniProt(
     from='Gene_Name',
     to = "UniProtKB",
