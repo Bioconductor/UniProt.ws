@@ -114,5 +114,5 @@ res
 
 }
 \seealso{
-\linkS4class{UniProt.ws}
+\link[=UniProt.ws-class]{UniProt.ws}
 }
