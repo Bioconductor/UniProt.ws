@@ -92,7 +92,7 @@ setMethod("keytypes", "UniProt.ws", function(x) {
     allToKeys(fromName = "UniProtKB_AC-ID")
 })
 
-#' @describeIn UniProt.ws-methods
+#' @describeIn UniProt.ws-methods Get columns for a UniProt.ws object
 #'
 #' @importFrom AnnotationDbi columns
 #'

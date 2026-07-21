@@ -75,7 +75,7 @@ selected \code{keys} and \code{columns} and \code{keytype} arguments.
 \itemize{
 \item \code{keytypes(UniProt.ws)}: Get keytypes for a UniProt.ws object
 
-\item \code{columns(UniProt.ws)}: 
+\item \code{columns(UniProt.ws)}: Get columns for a UniProt.ws object
 
 \item \code{keys(UniProt.ws)}: Get keys for a UniProt.ws object
 
